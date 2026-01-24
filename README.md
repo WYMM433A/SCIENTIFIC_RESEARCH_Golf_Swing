@@ -17,7 +17,7 @@ Build a **Motion-to-Text** and **Text-to-Motion** golf coaching system:
 
 ```
 DataStorm/
-├── pipeline.py                 # 🚀 Main entry point - runs full pipeline
+├── pipeline.py                 # Main entry point - runs full pipeline
 ├── README.md                   # This file
 ├── ANNOTATION_AND_TRAINING_GUIDE.md
 │
@@ -115,7 +115,7 @@ python -c "from src.pose.detector import PoseDetector; print('✓ Setup complete
 
 ---
 
-## 🚀 How to Use
+## How to Use
 
 ### Run Full Pipeline (Recommended)
 
@@ -145,7 +145,7 @@ After running the pipeline, you'll find:
 
 ---
 
-## 🏌️ The 8 Golf Swing Phases
+##  The 8 Golf Swing Phases
 
 | # | Phase | Description |
 |---|-------|-------------|
@@ -248,35 +248,9 @@ The `src/biomechanics/` module calculates golf-critical angles:
 
 ## 👥 Team
 
-- Add your team members here
-
----
-
-## 📝 License
-
-Add your license here
-
----
-
-## 🐛 Troubleshooting
-
-### "Model file not found"
-```bash
-# Make sure you're running from project root
-cd C:\Code Related\DataStorm
-python pipeline.py ...
-```
-
-### MediaPipe timestamp warnings
-These are normal and don't affect results:
-```
-W0000 00:00:1234567890.123456 one_euro_filter.cc:89] New timestamp...
-```
-
-### "No motion detected"
-Video may not have enough movement. Try:
-- Different video
-- Lower motion threshold in `src/video/cleaner.py`
+- WAI YAN MOE MYINT
+- AUNG KAUNG HTET
+- NGUYEN THI TUYET NHUNG
 
 ---
 
