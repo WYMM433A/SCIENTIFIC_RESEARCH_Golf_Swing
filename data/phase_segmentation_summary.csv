@@ -1,0 +1,55 @@
+Video,Phase,Start,End,Duration
+extracted_poses\golf_swing_001_cleaned,Address,1,161,161
+extracted_poses\golf_swing_001_cleaned,Backswing,161,172,12
+extracted_poses\golf_swing_001_cleaned,Top,172,182,11
+extracted_poses\golf_swing_001_cleaned,Downswing,182,186,5
+extracted_poses\golf_swing_001_cleaned,Impact,186,188,3
+extracted_poses\golf_swing_001_cleaned,Follow Through,188,243,56
+extracted_poses\golf_swing_002_cleaned,Address,1,193,193
+extracted_poses\golf_swing_002_cleaned,Backswing,193,202,10
+extracted_poses\golf_swing_002_cleaned,Top,202,212,11
+extracted_poses\golf_swing_002_cleaned,Downswing,212,219,8
+extracted_poses\golf_swing_002_cleaned,Impact,219,220,2
+extracted_poses\golf_swing_002_cleaned,Follow Through,220,287,68
+extracted_poses\golf_swing_003_cleaned,Address,1,123,123
+extracted_poses\golf_swing_003_cleaned,Backswing,123,134,12
+extracted_poses\golf_swing_003_cleaned,Top,134,144,11
+extracted_poses\golf_swing_003_cleaned,Downswing,144,189,46
+extracted_poses\golf_swing_003_cleaned,Impact,189,197,9
+extracted_poses\golf_swing_003_cleaned,Follow Through,197,208,12
+extracted_poses\golf_swing_004_cleaned,Address,1,213,213
+extracted_poses\golf_swing_004_cleaned,Backswing,213,223,11
+extracted_poses\golf_swing_004_cleaned,Top,223,233,11
+extracted_poses\golf_swing_004_cleaned,Downswing,233,240,8
+extracted_poses\golf_swing_004_cleaned,Impact,240,240,1
+extracted_poses\golf_swing_004_cleaned,Follow Through,240,241,2
+extracted_poses\golf_swing_006_cleaned,Address,1,95,95
+extracted_poses\golf_swing_006_cleaned,Backswing,95,101,7
+extracted_poses\golf_swing_006_cleaned,Top,101,111,11
+extracted_poses\golf_swing_006_cleaned,Downswing,111,119,9
+extracted_poses\golf_swing_006_cleaned,Impact,119,119,1
+extracted_poses\golf_swing_006_cleaned,Follow Through,119,186,68
+extracted_poses\golf_swing_007_cleaned,Address,1,82,82
+extracted_poses\golf_swing_007_cleaned,Backswing,82,90,9
+extracted_poses\golf_swing_007_cleaned,Top,90,100,11
+extracted_poses\golf_swing_007_cleaned,Downswing,100,105,6
+extracted_poses\golf_swing_007_cleaned,Impact,105,106,2
+extracted_poses\golf_swing_007_cleaned,Follow Through,106,200,95
+extracted_poses\golf_swing_008_cleaned,Address,1,74,74
+extracted_poses\golf_swing_008_cleaned,Backswing,74,77,4
+extracted_poses\golf_swing_008_cleaned,Top,77,87,11
+extracted_poses\golf_swing_008_cleaned,Downswing,87,93,7
+extracted_poses\golf_swing_008_cleaned,Impact,93,93,1
+extracted_poses\golf_swing_008_cleaned,Follow Through,93,115,23
+extracted_poses\golf_swing_009_cleaned,Address,1,112,112
+extracted_poses\golf_swing_009_cleaned,Backswing,112,117,6
+extracted_poses\golf_swing_009_cleaned,Top,117,127,11
+extracted_poses\golf_swing_009_cleaned,Downswing,127,132,6
+extracted_poses\golf_swing_009_cleaned,Impact,132,134,3
+extracted_poses\golf_swing_009_cleaned,Follow Through,134,183,50
+extracted_poses\golf_swing_010_cleaned,Address,1,120,120
+extracted_poses\golf_swing_010_cleaned,Backswing,120,126,7
+extracted_poses\golf_swing_010_cleaned,Top,126,136,11
+extracted_poses\golf_swing_010_cleaned,Downswing,136,141,6
+extracted_poses\golf_swing_010_cleaned,Impact,141,141,1
+extracted_poses\golf_swing_010_cleaned,Follow Through,141,142,2
