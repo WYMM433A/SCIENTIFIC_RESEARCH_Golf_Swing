@@ -10,6 +10,7 @@ import numpy as np
 from scipy.ndimage import uniform_filter1d
 import os
 from pathlib import Path
+from ..constants import PHASE_NAMES
 
 
 class EightPhaseDetector:
@@ -18,16 +19,7 @@ class EightPhaseDetector:
     8-phase version: Address, Takeaway, Mid-backswing, Top, Mid-downswing, Impact, Follow-through, Finish
     """
     
-    PHASE_NAMES = [
-        "Address",
-        "Takeaway",
-        "Mid-backswing",
-        "Top",
-        "Mid-downswing",
-        "Impact",
-        "Follow-through",
-        "Finish"
-    ]
+    PHASE_NAMES = PHASE_NAMES  # Use shared constant
     
     def __init__(self, csv_path, video_path, output_dir='phase_frames'):
         """

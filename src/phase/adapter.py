@@ -22,6 +22,7 @@ Usage:
 import os
 import numpy as np
 from .rule_based import EightPhaseDetector
+from ..constants import PHASE_NAMES
 
 
 class PhasePredictor:
@@ -32,16 +33,7 @@ class PhasePredictor:
     making it easy to swap between rule-based and neural network approaches.
     """
     
-    PHASE_NAMES = [
-        "Address",
-        "Takeaway",
-        "Mid-backswing",
-        "Top",
-        "Mid-downswing",
-        "Impact",
-        "Follow-through",
-        "Finish"
-    ]
+    PHASE_NAMES = PHASE_NAMES  # Use shared constant
     
     def __init__(self, model_type='rule-based', model_path=None):
         """
@@ -72,10 +64,10 @@ class PhasePredictor:
         
         try:
             import torch
-            from Md8PhaseDetector import PoseSwingNet
+            from .neural_model import PoseSwingNet
             
-            # Load model
-            self.model = PoseSwingNet(input_size=132, hidden_size=128, num_classes=8)
+            # Load model (9 classes = 8 phases + no-event)
+            self.model = PoseSwingNet(input_size=132, hidden_size=128, num_layers=2, num_classes=9)
             self.model.load_state_dict(torch.load(model_path, map_location='cpu'))
             self.model.eval()
             print(f"✓ Loaded Neural Network Model: {model_path}")
@@ -143,11 +135,13 @@ class PhasePredictor:
         # Predict
         with torch.no_grad():
             logits = self.model(x)
-            probs = torch.softmax(logits, dim=-1)
-            predictions = torch.argmax(probs, dim=-1).squeeze().numpy()
+            probs = torch.softmax(logits, dim=-1).squeeze().numpy()  # (seq_len, 9)
+            predictions = np.argmax(probs, axis=-1)
         
-        # Find phase boundaries
-        phase_ranges = self._find_phase_boundaries(predictions)
+        num_frames = len(frames)
+        
+        # Find phase boundaries using confidence-based peak detection
+        phase_ranges = self._find_phase_peaks(probs, num_frames)
         
         # Extract key frames
         keyframes = self._extract_keyframes_nn(
@@ -170,7 +164,7 @@ class PhasePredictor:
         }
     
     def _find_phase_boundaries(self, predictions):
-        """Find phase boundaries from frame-level predictions."""
+        """Find phase boundaries from frame-level predictions (legacy method)."""
         phase_ranges = {}
         
         for phase_id, phase_name in enumerate(self.PHASE_NAMES):
@@ -182,6 +176,77 @@ class PhasePredictor:
                 phase_ranges[phase_name] = (0, 0)
         
         return phase_ranges
+    
+    def _find_phase_peaks(self, probs, num_frames):
+        """
+        Find phase key frames using confidence-based peak detection.
+        Instead of looking for frames predicted as each class, find the 
+        frame with highest confidence for each phase class.
+        
+        Args:
+            probs: (num_frames, 9) softmax probabilities
+            num_frames: total number of frames
+            
+        Returns:
+            dict: phase_name -> (start, end) range around peak frame
+        """
+        phase_ranges = {}
+        
+        # Get confidence for each phase (excluding no-event class 8)
+        for phase_id, phase_name in enumerate(self.PHASE_NAMES):
+            phase_probs = probs[:, phase_id]  # Confidence for this phase
+            
+            # Find the frame with maximum confidence for this phase
+            peak_frame = int(np.argmax(phase_probs))
+            
+            # Define a small window around the peak
+            window = 3
+            start = max(0, peak_frame - window)
+            end = min(num_frames - 1, peak_frame + window)
+            
+            phase_ranges[phase_name] = (start, end)
+        
+        # Enforce temporal ordering: phases should occur in sequence
+        phase_ranges = self._enforce_temporal_order(phase_ranges, num_frames)
+        
+        return phase_ranges
+    
+    def _enforce_temporal_order(self, phase_ranges, num_frames):
+        """
+        Ensure phases occur in temporal order (Address < Takeaway < ... < Finish).
+        If phases are out of order, redistribute them.
+        """
+        # Get key frames (midpoints)
+        key_frames = []
+        for phase_name in self.PHASE_NAMES:
+            start, end = phase_ranges[phase_name]
+            key_frames.append((start + end) // 2)
+        
+        # Check if already in order
+        is_ordered = all(key_frames[i] <= key_frames[i+1] for i in range(len(key_frames)-1))
+        
+        if is_ordered:
+            return phase_ranges
+        
+        # Sort and redistribute
+        sorted_frames = sorted(key_frames)
+        
+        # If still problematic, distribute evenly across video
+        if sorted_frames[0] == sorted_frames[-1]:
+            # All same frame - distribute evenly
+            step = num_frames // 9
+            sorted_frames = [i * step for i in range(8)]
+        
+        # Rebuild phase_ranges with sorted frames
+        new_ranges = {}
+        window = 3
+        for i, phase_name in enumerate(self.PHASE_NAMES):
+            frame = sorted_frames[i]
+            start = max(0, frame - window)
+            end = min(num_frames - 1, frame + window)
+            new_ranges[phase_name] = (start, end)
+        
+        return new_ranges
     
     def _extract_keyframes_nn(self, video_path, phase_ranges, output_dir, video_name):
         """Extract key frames based on neural network predictions."""
