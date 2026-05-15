@@ -593,6 +593,204 @@ The `src/biomechanics/` module calculates golf-critical angles:
 
 ---
 
+## 📌 Current Status (May 2026)
+
+The project is now running an end-to-end swing evaluation pipeline with both phase detection and phase scoring in production.
+
+### What is working now
+
+- Full pipeline from raw video to scored 8-phase output
+- Rule-based and neural-network phase segmentation via a unified adapter
+- Per-phase biomechanical scoring with weighted metrics
+- Human-readable coaching feedback in score output
+- Detailed component-level feedback export for diagnostics and UI
+
+### Latest completed improvements
+
+- Actionable feedback upgrade:
+    - Uses raw component scores for accurate issue labels
+    - Includes measured value vs target range
+    - Adds fix cue and drill prescription per issue
+- New detailed diagnostics file:
+    - `data/metrics/{video_name}_feedback_detailed.csv`
+- Mid-downswing robustness improvements:
+    - More stable kinematic sequence extraction in `src/biomechanics/angles.py`
+    - Broader sequence window (Top-start to Impact-end) in scoring path
+    - Phase/keyframe lookup normalization in `pipeline.py` to avoid silent fallback errors
+
+### Current known direction
+
+- Front-view scoring quality and feedback are the current priority.
+- View-aware front/side normalization is intentionally deferred for a later milestone.
+
+---
+
+## 🧭 Technical Deep Dive
+
+### 1. End-to-End Pipeline Architecture
+
+Main entry: `pipeline.py`
+
+Processing flow:
+
+1. Video cleaning (`src/video/cleaner.py`)
+2. Pose extraction (`src/pose/analyzer.py`, `src/pose/detector.py`)
+3. Phase segmentation (`src/phase/adapter.py` -> rule-based or neural)
+4. Biomechanical scoring (`src/biomechanics/angles.py`, `src/biomechanics/phase_scorer.py`)
+5. Feedback generation (summary in scores CSV + detailed diagnostics CSV)
+6. Keyframe export and summary report
+
+Primary outputs:
+
+- `data/cleaned_videos/{name}_cleaned.mp4`
+- `data/extracted_poses/{name}_cleaned_poses.csv`
+- `data/metrics/{name}_cleaned_metrics.csv`
+- `data/metrics/{name}_scores.csv`
+- `data/metrics/{name}_feedback_detailed.csv`
+- `data/keyframes/{name}_rb/` or `data/keyframes/{name}_nn/`
+
+### 2. How Phase Segmentation Is Done
+
+`src/phase/adapter.py` exposes one interface and dispatches to two implementations.
+
+#### Rule-based segmentation (`src/phase/rule_based.py`)
+
+- Uses right-wrist Y trajectory over time
+- Smooths wrist signal and computes velocity magnitude
+- Detects swing boundaries from motion thresholding
+- Builds 8 phases with a hybrid strategy:
+    - Address and Finish: stability windows
+    - Top: peak-based event
+    - Remaining phases: time-proportional partitions between landmarks
+
+Best for deterministic behavior and no model dependency.
+
+#### Neural-network segmentation (`src/phase/neural.py` + loaded model)
+
+- Uses normalized per-frame pose features (132 dims: 33 landmarks x 4)
+- Bi-LSTM predicts class probabilities per frame
+- Peak-confidence frame is chosen per phase
+- Each phase gets a small window around the peak
+- Temporal order correction enforces Address -> ... -> Finish chronology
+
+Best for learned timing patterns and noisy real-world swings.
+
+### 3. How Analysis and Scoring Work Per Phase
+
+Scoring engine: `src/biomechanics/phase_scorer.py`
+Configuration: `src/biomechanics/scoring_config.py`
+
+Scoring structure:
+
+- Each phase has component metrics and weights (`METRIC_WEIGHTS`)
+- Each metric is evaluated against target ranges (`SCORING_THRESHOLDS`)
+- Component scores are combined into a normalized phase score (0-100)
+- Overall score uses phase importance weights (`PHASE_WEIGHTS`)
+
+#### Phase-by-phase factors
+
+| Phase | Main factors used for scoring |
+|------|-------------------------------|
+| Address | posture, grip indicator, weight distribution |
+| Takeaway | shoulder rotation initiation, hip lag, wrist position, club path/head stability |
+| Mid-backswing | coil (x-factor), shoulder rotation, wrist hinge, shaft/lead-arm plane |
+| Top | coil, posture retention, head stability, wrist set |
+| Mid-downswing | kinematic sequence, lag retention, hip rotation drive, upper-body lag |
+| Impact | lag release timing, x-factor unwind, arm extension, wrist structure, stability |
+| Follow-through | deceleration pattern, posture, arm swing shape, rotation completion |
+| Finish | balance, posture, final rotation, symmetry |
+
+#### Mid-downswing sequence specifics
+
+- Sequence scoring is the highest-weight component inside mid-downswing.
+- Sequence extraction is computed from a broader transition window:
+    - Top phase start -> Impact phase end
+- Robustness logic in `angles.py` includes:
+    - Angle unwrapping
+    - Velocity smoothing
+    - Persistent-onset detection (not one-frame spikes)
+    - Stabilized x-factor stretch estimation
+
+### 4. Feedback System Design
+
+Summary feedback (`{name}_scores.csv`):
+
+- One readable block per phase
+- Prioritized issues only
+- Includes fix cue + drill suggestion
+
+Detailed feedback (`{name}_feedback_detailed.csv`):
+
+- One row per phase component
+- Raw score and weighted score
+- Measured value and target range
+- Delta from target, severity, priority
+- Coaching cue and drill text
+
+This dual-output design supports both:
+
+- Coach/user-facing concise reports
+- Developer/debugger-facing diagnostic analysis
+
+### 5. Data and Control Flow in `pipeline.py`
+
+At scoring time:
+
+1. Set biomechanical reference frame at Address keyframe
+2. For each phase, select keyframe and compute metrics
+3. For Mid-downswing, additionally compute kinematic sequence data
+4. Score phase through `PhaseScorer`
+5. Generate summary feedback and detailed component diagnostics
+6. Compute full-swing overall score and save all artifacts
+
+Implementation notes:
+
+- Phase dictionary keys are normalized (case/hyphen/space tolerant) before lookup
+- This prevents bad fallback behavior when detector naming style differs
+
+---
+
+## 🗺️ Architecture Diagram
+
+### System Flow
+
+```mermaid
+flowchart LR
+    A[Raw Video<br/>data/raw_videos/*.mp4] --> B[Video Cleaner<br/>src/video/cleaner.py]
+    B --> C[Cleaned Video<br/>data/cleaned_videos/*_cleaned.mp4]
+    C --> D[Pose Extraction<br/>src/pose/detector.py + analyzer.py]
+    D --> E[Pose CSV<br/>data/extracted_poses/*_cleaned_poses.csv]
+    D --> F[Frame Metrics CSV<br/>data/metrics/*_cleaned_metrics.csv]
+
+    E --> G[Phase Adapter<br/>src/phase/adapter.py]
+    G --> H[Rule-Based Detector<br/>src/phase/rule_based.py]
+    G --> I[Neural Detector (Bi-LSTM)<br/>src/phase/neural.py]
+    H --> J[Phase Ranges + Keyframes]
+    I --> J
+
+    E --> K[Biomechanics Engine<br/>src/biomechanics/angles.py]
+    J --> L[Phase Scorer<br/>src/biomechanics/phase_scorer.py]
+    K --> L
+    L --> M[Scores CSV<br/>data/metrics/*_scores.csv]
+    L --> N[Detailed Feedback CSV<br/>data/metrics/*_feedback_detailed.csv]
+
+    J --> O[Keyframe Export<br/>data/keyframes/*_rb or *_nn]
+```
+
+### Module Responsibility Map
+
+| Layer | Main modules | Responsibility |
+|------|--------------|----------------|
+| Orchestration | `pipeline.py` | Runs all stages, tracks artifacts, prints summary |
+| Video preprocessing | `src/video/cleaner.py` | Crops video to swing motion boundaries |
+| Pose extraction | `src/pose/detector.py`, `src/pose/analyzer.py` | Extracts 33 landmarks/frame and derived frame metrics |
+| Phase segmentation | `src/phase/adapter.py`, `src/phase/rule_based.py`, `src/phase/neural.py` | Produces 8 ordered phase ranges and keyframes |
+| Biomechanics | `src/biomechanics/angles.py` | Computes golf-specific angles and kinematic sequence signals |
+| Scoring + feedback | `src/biomechanics/phase_scorer.py`, `src/biomechanics/scoring_config.py` | Converts metrics to phase scores, overall score, and coaching feedback |
+| Artifacts | `data/metrics/`, `data/keyframes/`, `data/extracted_poses/` | Stores analysis outputs for downstream UI/reporting/training |
+
+---
+
 ## 🗺️ Roadmap
 
 - [x] Video cleaning (auto-crop)
@@ -603,7 +801,7 @@ The `src/biomechanics/` module calculates golf-critical angles:
 - [x] Neural phase classifier (PoseSwingNet)
 - [x] GolfDB training pipeline
 - [x] Confidence-based phase detection
-- [ ] Text feedback generation
+- [x] Text feedback generation (summary + detailed diagnostics)
 - [ ] Visual overlay system
 - [ ] Text → Motion (3D skeleton synthesis)
 

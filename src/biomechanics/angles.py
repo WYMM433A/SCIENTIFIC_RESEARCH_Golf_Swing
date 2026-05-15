@@ -310,14 +310,15 @@ class GolfBiomechanics:
             left_shoulder = self._get_point_from_df(frame, 'left_shoulder')
             right_shoulder = self._get_point_from_df(frame, 'right_shoulder')
         
-        return self.calculate_line_angle(left_shoulder, right_shoulder)
+        # Normalize to [0, 180] so left/right camera orientation does not invert quality.
+        return abs(self.calculate_line_angle(left_shoulder, right_shoulder))
     
     def get_hip_rotation(self, lmList: List = None, frame: int = None) -> float:
         """
         Calculate hip line rotation from horizontal.
         
         Returns:
-            Angle in degrees
+            Angle in degrees (0-180, clamped to reasonable rotation range)
         """
         if lmList:
             left_hip = self._get_point_from_lmlist(lmList, 'left_hip')
@@ -326,7 +327,11 @@ class GolfBiomechanics:
             left_hip = self._get_point_from_df(frame, 'left_hip')
             right_hip = self._get_point_from_df(frame, 'right_hip')
         
-        return self.calculate_line_angle(left_hip, right_hip)
+        # Normalize to [0, 180] so left/right camera orientation does not invert quality.
+        angle = abs(self.calculate_line_angle(left_hip, right_hip))
+        # Sanity check: hip rotation should be in reasonable range, clamp extreme outliers
+        # to prevent measurement artifacts from breaking scoring
+        return np.clip(angle, 0, 180)
     
     def get_x_factor(self, lmList: List = None, frame: int = None) -> float:
         """
@@ -337,7 +342,10 @@ class GolfBiomechanics:
         """
         shoulder_rot = self.get_shoulder_rotation(lmList, frame)
         hip_rot = self.get_hip_rotation(lmList, frame)
-        return abs(shoulder_rot - hip_rot)
+
+        # Circular angular difference to avoid wrap artifacts (e.g., 355 instead of 5).
+        diff = abs(shoulder_rot - hip_rot) % 360
+        return min(diff, 360 - diff)
     
     def get_lead_arm_angle(self, lmList: List = None, frame: int = None) -> float:
         """
@@ -560,12 +568,16 @@ class GolfBiomechanics:
             # Rotation
             'shoulder_rotation': self.get_shoulder_rotation(lmList, frame),
             'hip_rotation': self.get_hip_rotation(lmList, frame),
+            'hip_angle': self.get_hip_rotation(lmList, frame),
             'x_factor': self.get_x_factor(lmList, frame),
             
             # Arms
             'lead_arm_angle': self.get_lead_arm_angle(lmList, frame),
             'trail_elbow_angle': self.get_trail_elbow_angle(lmList, frame),
+            'arm_extension': self.get_lead_arm_angle(lmList, frame),
             'wrist_hinge': self.get_wrist_hinge(lmList, frame),
+            'wrist_angle': self.get_wrist_hinge(lmList, frame),
+            'lag_angle': self.get_wrist_hinge(lmList, frame),
             
             # Lower body
             'lead_knee_flex': self.get_lead_knee_flex(lmList, frame),
@@ -577,6 +589,7 @@ class GolfBiomechanics:
             # Head movement
             'head_lateral': self.get_head_movement(lmList, frame)[0],
             'head_vertical': self.get_head_movement(lmList, frame)[1],
+            'head_displacement': np.linalg.norm(self.get_head_movement(lmList, frame)),
         }
         
         return metrics
@@ -644,6 +657,198 @@ class GolfBiomechanics:
                         })
         
         return analysis
+    
+    def compute_angular_velocity_sequence(self, df: pd.DataFrame, 
+                                          start_frame: int, end_frame: int) -> Dict[str, float]:
+        """
+        Calculate kinematic sequence during mid-downswing (hips → torso → arms → club).
+        
+        This is critical for golf performance as proper sequencing (hips lead, torso follows,
+        then arms, then club) generates maximum power and consistency.
+        
+        Args:
+            df: DataFrame with pose data
+            start_frame: Start frame of mid-downswing phase
+            end_frame: End frame of mid-downswing phase
+            
+        Returns:
+            Dictionary with:
+            {
+                'hip_start_ms': ms when hips start rotating,
+                'torso_start_ms': ms when torso starts rotating,
+                'arm_start_ms': ms when arms start rotating,
+                'club_start_ms': ms when club starts accelerating,
+                'hip_velocity': degrees/ms,
+                'torso_velocity': degrees/ms,
+                'arm_velocity': degrees/ms,
+                'sequence_efficiency': 0-1 score (1 = perfect),
+            }
+        """
+        try:
+            # Filter to phase frames
+            phase_df = df[(df['frame'] >= start_frame) & (df['frame'] <= end_frame)].copy()
+            
+            if len(phase_df) < 3:
+                return {}
+            
+            sequence = {
+                'hip_start_ms': None,
+                'torso_start_ms': None,
+                'arm_start_ms': None,
+                'club_start_ms': None,
+                'hip_velocity': 0.0,
+                'torso_velocity': 0.0,
+                'arm_velocity': 0.0,
+                'x_factor_stretch': 0.0,
+                'sequence_efficiency': 0.0,
+            }
+            
+            # Calculate rotation angles for each frame
+            hip_rotations = []
+            torso_rotations = []
+            arm_rotations = []
+            frames = []
+            
+            for idx, (_, row) in enumerate(phase_df.iterrows()):
+                frame_num = row['frame']
+                frames.append(frame_num)
+                
+                # Hip rotation
+                try:
+                    left_hip = np.array([row.get('left_hip_x', 0), row.get('left_hip_y', 0)])
+                    right_hip = np.array([row.get('right_hip_x', 0), row.get('right_hip_y', 0)])
+                    hip_mid = (left_hip + right_hip) / 2
+                    
+                    # Use a fixed reference point (target line assumed to be x=0)
+                    # Rotation is angle of hip line from vertical
+                    hip_angle = np.degrees(np.arctan2(right_hip[0] - left_hip[0], right_hip[1] - left_hip[1]))
+                    hip_rotations.append(hip_angle)
+                except:
+                    hip_rotations.append(0)
+                
+                # Torso rotation (shoulders)
+                try:
+                    left_shoulder = np.array([row.get('left_shoulder_x', 0), row.get('left_shoulder_y', 0)])
+                    right_shoulder = np.array([row.get('right_shoulder_x', 0), row.get('right_shoulder_y', 0)])
+                    
+                    torso_angle = np.degrees(np.arctan2(right_shoulder[0] - left_shoulder[0], 
+                                                       right_shoulder[1] - left_shoulder[1]))
+                    torso_rotations.append(torso_angle)
+                except:
+                    torso_rotations.append(0)
+                
+                # Arm rotation (wrist positions)
+                try:
+                    left_wrist = np.array([row.get('left_wrist_x', 0), row.get('left_wrist_y', 0)])
+                    right_wrist = np.array([row.get('right_wrist_x', 0), row.get('right_wrist_y', 0)])
+                    
+                    arm_angle = np.degrees(np.arctan2(right_wrist[0] - left_wrist[0],
+                                                      right_wrist[1] - left_wrist[1]))
+                    arm_rotations.append(arm_angle)
+                except:
+                    arm_rotations.append(0)
+            
+            hip_rotations = np.array(hip_rotations, dtype=float)
+            torso_rotations = np.array(torso_rotations, dtype=float)
+            arm_rotations = np.array(arm_rotations, dtype=float)
+            frames = np.array(frames)
+
+            # Unwrap angle series to avoid 180/-180 discontinuity spikes.
+            hip_unwrapped = np.degrees(np.unwrap(np.radians(hip_rotations)))
+            torso_unwrapped = np.degrees(np.unwrap(np.radians(torso_rotations)))
+            arm_unwrapped = np.degrees(np.unwrap(np.radians(arm_rotations)))
+
+            # Dynamic X-factor stretch with circular angular difference.
+            x_factor_series = np.abs((torso_rotations - hip_rotations + 180.0) % 360.0 - 180.0)
+            if len(x_factor_series) > 0:
+                if len(x_factor_series) >= 3:
+                    kernel = np.ones(3, dtype=float) / 3.0
+                    x_factor_smoothed = np.convolve(x_factor_series, kernel, mode='same')
+                else:
+                    x_factor_smoothed = x_factor_series
+
+                # Use inter-percentile spread to suppress outlier spikes.
+                p10 = np.percentile(x_factor_smoothed, 10)
+                p90 = np.percentile(x_factor_smoothed, 90)
+                stretch = max(0.0, float(p90 - p10))
+                sequence['x_factor_stretch'] = min(stretch, 40.0)
+            
+            # Calculate velocities (rotation change over time)
+            hip_velocities = np.abs(np.diff(hip_unwrapped))
+            torso_velocities = np.abs(np.diff(torso_unwrapped))
+            arm_velocities = np.abs(np.diff(arm_unwrapped))
+
+            # Smooth velocities to suppress single-frame noise spikes.
+            def smooth_velocity(v: np.ndarray, window: int = 3) -> np.ndarray:
+                if len(v) < 3:
+                    return v
+                kernel = np.ones(window, dtype=float) / float(window)
+                return np.convolve(v, kernel, mode='same')
+
+            hip_velocities = smooth_velocity(hip_velocities)
+            torso_velocities = smooth_velocity(torso_velocities)
+            arm_velocities = smooth_velocity(arm_velocities)
+            
+            # Find robust motion onset requiring persistent activation.
+            def find_motion_start(velocities, threshold_percentile=65, min_consecutive=2):
+                """Find motion start from sustained velocity rise, not one-frame spikes."""
+                if len(velocities) == 0:
+                    return 0
+
+                percentile_threshold = np.percentile(velocities, threshold_percentile)
+                absolute_floor = 0.25 * np.max(velocities) if np.max(velocities) > 0 else 0
+                threshold = max(percentile_threshold, absolute_floor)
+                active = velocities >= threshold
+
+                run = 0
+                for i, is_active in enumerate(active):
+                    run = run + 1 if is_active else 0
+                    if run >= min_consecutive:
+                        return i - min_consecutive + 1
+
+                indices = np.where(active)[0]
+                return int(indices[0]) if len(indices) > 0 else 0
+            
+            # Find start frames
+            min_consecutive = 2 if len(frames) >= 6 else 1
+            hip_start_idx = find_motion_start(hip_velocities, min_consecutive=min_consecutive)
+            torso_start_idx = find_motion_start(torso_velocities, min_consecutive=min_consecutive)
+            arm_start_idx = find_motion_start(arm_velocities, min_consecutive=min_consecutive)
+            
+            # Convert to milliseconds (assuming 30fps video)
+            frame_to_ms = 1000 / 30.0  # ~33.33ms per frame
+            
+            sequence['hip_start_ms'] = hip_start_idx * frame_to_ms
+            sequence['torso_start_ms'] = torso_start_idx * frame_to_ms
+            sequence['arm_start_ms'] = arm_start_idx * frame_to_ms
+            sequence['club_start_ms'] = (arm_start_idx + 1) * frame_to_ms  # club follows arms by ~1 frame
+            
+            # Calculate average velocities
+            sequence['hip_velocity'] = float(np.mean(hip_velocities)) if len(hip_velocities) > 0 else 0
+            sequence['torso_velocity'] = float(np.mean(torso_velocities)) if len(torso_velocities) > 0 else 0
+            sequence['arm_velocity'] = float(np.mean(arm_velocities)) if len(arm_velocities) > 0 else 0
+            
+            # Calculate sequence efficiency
+            # Perfect sequence: hips lead, torso follows ~50-150ms later, arms follow after that
+            hip_to_torso_ms = sequence['torso_start_ms'] - sequence['hip_start_ms']
+            torso_to_arm_ms = sequence['arm_start_ms'] - sequence['torso_start_ms']
+            
+            ideal_hip_to_torso = 75  # ms
+            ideal_torso_to_arm = 100  # ms
+            
+            # Score based on how close to ideal
+            hip_torso_error = abs(hip_to_torso_ms - ideal_hip_to_torso)
+            torso_arm_error = abs(torso_to_arm_ms - ideal_torso_to_arm)
+            
+            max_error = 100  # ms
+            efficiency = max(0, 1.0 - (hip_torso_error + torso_arm_error) / (2 * max_error))
+            sequence['sequence_efficiency'] = float(efficiency)
+            
+            return sequence
+            
+        except Exception as e:
+            print(f"Error computing kinematic sequence: {e}")
+            return {}
     
     def analyze_full_swing(self, phase_frames: Dict[str, int]) -> pd.DataFrame:
         """

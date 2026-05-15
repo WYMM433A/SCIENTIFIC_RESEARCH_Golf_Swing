@@ -30,7 +30,9 @@ from datetime import datetime
 from src.pose import SwingAnalyzer
 from src.phase import create_predictor
 from src.video.cleaner import detect_swing_bounds, crop_video
+from src.biomechanics import PhaseScorer, GolfBiomechanics
 from src import config
+import pandas as pd
 
 
 class GolfSwingPipeline:
@@ -115,6 +117,10 @@ class GolfSwingPipeline:
         print("\n📋 STEP 3/4: Detecting 8 Swing Phases...")
         self._detect_phases()
         
+        # Step 3b: Score phases (NEW)
+        print("\n📋 STEP 3b/4: Scoring Phases...")
+        self._score_swing()
+        
         # Step 4: Extract key frames
         print("\n📋 STEP 4/4: Extracting 8 Key Frames...")
         self._extract_keyframes()
@@ -123,6 +129,44 @@ class GolfSwingPipeline:
         self._print_summary()
         
         return self._get_results()
+
+    def _calibrate_overall_score(self, overall_score, phase_scores, phase_metrics):
+        """
+        Apply targeted calibration so catastrophic finish faults are penalized hard
+        without globally crushing pro-level scores.
+
+        Args:
+            overall_score: Weighted score from phase aggregation
+            phase_scores: Dict of phase -> phase score
+            phase_metrics: Dict of normalized phase -> metrics dict
+
+        Returns:
+            (calibrated_score, calibration_details)
+        """
+        calibrated = float(overall_score)
+        calibration_details = {
+            'base_score': float(overall_score),
+            'finish_rotation': None,
+            'finish_rotation_penalty': 0.0,
+        }
+
+        finish_metrics = phase_metrics.get('finish', {})
+        finish_rotation = finish_metrics.get('hip_rotation')
+        if finish_rotation is not None:
+            finish_rotation = float(finish_rotation)
+            calibration_details['finish_rotation'] = finish_rotation
+
+            # Catastrophic finish-rotation penalty:
+            # front-view clips with near-zero finish rotation indicate severe quality issues.
+            if finish_rotation < 120.0:
+                rotation_gap = 120.0 - finish_rotation
+                rotation_penalty = min(35.0, rotation_gap * 0.30)
+                calibrated -= rotation_penalty
+                calibration_details['finish_rotation_penalty'] = float(rotation_penalty)
+
+        calibrated = float(np.clip(calibrated, 0.0, 100.0))
+        calibration_details['calibrated_score'] = calibrated
+        return calibrated, calibration_details
     
     def _clean_video(self, video_path, motion_threshold=0.3):
         """
@@ -230,6 +274,196 @@ class GolfSwingPipeline:
                 duration = end - start + 1
                 print(f"      • {phase_name:<18} frames {start:>4d}-{end:>4d} ({duration:>3d} frames)")
     
+    def _score_swing(self):
+        """
+        Step 3b: Score each phase biomechanically.
+        
+        Evaluates:
+        - Individual phase scores (0-100)
+        - Overall swing score
+        - Kinematic sequence (mid-downswing)
+        - Feedback and recommendations
+        
+        Saves results to CSV for analysis.
+        """
+        try:
+            # Load pose data
+            pose_df = pd.read_csv(self.poses_csv_path)
+
+            def _normalize_phase_name(name: str) -> str:
+                return str(name).strip().lower().replace('-', '_').replace(' ', '_')
+
+            def _get_phase_range(phase_name: str):
+                target = _normalize_phase_name(phase_name)
+                for key, value in self.phase_ranges.items():
+                    if _normalize_phase_name(key) == target:
+                        return value
+                return None
+
+            def _get_phase_keyframe(phase_name: str):
+                target = _normalize_phase_name(phase_name)
+                for key, value in self.keyframes.items():
+                    if _normalize_phase_name(key) == target:
+                        return value.get('key_frame')
+                return None
+            
+            # Initialize scorer
+            scorer = PhaseScorer()
+            
+            # Initialize biomechanics for reference setting
+            biomechanics = GolfBiomechanics()
+            biomechanics.df = pose_df
+            
+            # Get address frame for reference
+            address_phase = _get_phase_range('address') or (0, 10)
+            address_key_frame = _get_phase_keyframe('address')
+            if address_key_frame is None:
+                address_key_frame = address_phase[0]
+            
+            # Set reference position at address
+            biomechanics.set_reference_position(frame=int(address_key_frame))
+            print(f"   ✓ Reference position set at address (frame {int(address_key_frame)})")
+            
+            # Score each phase
+            phase_scores = {}
+            phase_metrics = {}
+            scoring_details = []
+            detailed_feedback_rows = []
+            
+            print(f"   Scoring phases:")
+            for phase_name in self.predictor.PHASE_NAMES:
+                phase_range = _get_phase_range(phase_name)
+                if phase_range is None:
+                    continue
+                
+                start_frame, end_frame = phase_range
+                key_frame = _get_phase_keyframe(phase_name)
+                if key_frame is None:
+                    key_frame = start_frame
+                
+                # Get metrics for this frame
+                frame_df = pose_df[pose_df['frame'] == int(key_frame)]
+                
+                if len(frame_df) == 0:
+                    phase_scores[phase_name] = 0
+                    continue
+
+                phase_normalized = phase_name.replace('-', '_').lower()
+                
+                # Calculate metrics
+                metrics = biomechanics.calculate_all_metrics(frame=int(key_frame))
+                phase_metrics[phase_normalized] = metrics
+                
+                # Convert metrics dict into a pandas Series for scorer input
+                metrics_series = pd.Series(metrics)
+                
+                # Get kinematic sequence for mid-downswing
+                kinematic_data = None
+                if phase_name.lower().replace('-', '_') == 'mid_downswing':
+                    kin_start = int(start_frame)
+                    kin_end = int(end_frame)
+
+                    # Sequence is more stable across a broader transition window.
+                    top_phase = _get_phase_range('top')
+                    impact_phase = _get_phase_range('impact')
+                    if top_phase and impact_phase and int(impact_phase[1]) > int(top_phase[0]):
+                        kin_start = int(top_phase[0])
+                        kin_end = int(impact_phase[1])
+
+                    kinematic_data = biomechanics.compute_angular_velocity_sequence(
+                        pose_df, kin_start, kin_end
+                    )
+                
+                # Score the phase
+                score, details = scorer.score_phase_with_metrics(
+                    phase_normalized, 
+                    metrics_series, 
+                    kinematic_data
+                )
+                
+                phase_scores[phase_name] = score
+                
+                # Generate feedback
+                feedback = scorer.generate_feedback(
+                    phase_name, 
+                    score, 
+                    metrics,
+                    details.get('components', {})
+                )
+
+                # Build detailed actionable feedback rows for export
+                feedback_details = scorer.generate_feedback_details(
+                    phase_name,
+                    metrics,
+                    details.get('components', {})
+                )
+                for item in feedback_details:
+                    item_row = dict(item)
+                    item_row['key_frame'] = int(key_frame)
+                    item_row['phase_score'] = float(score)
+                    detailed_feedback_rows.append(item_row)
+                
+                print(f"      • {phase_name:<18} Score: {score:>6.1f}/100")
+                
+                # Store details
+                scoring_details.append({
+                    'phase': phase_name,
+                    'score': score,
+                    'confidence': details.get('confidence', 0.5),
+                    'key_frame': int(key_frame),
+                    'feedback': feedback
+                })
+            
+            # Calculate overall score
+            overall_score_raw, overall_details = scorer.score_full_swing(phase_scores)
+            overall_score, calibration_details = self._calibrate_overall_score(
+                overall_score_raw,
+                phase_scores,
+                phase_metrics,
+            )
+            
+            print(f"\n   ✓ Overall Score: {overall_score:.1f}/100")
+            if calibration_details.get('finish_rotation_penalty', 0.0) > 0:
+                print(
+                    "   ✓ Calibration applied: "
+                    f"finish rotation {calibration_details.get('finish_rotation', 0.0):.2f}°, "
+                    f"penalty {calibration_details['finish_rotation_penalty']:.1f}"
+                )
+            
+            # Save scoring results
+            self.scores_csv_path = self.metrics_dir / f"{self.video_name}_scores.csv"
+            scoring_details.append({
+                'phase': 'Overall',
+                'score': float(overall_score),
+                'confidence': 1.0,
+                'key_frame': -1,
+                'feedback': (
+                    f"OVERALL: {overall_score:.1f}/100 "
+                    f"(raw={overall_score_raw:.1f}, "
+                    f"finish_rotation_penalty={calibration_details.get('finish_rotation_penalty', 0.0):.1f})"
+                ),
+            })
+            scoring_df = pd.DataFrame(scoring_details)
+            scoring_df.to_csv(self.scores_csv_path, index=False)
+            print(f"   ✓ Scores saved to: {self.scores_csv_path}")
+
+            # Save detailed actionable feedback diagnostics
+            self.feedback_details_csv_path = self.metrics_dir / f"{self.video_name}_feedback_detailed.csv"
+            detailed_feedback_df = pd.DataFrame(detailed_feedback_rows)
+            detailed_feedback_df.to_csv(self.feedback_details_csv_path, index=False)
+            print(f"   ✓ Detailed feedback saved to: {self.feedback_details_csv_path}")
+            
+            # Store for results
+            self.phase_scores = phase_scores
+            self.overall_score = overall_score
+            
+        except Exception as e:
+            print(f"   ✗ Error scoring swing: {e}")
+            import traceback
+            traceback.print_exc()
+            self.phase_scores = {}
+            self.overall_score = 0
+    
     def _extract_keyframes(self):
         """
         Step 4: Extract 8 key frames (one per phase).
@@ -250,6 +484,7 @@ class GolfSwingPipeline:
         print(f"   📹 Cleaned Video: {self.cleaned_video_path}")
         print(f"   📊 Pose Data:     {self.poses_csv_path}")
         print(f"   📈 Metrics:       {self.metrics_csv_path}")
+        print(f"   🎯 Scores:        {getattr(self, 'scores_csv_path', 'N/A')}")
         print(f"   📋 Phase Info:    {self.phases_csv_path}")
         
         print(f"\n🖼️  KEY FRAMES ({self.keyframes_dir / self.output_folder_name}):")
@@ -267,10 +502,14 @@ class GolfSwingPipeline:
             'cleaned_video': str(self.cleaned_video_path),
             'poses_csv': str(self.poses_csv_path),
             'metrics_csv': str(self.metrics_csv_path),
+            'scores_csv': str(getattr(self, 'scores_csv_path', '')),
+            'feedback_details_csv': str(getattr(self, 'feedback_details_csv_path', '')),
             'phases_csv': str(self.phases_csv_path),
             'keyframes_dir': str(self.keyframes_dir / self.output_folder_name),
             'keyframes': self.keyframes,
-            'phase_ranges': self.phase_ranges
+            'phase_ranges': self.phase_ranges,
+            'overall_score': getattr(self, 'overall_score', 0),
+            'phase_scores': getattr(self, 'phase_scores', {})
         }
 
 

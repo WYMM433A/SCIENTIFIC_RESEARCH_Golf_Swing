@@ -1,0 +1,31 @@
+phase,score,confidence,key_frame,feedback
+Address,99.58333333333331,0.6,93,"ADDRESS: 100/100 (EXCELLENT)
+  ✓ No critical issues detected in this phase."
+Takeaway,85.0,1.0,118,"TAKEAWAY: 85/100 (GOOD)
+  ✗ shoulder_rotation: 171.86 vs target 5.00-25.00 (score 50)
+    Fix: Start takeaway with one-piece turn from chest and shoulders.
+    Drill: Cross-arm takeaway drill: 2 x 10 slow reps."
+Mid-backswing,100.0,1.0,124,"MID-BACKSWING: 100/100 (EXCELLENT)
+  ✓ No critical issues detected in this phase."
+Top,95.93849803236652,1.0,139,"TOP: 96/100 (EXCELLENT)
+  ✗ posture: -12.87 vs target -8.00-12.00 (score 80)
+    Fix: Maintain spine posture at the top without standing up.
+    Drill: Top freeze with posture check: 8 reps."
+Mid-downswing,87.5,1.0,144,"MID-DOWNSWING: 88/100 (GOOD)
+  ✗ kinematic_sequence: score 17
+    Fix: Start down with lower body, then torso, then arms.
+    Drill: Step-through sequencing drill: 2 x 8 reps."
+Impact,87.50000000000001,1.0,146,"IMPACT: 88/100 (GOOD)
+  ✗ arm_extension: 146.67 vs target 160.00-180.00 (score 50)
+    Fix: Extend lead arm through strike for compression.
+    Drill: One-arm extension drill: 2 x 8 reps."
+Follow-through,80.0,1.0,149,"FOLLOW-THROUGH: 80/100 (GOOD)
+  ✗ arm_swing: 101.86 vs target 120.00-170.00 (score 50)
+    Fix: Allow natural arm fold around the body.
+    Drill: Finish-wrap rehearsal drill: 2 x 8 reps.
+  ✗ deceleration: 14.27 vs target 0.00-10.00 (score 50)
+    Fix: Decelerate smoothly after release.
+    Drill: Three-quarter finish hold drill: 8 reps."
+Finish,100.0,1.0,160,"FINISH: 100/100 (EXCELLENT)
+  ✓ No critical issues detected in this phase."
+Overall,89.55841317592265,1.0,-1,"OVERALL: 89.6/100 (raw=89.6, finish_rotation_penalty=0.0)"
