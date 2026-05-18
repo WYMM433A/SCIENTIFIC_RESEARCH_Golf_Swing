@@ -959,8 +959,8 @@ class GolfBiomechanics:
             range_val = max_val - min_val
             
             # Consistency penalty: high jitter = amateur-like
-            # std > 5° for most metrics = inconsistent motion
-            consistency_penalty = min(30, max(0, (std - 5) * 3))  # 0 pts at std=5, 30 pts at std=15
+            # std > 3° for most metrics = inconsistent motion (lowered from 5)
+            consistency_penalty = min(50, max(0, (std - 3) * 5))  # 0 pts at std=3, 50 pts at std=13 (was 30 at std=15)
             
             return {
                 'mean': mean,
@@ -1035,7 +1035,7 @@ class GolfBiomechanics:
             # Convert to quality score (inverse: low jerk = high score)
             # Pro swing: jerk ~5-15 pixels/frame²
             # Amateur swing: jerk ~20-50 pixels/frame²
-            jerk_quality = max(0, 100 - (wrist_jerk * 2))  # -2 pts per unit jerk
+            jerk_quality = max(0, 100 - (wrist_jerk * 3))  # -3 pts per unit jerk (was -2)
             
             return {
                 'wrist_jerk': wrist_jerk,

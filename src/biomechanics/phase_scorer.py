@@ -207,9 +207,17 @@ class PhaseScorer:
         
         phase_score = self._normalize_phase_score(phase, score_components)
         
+        # FIX 3/4: Apply window-based penalties if available
+        context = getattr(self, '_window_context', {})
+        if context.get('use_window'):
+            phase_score, penalty_details = self._apply_window_metrics(phase_score, phase)
+        else:
+            penalty_details = {}
+        
         return phase_score, {
             "components": score_components,
             "confidence": len(score_components) / len(METRIC_WEIGHTS[phase]),
+            "penalty_details": penalty_details,
         }
 
     def score_mid_backswing(self, metrics: Dict[str, float]) -> Tuple[float, Dict]:
@@ -273,9 +281,17 @@ class PhaseScorer:
 
         phase_score = self._normalize_phase_score(phase, score_components)
 
+        # FIX 3/4: Apply window-based penalties if available
+        context = getattr(self, '_window_context', {})
+        if context.get('use_window'):
+            phase_score, penalty_details = self._apply_window_metrics(phase_score, phase)
+        else:
+            penalty_details = {}
+
         return phase_score, {
             "components": score_components,
             "confidence": len(score_components) / len(METRIC_WEIGHTS[phase]),
+            "penalty_details": penalty_details,
         }
     
     def score_top(self, metrics: Dict[str, float]) -> Tuple[float, Dict]:
@@ -338,9 +354,17 @@ class PhaseScorer:
         
         phase_score = self._normalize_phase_score(phase, score_components)
         
+        # FIX 3/4: Apply window-based penalties if available
+        context = getattr(self, '_window_context', {})
+        if context.get('use_window'):
+            phase_score, penalty_details = self._apply_window_metrics(phase_score, phase)
+        else:
+            penalty_details = {}
+        
         return phase_score, {
             "components": score_components,
             "confidence": len(score_components) / len(METRIC_WEIGHTS[phase]),
+            "penalty_details": penalty_details,
         }
     
     def score_mid_downswing(self, metrics: Dict[str, float], 
@@ -571,9 +595,17 @@ class PhaseScorer:
 
         phase_score = self._normalize_phase_score(phase, score_components)
 
+        # FIX 3/4: Apply window-based penalties if available
+        context = getattr(self, '_window_context', {})
+        if context.get('use_window'):
+            phase_score, penalty_details = self._apply_window_metrics(phase_score, phase)
+        else:
+            penalty_details = {}
+
         return phase_score, {
             "components": score_components,
             "confidence": len(score_components) / len(METRIC_WEIGHTS[phase]),
+            "penalty_details": penalty_details,
         }
 
     def score_finish(self, metrics: Dict[str, float]) -> Tuple[float, Dict]:
@@ -636,9 +668,17 @@ class PhaseScorer:
 
         phase_score = self._normalize_phase_score(phase, score_components)
 
+        # FIX 3/4: Apply window-based penalties if available
+        context = getattr(self, '_window_context', {})
+        if context.get('use_window'):
+            phase_score, penalty_details = self._apply_window_metrics(phase_score, phase)
+        else:
+            penalty_details = {}
+
         return phase_score, {
             "components": score_components,
             "confidence": len(score_components) / len(METRIC_WEIGHTS[phase]),
+            "penalty_details": penalty_details,
         }
     
     def score_full_swing(self, phase_scores: Dict[str, float]) -> Tuple[float, Dict]:
@@ -953,7 +993,7 @@ class PhaseScorer:
             )
             if spine_window:
                 consistency_penalty = spine_window.get('consistency_penalty', 0)
-                total_penalty += consistency_penalty * 0.5  # 50% weight on consistency
+                total_penalty += consistency_penalty * 1.0  # 100% weight on consistency (was 0.5)
                 penalty_details['spine_consistency'] = {
                     'std': spine_window.get('std', 0),
                     'penalty': consistency_penalty
@@ -963,15 +1003,15 @@ class PhaseScorer:
             wrist_jerk_data = biomechanics_obj.calculate_wrist_jerk(start_frame, end_frame)
             if wrist_jerk_data:
                 jerk_penalty = max(0, 100 - wrist_jerk_data.get('jerk_quality', 100))
-                total_penalty += jerk_penalty * 0.3  # 30% weight on jerk
+                total_penalty += jerk_penalty * 0.8  # 80% weight on jerk (was 0.3)
                 penalty_details['wrist_jerk'] = {
                     'jerk': wrist_jerk_data.get('wrist_jerk', 0),
                     'quality': wrist_jerk_data.get('jerk_quality', 100),
                     'penalty': jerk_penalty
                 }
             
-            # Apply penalties with ceiling (max -20 points)
-            total_penalty = min(20, total_penalty)
+            # Apply penalties with higher ceiling (max -50 points instead of -20)
+            total_penalty = min(50, total_penalty)
             adjusted_score = max(0, phase_score - total_penalty)
             penalty_details['total_penalty'] = total_penalty
             
