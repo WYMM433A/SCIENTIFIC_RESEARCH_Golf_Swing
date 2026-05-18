@@ -1,0 +1,29 @@
+phase,score,confidence,key_frame,feedback
+Address,100.00000000000001,1.0,25,"ADDRESS: 100/100 (EXCELLENT)
+  ✓ No critical issues detected in this phase."
+Takeaway,79.94107919598648,1.0,54,"TAKEAWAY: 80/100 (GOOD)
+  ✗ hip_lag: 0.20 vs target 1.00-10.00 (score 60)
+    Fix: Let shoulders start first; keep hips quieter early.
+    Drill: Pause-at-P2 drill with hips quiet: 8 reps."
+Mid-backswing,90.0,1.0,58,"MID-BACKSWING: 90/100 (EXCELLENT)
+  ✗ shaft_plane: 143.49 vs target 155.00-180.00 (score 50)
+    Fix: Keep lead arm structure and shaft on a repeatable plane.
+    Drill: Pump-to-top drill with mirror feedback: 8 reps."
+Top,90.0,1.0,66,"TOP: 90/100 (EXCELLENT)
+  ✗ wrist_angle: 140.19 vs target 145.00-180.00 (score 50)
+    Fix: Preserve wrist set at the top into transition.
+    Drill: Top-to-transition pump drill: 10 reps."
+Mid-downswing,79.51514497214627,1.0,70,"MID-DOWNSWING: 80/100 (GOOD)
+  ✗ kinematic_sequence: score 17
+    Fix: Start down with lower body, then torso, then arms.
+    Drill: Step-through sequencing drill: 2 x 8 reps.
+  ✗ upper_body_lag: 5.19 vs target 0.00-5.00 (score 73)
+    Fix: Let torso follow hips; avoid throwing arms early.
+    Drill: Split-grip transition drill: 2 x 8 reps."
+Impact,100.0,1.0,74,"IMPACT: 100/100 (EXCELLENT)
+  ✓ No critical issues detected in this phase."
+Follow-through,100.0,1.0,76,"FOLLOW-THROUGH: 100/100 (EXCELLENT)
+  ✓ No critical issues detected in this phase."
+Finish,97.95978865443094,1.0,91,"FINISH: 98/100 (EXCELLENT)
+  ✓ No critical issues detected in this phase."
+Overall,91.89246412489273,1.0,-1,"OVERALL: 91.9/100 (raw=91.9, finish_rotation_penalty=0.0)"

@@ -1,0 +1,37 @@
+phase,score,confidence,key_frame,feedback
+Address,88.60975643158199,1.0,26,"ADDRESS: 89/100 (GOOD)
+  ✗ weight_distribution: 1.27 vs target 0.90-1.20 (score 63)
+    Fix: Center pressure between your feet with shoulder-width stance.
+    Drill: Feet-line setup drill: align heels to a marked shoulder-width line."
+Takeaway,76.05008928672348,1.0,67,"TAKEAWAY: 76/100 (GOOD)
+  ✗ hip_lag: 0.04 vs target 1.00-10.00 (score 52)
+    Fix: Let shoulders start first; keep hips quieter early.
+    Drill: Pause-at-P2 drill with hips quiet: 8 reps."
+Mid-backswing,87.37621780300039,1.0,74,"MID-BACKSWING: 87/100 (GOOD)
+  ✗ coil: 0.32 vs target 2.00-14.00 (score 58)
+    Fix: Increase torso coil while keeping lower body stable.
+    Drill: Resistance-band turn drill: 2 x 10 reps."
+Top,73.76853885356562,1.0,86,"TOP: 74/100 (ACCEPTABLE)
+  ✗ wrist_angle: 119.57 vs target 145.00-180.00 (score 0)
+    Fix: Preserve wrist set at the top into transition.
+    Drill: Top-to-transition pump drill: 10 reps.
+  ✗ posture: -15.48 vs target -8.00-12.00 (score 69)
+    Fix: Maintain spine posture at the top without standing up.
+    Drill: Top freeze with posture check: 8 reps."
+Mid-downswing,88.60452368201783,1.0,91,"MID-DOWNSWING: 89/100 (GOOD)
+  ✗ kinematic_sequence: score 33
+    Fix: Start down with lower body, then torso, then arms.
+    Drill: Step-through sequencing drill: 2 x 8 reps."
+Impact,94.72796886489897,1.0,93,"IMPACT: 95/100 (EXCELLENT)
+  ✗ arm_extension: 153.24 vs target 155.00-175.00 (score 82)
+    Fix: Extend lead arm through strike for compression.
+    Drill: One-arm extension drill: 2 x 8 reps."
+Follow-through,95.0,1.0,94,"FOLLOW-THROUGH: 95/100 (EXCELLENT)
+  ✗ deceleration: 4.36 vs target 10.00-20.00 (score 50)
+    Fix: Decelerate smoothly after release.
+    Drill: Three-quarter finish hold drill: 8 reps."
+Finish,80.0,1.0,100,"FINISH: 80/100 (GOOD)
+  ✗ rotation: 8.55 vs target 160.00-175.00 (score 0)
+    Fix: Complete body rotation fully toward target.
+    Drill: Step-and-turn finish drill: 2 x 8 reps."
+Overall,55.04973246456181,1.0,-1,"OVERALL: 55.0/100 (raw=88.5, finish_rotation_penalty=33.4)"

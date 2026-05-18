@@ -1,0 +1,59 @@
+phase,score,confidence,key_frame,feedback
+Address,20.709391663890695,1.0,51,"ADDRESS: 21/100 (POOR)
+  ✗ posture: 52.12 vs target -5.00-10.00 (score 0)
+    Fix: Set your chest over the ball with a neutral spine and soft knees.
+    Drill: Mirror setup holds: 3 x 20s maintaining neutral posture.
+  ✗ weight_distribution: 8.84 vs target 0.90-1.20 (score 17)
+    Fix: Center pressure between your feet with shoulder-width stance.
+    Drill: Feet-line setup drill: align heels to a marked shoulder-width line."
+Takeaway,100.0,1.0,71,"TAKEAWAY: 100/100 (EXCELLENT)
+  ✓ No critical issues detected in this phase."
+Mid-backswing,77.5,1.0,82,"MID-BACKSWING: 78/100 (GOOD)
+  ✗ shoulder_rotation: 153.98 vs target 170.00-185.00 (score 50)
+    Fix: Complete shoulder turn to the top without lifting.
+    Drill: Wall-turn drill to feel depth: 2 x 8 reps.
+  ✗ shaft_plane: 131.77 vs target 155.00-180.00 (score 50)
+    Fix: Keep lead arm structure and shaft on a repeatable plane.
+    Drill: Pump-to-top drill with mirror feedback: 8 reps."
+Top,62.5,1.0,96,"TOP: 62/100 (ACCEPTABLE)
+  ✗ posture: 45.20 vs target -8.00-12.00 (score 0)
+    Fix: Maintain spine posture at the top without standing up.
+    Drill: Top freeze with posture check: 8 reps.
+  ✗ coil: 161.40 vs target 170.00-185.00 (score 50)
+    Fix: Reach a full but balanced top turn.
+    Drill: Top-position hold drill: 6 reps x 3s hold."
+Mid-downswing,57.5,1.0,100,"MID-DOWNSWING: 58/100 (NEEDS_WORK)
+  ✗ hip_rotation: 168.37 vs target 170.00-185.00 (score 50)
+    Fix: Rotate hips through the downswing instead of sliding.
+    Drill: Chair-hip rotation drill: 2 x 10 reps.
+  ✗ kinematic_sequence: score 50
+    Fix: Start down with lower body, then torso, then arms.
+    Drill: Step-through sequencing drill: 2 x 8 reps.
+  ✗ upper_body_lag: 1.03 vs target 0.00-5.00 (score 75)
+    Fix: Let torso follow hips; avoid throwing arms early.
+    Drill: Split-grip transition drill: 2 x 8 reps."
+Impact,40.0,1.0,105,"IMPACT: 40/100 (NEEDS_WORK)
+  ✗ x_factor_unwind: 95.69 vs target 0.00-18.00 (score 0)
+    Fix: Unwind through impact with chest and hips synced.
+    Drill: Slow-motion impact checkpoints: 10 reps.
+  ✗ arm_extension: 138.36 vs target 155.00-175.00 (score 50)
+    Fix: Extend lead arm through strike for compression.
+    Drill: One-arm extension drill: 2 x 8 reps."
+Follow-through,27.5,1.0,107,"FOLLOW-THROUGH: 28/100 (POOR)
+  ✗ arm_swing: 67.99 vs target 160.00-175.00 (score 0)
+    Fix: Allow natural arm fold around the body.
+    Drill: Finish-wrap rehearsal drill: 2 x 8 reps.
+  ✗ rotation: 18.63 vs target 165.00-180.00 (score 0)
+    Fix: Continue rotating to a complete exit.
+    Drill: Belt-buckle-to-target drill: 2 x 10 reps.
+  ✗ posture: 30.17 vs target -30.00-20.00 (score 50)
+    Fix: Keep posture as chest rotates to target.
+    Drill: Post-impact posture checkpoints: 10 reps."
+Finish,77.3283509651383,1.0,189,"FINISH: 77/100 (GOOD)
+  ✗ rotation: 3.82 vs target 160.00-175.00 (score 0)
+    Fix: Complete body rotation fully toward target.
+    Drill: Step-and-turn finish drill: 2 x 8 reps.
+  ✗ posture: 14.14 vs target -10.00-12.00 (score 89)
+    Fix: Keep stable spine through the finish pose.
+    Drill: Finish mirror holds: 2 x 8 reps."
+Overall,16.309654834469406,1.0,-1,"OVERALL: 16.3/100 (raw=51.2, finish_rotation_penalty=34.9)"

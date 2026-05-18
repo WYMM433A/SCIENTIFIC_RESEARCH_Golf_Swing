@@ -1,0 +1,31 @@
+phase,score,confidence,key_frame,feedback
+Address,96.03022229731106,1.0,51,"ADDRESS: 96/100 (EXCELLENT)
+  ✓ No critical issues detected in this phase."
+Takeaway,100.0,1.0,74,"TAKEAWAY: 100/100 (EXCELLENT)
+  ✓ No critical issues detected in this phase."
+Mid-backswing,87.5,1.0,81,"MID-BACKSWING: 88/100 (GOOD)
+  ✗ wrist_hinge: 147.06 vs target 150.00-180.00 (score 50)
+    Fix: Set wrists progressively through mid-backswing.
+    Drill: Half-swing hinge checkpoints: 10 reps."
+Top,45.0,1.0,94,"TOP: 45/100 (NEEDS_WORK)
+  ✗ coil: 14.04 vs target 170.00-185.00 (score 0)
+    Fix: Reach a full but balanced top turn.
+    Drill: Top-position hold drill: 6 reps x 3s hold.
+  ✗ wrist_angle: 124.53 vs target 145.00-180.00 (score 0)
+    Fix: Preserve wrist set at the top into transition.
+    Drill: Top-to-transition pump drill: 10 reps."
+Mid-downswing,95.0,1.0,98,"MID-DOWNSWING: 95/100 (EXCELLENT)
+  ✗ kinematic_sequence: score 67
+    Fix: Start down with lower body, then torso, then arms.
+    Drill: Step-through sequencing drill: 2 x 8 reps."
+Impact,100.0,1.0,101,"IMPACT: 100/100 (EXCELLENT)
+  ✓ No critical issues detected in this phase."
+Follow-through,95.0,1.0,103,"FOLLOW-THROUGH: 95/100 (EXCELLENT)
+  ✗ deceleration: 7.41 vs target 10.00-20.00 (score 50)
+    Fix: Decelerate smoothly after release.
+    Drill: Three-quarter finish hold drill: 8 reps."
+Finish,95.37628645167692,1.0,146,"FINISH: 95/100 (EXCELLENT)
+  ✗ rotation: 179.62 vs target 160.00-175.00 (score 77)
+    Fix: Complete body rotation fully toward target.
+    Drill: Step-and-turn finish drill: 2 x 8 reps."
+Overall,92.64307368779818,1.0,-1,"OVERALL: 92.6/100 (raw=92.6, finish_rotation_penalty=0.0)"

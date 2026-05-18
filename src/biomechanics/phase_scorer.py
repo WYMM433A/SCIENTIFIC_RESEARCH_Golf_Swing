@@ -30,7 +30,7 @@ class PhaseScorer:
     COMPONENT_METRIC_MAP = {
         "address": {
             "posture": ("spine_angle", "address_ideal"),
-            "grip": ("wrist_angle", "top_ideal"),
+            "grip": ("wrist_angle", "address_ideal"),
             "weight_distribution": ("stance_width_ratio", "address_ideal"),
         },
         "takeaway": {
@@ -115,7 +115,7 @@ class PhaseScorer:
         if wrist_value is not None:
             wrist_score = self._evaluate_metric(
                 wrist_value,
-                SCORING_THRESHOLDS["wrist_angle"]["top_ideal"],
+                SCORING_THRESHOLDS["wrist_angle"]["address_ideal"],
                 metric_name="wrist_angle"
             )
             score_components["grip"] = wrist_score * METRIC_WEIGHTS[phase]["grip"]

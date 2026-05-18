@@ -1,0 +1,27 @@
+phase,score,confidence,key_frame,feedback
+Address,100.00000000000001,1.0,115,"ADDRESS: 100/100 (EXCELLENT)
+  ✓ No critical issues detected in this phase."
+Takeaway,100.0,1.0,145,"TAKEAWAY: 100/100 (EXCELLENT)
+  ✓ No critical issues detected in this phase."
+Mid-backswing,97.55221385369182,1.0,151,"MID-BACKSWING: 98/100 (EXCELLENT)
+  ✓ No critical issues detected in this phase."
+Top,85.98568794413288,1.0,164,"TOP: 86/100 (GOOD)
+  ✗ wrist_angle: 144.48 vs target 145.00-180.00 (score 50)
+    Fix: Preserve wrist set at the top into transition.
+    Drill: Top-to-transition pump drill: 10 reps.
+  ✗ posture: -12.82 vs target -8.00-12.00 (score 80)
+    Fix: Maintain spine posture at the top without standing up.
+    Drill: Top freeze with posture check: 8 reps."
+Mid-downswing,95.0,1.0,169,"MID-DOWNSWING: 95/100 (EXCELLENT)
+  ✗ kinematic_sequence: score 67
+    Fix: Start down with lower body, then torso, then arms.
+    Drill: Step-through sequencing drill: 2 x 8 reps."
+Impact,85.0,1.0,172,"IMPACT: 85/100 (GOOD)
+  ✗ arm_extension: 142.65 vs target 155.00-175.00 (score 50)
+    Fix: Extend lead arm through strike for compression.
+    Drill: One-arm extension drill: 2 x 8 reps."
+Follow-through,100.0,1.0,174,"FOLLOW-THROUGH: 100/100 (EXCELLENT)
+  ✓ No critical issues detected in this phase."
+Finish,99.73152456268805,1.0,197,"FINISH: 100/100 (EXCELLENT)
+  ✓ No critical issues detected in this phase."
+Overall,92.99572671072274,1.0,-1,"OVERALL: 93.0/100 (raw=93.0, finish_rotation_penalty=0.0)"

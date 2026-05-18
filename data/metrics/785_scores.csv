@@ -1,0 +1,49 @@
+phase,score,confidence,key_frame,feedback
+Address,81.41521660937177,1.0,182,"ADDRESS: 81/100 (GOOD)
+  ✗ weight_distribution: 1.48 vs target 0.90-1.20 (score 50)
+    Fix: Center pressure between your feet with shoulder-width stance.
+    Drill: Feet-line setup drill: align heels to a marked shoulder-width line."
+Takeaway,94.62244932864863,1.0,199,"TAKEAWAY: 95/100 (EXCELLENT)
+  ✗ hip_lag: 0.78 vs target 1.00-10.00 (score 89)
+    Fix: Let shoulders start first; keep hips quieter early.
+    Drill: Pause-at-P2 drill with hips quiet: 8 reps."
+Mid-backswing,75.73446700933836,1.0,202,"MID-BACKSWING: 76/100 (GOOD)
+  ✗ coil: 0.10 vs target 2.00-14.00 (score 52)
+    Fix: Increase torso coil while keeping lower body stable.
+    Drill: Resistance-band turn drill: 2 x 10 reps.
+  ✗ shaft_plane: 145.08 vs target 155.00-180.00 (score 50)
+    Fix: Keep lead arm structure and shaft on a repeatable plane.
+    Drill: Pump-to-top drill with mirror feedback: 8 reps."
+Top,95.26090561190946,1.0,211,"TOP: 95/100 (EXCELLENT)
+  ✗ posture: -13.69 vs target -8.00-12.00 (score 76)
+    Fix: Maintain spine posture at the top without standing up.
+    Drill: Top freeze with posture check: 8 reps."
+Mid-downswing,80.0,1.0,215,"MID-DOWNSWING: 80/100 (GOOD)
+  ✗ kinematic_sequence: score 17
+    Fix: Start down with lower body, then torso, then arms.
+    Drill: Step-through sequencing drill: 2 x 8 reps.
+  ✗ upper_body_lag: 12.49 vs target 0.00-5.00 (score 75)
+    Fix: Let torso follow hips; avoid throwing arms early.
+    Drill: Split-grip transition drill: 2 x 8 reps."
+Impact,62.5,1.0,218,"IMPACT: 62/100 (ACCEPTABLE)
+  ✗ x_factor_unwind: 19.54 vs target 0.00-18.00 (score 50)
+    Fix: Unwind through impact with chest and hips synced.
+    Drill: Slow-motion impact checkpoints: 10 reps.
+  ✗ arm_extension: 113.57 vs target 155.00-175.00 (score 50)
+    Fix: Extend lead arm through strike for compression.
+    Drill: One-arm extension drill: 2 x 8 reps."
+Follow-through,85.75915164072418,1.0,219,"FOLLOW-THROUGH: 86/100 (GOOD)
+  ✗ deceleration: 26.19 vs target 10.00-20.00 (score 18)
+    Fix: Decelerate smoothly after release.
+    Drill: Three-quarter finish hold drill: 8 reps.
+  ✗ arm_swing: 177.02 vs target 160.00-175.00 (score 80)
+    Fix: Allow natural arm fold around the body.
+    Drill: Finish-wrap rehearsal drill: 2 x 8 reps."
+Finish,85.39662901648933,1.0,236,"FINISH: 85/100 (GOOD)
+  ✗ symmetry: 8.26 vs target 0.00-6.00 (score 50)
+    Fix: Hold a controlled, symmetric finish position.
+    Drill: Count-to-two finish freeze drill: 10 reps.
+  ✗ rotation: 179.60 vs target 160.00-175.00 (score 77)
+    Fix: Complete body rotation fully toward target.
+    Drill: Step-and-turn finish drill: 2 x 8 reps."
+Overall,77.86069373138074,1.0,-1,"OVERALL: 77.9/100 (raw=77.9, finish_rotation_penalty=0.0)"

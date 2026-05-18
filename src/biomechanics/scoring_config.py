@@ -10,12 +10,12 @@ Defines weights, thresholds, and ideal values for golf swing evaluation.
 PHASE_WEIGHTS = {
     "address": 0.10,              # Setup foundation
     "takeaway": 0.08,             # Sequence initiation
-    "mid_backswing": 0.05,        # Coil building (reduced: setup quality less critical)
-    "top": 0.08,                  # Max coil/stability (reduced: position less critical)
+    "mid_backswing": 0.13,        # Coil building (reliable discrimination)
+    "top": 0.08,                  # Max coil/stability
     "mid_downswing": 0.25,        # Sequencing (CRITICAL: power generation)
     "impact": 0.30,               # Contact efficiency (MOST CRITICAL: shot outcome)
-    "follow_through": 0.10,       # Deceleration
-    "finish": 0.04,               # Balance/consistency (reduced)
+    "follow_through": 0.05,       # Deceleration (reduced: front-view unreliable)
+    "finish": 0.01,               # Balance/consistency (reduced: front-view late-swing issues)
 }
 
 # ============================================================================
@@ -24,17 +24,15 @@ PHASE_WEIGHTS = {
 # Higher weight = metric contributes more to phase score
 METRIC_WEIGHTS = {
     "address": {
-        "posture": 0.25,          # Spine angle/posture setup
-        "stance": 0.20,           # Foot position and alignment
-        "grip": 0.15,             # Grip pressure indicator (wrist angle)
-        "alignment": 0.20,        # Club/body alignment
+        "posture": 0.35,           # Spine angle/posture setup
+        "grip": 0.10,              # Grip pressure indicator (wrist angle)
         "weight_distribution": 0.20,
     },
     "takeaway": {
-        "shoulder_rotation": 0.30, # Shoulder turn initiation
-        "hip_lag": 0.25,          # Separating hips from shoulders
-        "wrist_position": 0.20,   # Wrist hinge initiation
-        "club_path": 0.25,        # Club on plane
+        "shoulder_rotation": 0.15, # Shoulder turn
+        "hip_lag": 0.50,           # X-factor
+        "wrist_position": 0.15,    # Wrist
+        "club_path": 0.20,         # Head displacement
     },
     "mid_backswing": {
         "coil": 0.30,             # X-factor development
@@ -58,11 +56,11 @@ METRIC_WEIGHTS = {
     },
     "impact": {
         # Down-weight estimated lag proxy; emphasize directly observed pose.
-        "lag_release": 0.05,
-        "x_factor_unwind": 0.35,
-        "arm_extension": 0.25,
-        "wrist_angle": 0.20,
-        "stability": 0.15,
+        "lag_release": 0.02,
+        "x_factor_unwind": 0.45,   # Increased from 0.35
+        "arm_extension": 0.30,     # Increased from 0.25
+        "wrist_angle": 0.10,       # Reduced from 0.20
+        "stability": 0.13,         # Reduced from 0.15
     },
     "follow_through": {
         # Deceleration is proxy-based, so keep it lower.
@@ -108,8 +106,8 @@ SCORING_THRESHOLDS = {
         "takeaway_ideal": (1, 10),
         "mid_backswing_ideal": (2, 14),
         "top_ideal": (2, 18),
-        "mid_downswing_ideal": (3, 15),
-        "follow_through_ideal": (0, 10),
+        "mid_downswing_ideal": (0, 5),
+        "follow_through_ideal": (10, 20),
         "finish_ideal": (0, 6),
         "impact_ideal": (0, 18),
     },
@@ -126,10 +124,12 @@ SCORING_THRESHOLDS = {
         "acceptable": (140, 180),
         "ideal": (150, 180),
         "direction": "context_dependent",
+        "address_ideal": (160, 180),
         "takeaway_ideal": (160, 180),
         "mid_backswing_ideal": (150, 180),
         "top_ideal": (145, 180),
         "impact_ideal": (150, 180),
+        "follow_through_ideal": (150, 180),
     },
     
     # HIP ROTATION (degrees) - Hip line rotation from horizontal
@@ -137,10 +137,10 @@ SCORING_THRESHOLDS = {
         "acceptable": (150, 185),
         "ideal": (165, 185),
         "direction": "higher_better",
-        "backswing_ideal": (160, 185),
-        "downswing_ideal": (160, 185),
-        "follow_through_ideal": (160, 185),
-        "finish_ideal": (160, 185),
+        "backswing_ideal": (170, 185),
+        "downswing_ideal": (170, 185),
+        "follow_through_ideal": (165, 180),
+        "finish_ideal": (160, 175),
     },
     
     # SHOULDER ROTATION (degrees) - Shoulder line rotation from horizontal
@@ -148,9 +148,9 @@ SCORING_THRESHOLDS = {
         "acceptable": (150, 185),
         "ideal": (165, 185),
         "direction": "higher_better",
-        "takeaway_ideal": (5, 25),
-        "backswing_ideal": (155, 185),
-        "downswing_ideal": (150, 185),
+        "takeaway_ideal": (165, 180),
+        "backswing_ideal": (170, 185),
+        "downswing_ideal": (160, 180),
     },
     
     # LAG ANGLE (degrees) - Approximate wrist lag using wrist hinge
@@ -158,8 +158,8 @@ SCORING_THRESHOLDS = {
         "acceptable": (140, 180),
         "ideal": (150, 180),
         "direction": "higher_better",  # More lag = more power potential
-        "mid_downswing_ideal": (150, 180),
-        "impact_ideal": (150, 180),
+        "mid_downswing_ideal": (160, 180),
+        "impact_ideal": (160, 180),
     },
 
     # LEAD ARM ANGLE (degrees) - Approximate shaft/arm plane quality
@@ -167,9 +167,9 @@ SCORING_THRESHOLDS = {
         "acceptable": (90, 180),
         "ideal": (150, 180),
         "direction": "higher_better",
-        "mid_backswing_ideal": (150, 180),
-        "impact_ideal": (160, 180),
-        "follow_through_ideal": (120, 170),
+        "mid_backswing_ideal": (155, 180),
+        "impact_ideal": (155, 175),
+        "follow_through_ideal": (160, 175),
     },
     
     # HEAD MOVEMENT (pixels/cm) - Movement from address

@@ -1,0 +1,34 @@
+phase,score,confidence,key_frame,feedback
+Address,89.78650999424724,1.0,151,"ADDRESS: 90/100 (EXCELLENT)
+  ✗ weight_distribution: 1.27 vs target 0.90-1.20 (score 67)
+    Fix: Center pressure between your feet with shoulder-width stance.
+    Drill: Feet-line setup drill: align heels to a marked shoulder-width line."
+Takeaway,100.0,1.0,162,"TAKEAWAY: 100/100 (EXCELLENT)
+  ✓ No critical issues detected in this phase."
+Mid-backswing,90.0,1.0,167,"MID-BACKSWING: 90/100 (EXCELLENT)
+  ✗ shaft_plane: 154.85 vs target 155.00-180.00 (score 50)
+    Fix: Keep lead arm structure and shaft on a repeatable plane.
+    Drill: Pump-to-top drill with mirror feedback: 8 reps."
+Top,71.9547280976414,1.0,185,"TOP: 72/100 (ACCEPTABLE)
+  ✗ coil: 169.97 vs target 170.00-185.00 (score 50)
+    Fix: Reach a full but balanced top turn.
+    Drill: Top-position hold drill: 6 reps x 3s hold.
+  ✗ posture: -20.35 vs target -8.00-12.00 (score 47)
+    Fix: Maintain spine posture at the top without standing up.
+    Drill: Top freeze with posture check: 8 reps."
+Mid-downswing,92.5,1.0,190,"MID-DOWNSWING: 92/100 (EXCELLENT)
+  ✗ kinematic_sequence: score 50
+    Fix: Start down with lower body, then torso, then arms.
+    Drill: Step-through sequencing drill: 2 x 8 reps."
+Impact,100.0,1.0,192,"IMPACT: 100/100 (EXCELLENT)
+  ✓ No critical issues detected in this phase."
+Follow-through,100.0,1.0,194,"FOLLOW-THROUGH: 100/100 (EXCELLENT)
+  ✓ No critical issues detected in this phase."
+Finish,76.75440319651267,1.0,218,"FINISH: 77/100 (GOOD)
+  ✗ symmetry: 152.02 vs target 0.00-6.00 (score 0)
+    Fix: Hold a controlled, symmetric finish position.
+    Drill: Count-to-two finish freeze drill: 10 reps.
+  ✗ rotation: 156.75 vs target 160.00-175.00 (score 84)
+    Fix: Complete body rotation fully toward target.
+    Drill: Step-and-turn finish drill: 2 x 8 reps."
+Overall,93.43020537509655,1.0,-1,"OVERALL: 93.4/100 (raw=93.4, finish_rotation_penalty=0.0)"

@@ -1,0 +1,39 @@
+phase,score,confidence,key_frame,feedback
+Address,68.21012200528507,1.0,83,"ADDRESS: 68/100 (ACCEPTABLE)
+  ✗ weight_distribution: 1.43 vs target 0.90-1.20 (score 50)
+    Fix: Center pressure between your feet with shoulder-width stance.
+    Drill: Feet-line setup drill: align heels to a marked shoulder-width line.
+  ✗ posture: 14.85 vs target -5.00-10.00 (score 84)
+    Fix: Set your chest over the ball with a neutral spine and soft knees.
+    Drill: Mirror setup holds: 3 x 20s maintaining neutral posture.
+  ✗ grip: 159.81 vs target 160.00-180.00 (score 50)
+    Fix: Keep wrists quiet and avoid excessive cupping at setup.
+    Drill: Setup-and-freeze repetitions: 10 reps, check wrist angle each rep."
+Takeaway,100.0,1.0,100,"TAKEAWAY: 100/100 (EXCELLENT)
+  ✓ No critical issues detected in this phase."
+Mid-backswing,87.5,1.0,105,"MID-BACKSWING: 88/100 (GOOD)
+  ✗ shoulder_rotation: 166.43 vs target 170.00-185.00 (score 50)
+    Fix: Complete shoulder turn to the top without lifting.
+    Drill: Wall-turn drill to feel depth: 2 x 8 reps."
+Top,100.0,1.0,119,"TOP: 100/100 (EXCELLENT)
+  ✓ No critical issues detected in this phase."
+Mid-downswing,80.0,1.0,123,"MID-DOWNSWING: 80/100 (GOOD)
+  ✗ kinematic_sequence: score 17
+    Fix: Start down with lower body, then torso, then arms.
+    Drill: Step-through sequencing drill: 2 x 8 reps.
+  ✗ upper_body_lag: 6.54 vs target 0.00-5.00 (score 75)
+    Fix: Let torso follow hips; avoid throwing arms early.
+    Drill: Split-grip transition drill: 2 x 8 reps."
+Impact,92.31662471408256,1.0,126,"IMPACT: 92/100 (EXCELLENT)
+  ✗ arm_extension: 177.56 vs target 155.00-175.00 (score 74)
+    Fix: Extend lead arm through strike for compression.
+    Drill: One-arm extension drill: 2 x 8 reps."
+Follow-through,93.61478177448274,1.0,128,"FOLLOW-THROUGH: 94/100 (EXCELLENT)
+  ✗ arm_swing: 177.13 vs target 160.00-175.00 (score 79)
+    Fix: Allow natural arm fold around the body.
+    Drill: Finish-wrap rehearsal drill: 2 x 8 reps."
+Finish,97.1392580122048,1.0,138,"FINISH: 97/100 (EXCELLENT)
+  ✗ rotation: 177.86 vs target 160.00-175.00 (score 86)
+    Fix: Complete body rotation fully toward target.
+    Drill: Step-and-turn finish drill: 2 x 8 reps."
+Overall,88.13804811268975,1.0,-1,"OVERALL: 88.1/100 (raw=88.1, finish_rotation_penalty=0.0)"
