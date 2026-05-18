@@ -132,9 +132,17 @@ class PhaseScorer:
         
         phase_score = self._normalize_phase_score(phase, score_components)
         
+        # FIX 3/4: Apply window-based penalties if available
+        context = getattr(self, '_window_context', {})
+        if context.get('use_window'):
+            phase_score, penalty_details = self._apply_window_metrics(phase_score, phase)
+        else:
+            penalty_details = {}
+        
         return phase_score, {
             "components": score_components,
             "confidence": len(score_components) / len(METRIC_WEIGHTS[phase]),
+            "penalty_details": penalty_details,
         }
     
     def score_takeaway(self, metrics: Dict[str, float]) -> Tuple[float, Dict]:
@@ -417,8 +425,8 @@ class PhaseScorer:
         
         Evaluates:
         - Lag release timing
-        - X-factor unwind (torso-hip differential)
-        - Arm extension
+        - X-factor unwind (torso-hip differential) — DEPRECATED in Fix 1
+        - Arm extension delta (top vs impact) — NEW in Fix 1
         - Wrist angle at contact
         - Head/body stability
         
@@ -441,16 +449,24 @@ class PhaseScorer:
             )
             score_components["lag_release"] = lag_release_score * METRIC_WEIGHTS[phase]["lag_release"]
         
-        # X-factor unwind
-        if "x_factor" in metrics:
-            unwind_score = self._evaluate_metric(
-                metrics["x_factor"],
-                SCORING_THRESHOLDS["x_factor"]["impact_ideal"],
-                metric_name="x_factor"
-            )
-            score_components["x_factor_unwind"] = unwind_score * METRIC_WEIGHTS[phase]["x_factor_unwind"]
+        # FIX 1: Replace x_factor_unwind with arm_extension_delta
+        context = getattr(self, '_window_context', {})
+        if context.get('use_window'):
+            # Use arm_extension_delta when window analysis is available
+            delta_result = self._apply_arm_extension_delta(metrics)
+            arm_ext_delta_score = delta_result.get('score', 75)
+            score_components["arm_extension_delta"] = arm_ext_delta_score * METRIC_WEIGHTS[phase].get("x_factor_unwind", 0.45)
+        else:
+            # Fallback to x_factor_unwind for keyframe-only scoring
+            if "x_factor" in metrics:
+                unwind_score = self._evaluate_metric(
+                    metrics["x_factor"],
+                    SCORING_THRESHOLDS["x_factor"]["impact_ideal"],
+                    metric_name="x_factor"
+                )
+                score_components["x_factor_unwind"] = unwind_score * METRIC_WEIGHTS[phase]["x_factor_unwind"]
         
-        # Arm extension
+        # Arm extension (static)
         arm_ext_value = self._get_metric(metrics, ["arm_extension", "lead_arm_angle"])
         if arm_ext_value is not None:
             arm_score = self._evaluate_metric(
@@ -482,10 +498,18 @@ class PhaseScorer:
         
         phase_score = self._normalize_phase_score(phase, score_components)
         
+        # FIX 3/4: Apply window-based penalties if available
+        if context.get('use_window'):
+            phase_score, penalty_details = self._apply_window_metrics(phase_score, phase)
+        else:
+            penalty_details = {}
+        
         return phase_score, {
             "components": score_components,
             "confidence": len(score_components) / len(METRIC_WEIGHTS[phase]),
+            "penalty_details": penalty_details,
         }
+
 
     def score_follow_through(self, metrics: Dict[str, float]) -> Tuple[float, Dict]:
         """
@@ -898,6 +922,134 @@ class PhaseScorer:
             print(f"Error evaluating kinematic sequence: {e}")
             return 0
     
+    # ========================================================================
+    # FIX 1/3/4: WINDOW-BASED ANALYSIS HELPERS
+    # ========================================================================
+    
+    def _apply_window_metrics(self, phase_score: float, phase_name: str) -> Tuple[float, Dict]:
+        """
+        Apply consistency and jerk penalties for window-based analysis (Fixes 3 & 4).
+        
+        Called when window context is available (start_frame, end_frame, biomechanics_obj).
+        
+        Returns:
+            (adjusted_score, penalty_details)
+        """
+        context = getattr(self, '_window_context', {})
+        if not context.get('use_window') or not context.get('biomechanics'):
+            return phase_score, {}
+        
+        biomechanics_obj = context['biomechanics']
+        start_frame = context['start_frame']
+        end_frame = context['end_frame']
+        
+        penalty_details = {}
+        total_penalty = 0.0
+        
+        try:
+            # Calculate consistency penalty for spine_angle (most important for posture)
+            spine_window = biomechanics_obj.calculate_metrics_window(
+                start_frame, end_frame, metric_name='spine_angle'
+            )
+            if spine_window:
+                consistency_penalty = spine_window.get('consistency_penalty', 0)
+                total_penalty += consistency_penalty * 0.5  # 50% weight on consistency
+                penalty_details['spine_consistency'] = {
+                    'std': spine_window.get('std', 0),
+                    'penalty': consistency_penalty
+                }
+            
+            # Calculate wrist jerk penalty (smoothness)
+            wrist_jerk_data = biomechanics_obj.calculate_wrist_jerk(start_frame, end_frame)
+            if wrist_jerk_data:
+                jerk_penalty = max(0, 100 - wrist_jerk_data.get('jerk_quality', 100))
+                total_penalty += jerk_penalty * 0.3  # 30% weight on jerk
+                penalty_details['wrist_jerk'] = {
+                    'jerk': wrist_jerk_data.get('wrist_jerk', 0),
+                    'quality': wrist_jerk_data.get('jerk_quality', 100),
+                    'penalty': jerk_penalty
+                }
+            
+            # Apply penalties with ceiling (max -20 points)
+            total_penalty = min(20, total_penalty)
+            adjusted_score = max(0, phase_score - total_penalty)
+            penalty_details['total_penalty'] = total_penalty
+            
+            return adjusted_score, penalty_details
+            
+        except Exception as e:
+            print(f"Error applying window metrics penalty: {e}")
+            return phase_score, {'error': str(e)}
+    
+    def _apply_arm_extension_delta(self, metrics: Dict[str, float]) -> Dict[str, any]:
+        """
+        Apply Fix 1: arm_extension_delta component to IMPACT scoring.
+        
+        Replaces x_factor_unwind which has poor discrimination (0-5° range).
+        
+        Returns:
+            {
+                'component_name': 'arm_extension_delta',
+                'score': 0-100,
+                'details': {...}
+            }
+        """
+        context = getattr(self, '_window_context', {})
+        if not context.get('use_window') or not context.get('biomechanics') or not context.get('top_frame'):
+            # Fallback: use static arm extension
+            return {
+                'component_name': 'arm_extension_delta',
+                'score': self._evaluate_metric(
+                    metrics.get('lead_arm_angle', 170),
+                    SCORING_THRESHOLDS['lead_arm_angle']['impact_ideal'],
+                    metric_name='lead_arm_angle'
+                ),
+                'fallback': True
+            }
+        
+        try:
+            biomechanics_obj = context['biomechanics']
+            impact_frame = context['end_frame']  # Assume impact is at end of phase
+            top_frame = context['top_frame']
+            
+            # Calculate arm extension change
+            delta_data = biomechanics_obj.calculate_arm_extension_delta(top_frame, impact_frame)
+            
+            if not delta_data:
+                # Fallback
+                return {
+                    'component_name': 'arm_extension_delta',
+                    'score': self._evaluate_metric(
+                        metrics.get('lead_arm_angle', 170),
+                        SCORING_THRESHOLDS['lead_arm_angle']['impact_ideal'],
+                        metric_name='lead_arm_angle'
+                    ),
+                    'fallback': True,
+                    'reason': 'Could not calculate delta'
+                }
+            
+            return {
+                'component_name': 'arm_extension_delta',
+                'score': delta_data.get('quality', 75),
+                'top_angle': delta_data.get('top_lead_arm', 0),
+                'impact_angle': delta_data.get('impact_lead_arm', 0),
+                'delta': delta_data.get('delta', 0),
+                'fallback': False
+            }
+            
+        except Exception as e:
+            print(f"Error applying arm extension delta: {e}")
+            return {
+                'component_name': 'arm_extension_delta',
+                'score': self._evaluate_metric(
+                    metrics.get('lead_arm_angle', 170),
+                    SCORING_THRESHOLDS['lead_arm_angle']['impact_ideal'],
+                    metric_name='lead_arm_angle'
+                ),
+                'fallback': True,
+                'error': str(e)
+            }
+    
     def generate_feedback(self, phase: str, score: float, metrics: Dict,
                          component_scores: Dict) -> str:
         """
@@ -955,14 +1107,26 @@ class PhaseScorer:
         return "\n".join(feedback_parts)
     
     def score_phase_with_metrics(self, phase: str, metrics: pd.DataFrame,
-                                kinematic_data: Optional[Dict] = None) -> Tuple[float, Dict]:
+                                kinematic_data: Optional[Dict] = None,
+                                biomechanics_obj: Optional[object] = None,
+                                start_frame: Optional[int] = None,
+                                end_frame: Optional[int] = None,
+                                top_frame: Optional[int] = None) -> Tuple[float, Dict]:
         """
         Score a phase given a metrics DataFrame.
+        
+        Supports both keyframe-based (legacy) and window-based (Fix 3/4) scoring:
+        - If start_frame/end_frame provided: Use window averaging + jerk + consistency penalties
+        - Otherwise: Use single keyframe metrics (backward compatible)
         
         Args:
             phase: Phase name (e.g., "Address", "Top", "Impact")
             metrics: DataFrame with metrics for the phase
             kinematic_data: Optional kinematic sequence data
+            biomechanics_obj: Optional GolfBiomechanics object for window analysis
+            start_frame: Start frame of phase (for window analysis)
+            end_frame: End frame of phase (for window analysis)
+            top_frame: Frame number at top of swing (for arm_extension_delta in Fix 1)
             
         Returns:
             (score, details)
@@ -976,6 +1140,15 @@ class PhaseScorer:
             metrics_dict = metrics.iloc[0].to_dict()
         else:
             metrics_dict = {}
+        
+        # Store context for phase methods to use
+        self._window_context = {
+            'biomechanics': biomechanics_obj,
+            'start_frame': start_frame,
+            'end_frame': end_frame,
+            'top_frame': top_frame,
+            'use_window': biomechanics_obj is not None and start_frame is not None and end_frame is not None
+        }
         
         if phase_normalized == "address":
             return self.score_address(metrics_dict)

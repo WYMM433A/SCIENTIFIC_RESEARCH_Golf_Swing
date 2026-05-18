@@ -850,6 +850,203 @@ class GolfBiomechanics:
             print(f"Error computing kinematic sequence: {e}")
             return {}
     
+    # ============================================
+    # FIX 1: ARM EXTENSION DELTA
+    # ============================================
+    
+    def calculate_arm_extension_delta(self, top_frame: int, impact_frame: int) -> Dict[str, float]:
+        """
+        Calculate change in arm extension from top to impact (Fix 1).
+        
+        Pros: Arms extend toward 170-175° at impact
+        Amateurs: Arms often stay bent or collapse
+        
+        Args:
+            top_frame: Frame number at top of swing
+            impact_frame: Frame number at impact
+            
+        Returns:
+            {
+                'top_lead_arm': angle at top,
+                'impact_lead_arm': angle at impact,
+                'delta': change (positive = extended more),
+                'quality': 0-100 score based on delta
+            }
+        """
+        try:
+            top_arm = self.get_lead_arm_angle(frame=top_frame)
+            impact_arm = self.get_lead_arm_angle(frame=impact_frame)
+            
+            delta = impact_arm - top_arm  # Positive = extended more
+            
+            # Scoring: pros extend 10-20° into impact
+            ideal_delta = 15  # degrees
+            delta_error = abs(delta - ideal_delta)
+            quality = max(0, 100 - (delta_error * 5))  # -5 pts per degree error
+            
+            return {
+                'top_lead_arm': float(top_arm),
+                'impact_lead_arm': float(impact_arm),
+                'delta': float(delta),
+                'quality': float(quality),
+            }
+        except Exception as e:
+            print(f"Error calculating arm extension delta: {e}")
+            return {}
+    
+    # ============================================
+    # FIX 3: PHASE WINDOW ANALYSIS
+    # ============================================
+    
+    def calculate_metrics_window(self, start_frame: int, end_frame: int, 
+                                 metric_name: str = 'spine_angle') -> Dict[str, float]:
+        """
+        Calculate metric statistics across a frame window (Fix 3).
+        
+        Instead of scoring a single keyframe, analyze the entire phase window:
+        - Mean: average value across frames
+        - Std: consistency (std > 5° = jerky/inconsistent = deduct points)
+        - Min/Max: range of motion
+        
+        Args:
+            start_frame: Start frame of phase
+            end_frame: End frame of phase
+            metric_name: Which metric to analyze ('spine_angle', 'lead_arm_angle', etc.)
+            
+        Returns:
+            {
+                'mean': average value,
+                'std': standard deviation,
+                'min': minimum value,
+                'max': maximum value,
+                'range': max - min,
+                'consistency_penalty': 0-30 points to deduct
+            }
+        """
+        try:
+            phase_df = self.df[(self.df['frame'] >= start_frame) & 
+                              (self.df['frame'] <= end_frame)].copy()
+            
+            if len(phase_df) < 2:
+                return {}
+            
+            # Collect metric values across window
+            values = []
+            for _, row in phase_df.iterrows():
+                frame_num = row['frame']
+                if metric_name == 'spine_angle':
+                    val = self.get_spine_angle(frame=frame_num)
+                elif metric_name == 'lead_arm_angle':
+                    val = self.get_lead_arm_angle(frame=frame_num)
+                elif metric_name == 'x_factor':
+                    val = self.get_x_factor(frame=frame_num)
+                elif metric_name == 'wrist_angle':
+                    val = self.get_wrist_hinge(frame=frame_num)
+                else:
+                    continue
+                values.append(val)
+            
+            if len(values) < 2:
+                return {}
+            
+            values = np.array(values, dtype=float)
+            
+            # Calculate statistics
+            mean = float(np.mean(values))
+            std = float(np.std(values))
+            min_val = float(np.min(values))
+            max_val = float(np.max(values))
+            range_val = max_val - min_val
+            
+            # Consistency penalty: high jitter = amateur-like
+            # std > 5° for most metrics = inconsistent motion
+            consistency_penalty = min(30, max(0, (std - 5) * 3))  # 0 pts at std=5, 30 pts at std=15
+            
+            return {
+                'mean': mean,
+                'std': std,
+                'min': min_val,
+                'max': max_val,
+                'range': range_val,
+                'consistency_penalty': consistency_penalty,
+            }
+        except Exception as e:
+            print(f"Error calculating metrics window: {e}")
+            return {}
+    
+    # ============================================
+    # FIX 4: WRIST JERK METRIC
+    # ============================================
+    
+    def calculate_wrist_jerk(self, start_frame: int, end_frame: int) -> Dict[str, float]:
+        """
+        Calculate wrist motion smoothness using jerk (second derivative) (Fix 4).
+        
+        Wrist jerk = mean(abs(second_derivative(wrist_position)))
+        
+        Low jerk = smooth motion = pro-like
+        High jerk = jerky motion = amateur-like
+        
+        Args:
+            start_frame: Start frame of phase
+            end_frame: End frame of phase
+            
+        Returns:
+            {
+                'wrist_jerk': average jerk value,
+                'jerk_quality': 0-100 score (inverse of jerk),
+                'smoothness_percentile': where this falls in distribution
+            }
+        """
+        try:
+            phase_df = self.df[(self.df['frame'] >= start_frame) & 
+                              (self.df['frame'] <= end_frame)].copy()
+            
+            if len(phase_df) < 3:  # Need at least 3 frames for second derivative
+                return {}
+            
+            # Extract wrist positions
+            wrist_x = phase_df['left_wrist_x'].values
+            wrist_y = phase_df['left_wrist_y'].values
+            
+            if len(wrist_x) < 3 or np.all(np.isnan(wrist_x)) or np.all(np.isnan(wrist_y)):
+                return {}
+            
+            # First derivative (velocity)
+            velocity_x = np.diff(wrist_x)
+            velocity_y = np.diff(wrist_y)
+            
+            # Second derivative (acceleration/jerk)
+            accel_x = np.diff(velocity_x)
+            accel_y = np.diff(velocity_y)
+            
+            # Magnitude of acceleration
+            accel_magnitude = np.sqrt(accel_x**2 + accel_y**2)
+            
+            # Remove NaN and inf
+            accel_magnitude = accel_magnitude[np.isfinite(accel_magnitude)]
+            
+            if len(accel_magnitude) == 0:
+                return {}
+            
+            # Jerk = mean of absolute acceleration
+            wrist_jerk = float(np.mean(np.abs(accel_magnitude)))
+            
+            # Convert to quality score (inverse: low jerk = high score)
+            # Pro swing: jerk ~5-15 pixels/frame²
+            # Amateur swing: jerk ~20-50 pixels/frame²
+            jerk_quality = max(0, 100 - (wrist_jerk * 2))  # -2 pts per unit jerk
+            
+            return {
+                'wrist_jerk': wrist_jerk,
+                'jerk_quality': float(jerk_quality),
+                'mean_acceleration': float(np.mean(accel_magnitude)),
+                'max_acceleration': float(np.max(accel_magnitude)),
+            }
+        except Exception as e:
+            print(f"Error calculating wrist jerk: {e}")
+            return {}
+    
     def analyze_full_swing(self, phase_frames: Dict[str, int]) -> pd.DataFrame:
         """
         Analyze all phases of a swing.

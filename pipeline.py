@@ -374,15 +374,24 @@ class GolfSwingPipeline:
                         pose_df, kin_start, kin_end
                     )
                 
-                # Score the phase
+                # Get top frame for arm_extension_delta (Fix 1)
+                top_frame_val = None
+                if phase_name.lower().replace('-', '_') == 'impact':
+                    top_range = _get_phase_range('top')
+                    if top_range:
+                        top_frame_val = _get_phase_keyframe('top')
+                        if top_frame_val is None:
+                            top_frame_val = top_range[1]  # Use end of top phase
+                
+                # Score the phase with window context (Fixes 1/3/4)
                 score, details = scorer.score_phase_with_metrics(
                     phase_normalized, 
                     metrics_series, 
-                    kinematic_data
-                )
-                
-                phase_scores[phase_name] = score
-                
+                    kinematic_data,
+                    biomechanics_obj=biomechanics,
+                    start_frame=int(start_frame),
+                    end_frame=int(end_frame),
+                    top_frame=int(top_frame_val) if top_frame_val else None
                 # Generate feedback
                 feedback = scorer.generate_feedback(
                     phase_name, 
