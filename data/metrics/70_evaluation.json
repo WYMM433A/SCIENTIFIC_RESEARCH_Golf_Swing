@@ -1,0 +1,76 @@
+{
+    "summary": {
+        "overall_score": 34,
+        "player_level": "amateur",
+        "total_metrics_analyzed": 5
+    },
+    "detailed_metrics": [
+        {
+            "name": "Shoulder Turn",
+            "value": 12.5,
+            "unit": "°",
+            "status": "Poor",
+            "color": "Danger",
+            "ideal_range": "70-90",
+            "feedback": "Increase shoulder rotation to generate better coil/power."
+        },
+        {
+            "name": "X-Factor Separation",
+            "value": 3.8,
+            "unit": "°",
+            "status": "Poor",
+            "color": "Danger",
+            "ideal_range": "30-45",
+            "feedback": "Increase separation between shoulders and hips to optimize power."
+        },
+        {
+            "name": "Spine Angle",
+            "value": 30.4,
+            "unit": "°",
+            "status": "Good",
+            "color": "Success",
+            "ideal_range": "30-42",
+            "feedback": "Excellent!"
+        },
+        {
+            "name": "Trail Knee Stability",
+            "value": 110.6,
+            "unit": "°",
+            "status": "Poor",
+            "color": "Danger",
+            "ideal_range": "15-35",
+            "feedback": "Maintain trail knee flex for lower body stability."
+        },
+        {
+            "name": "Head Stability (Fluctuation)",
+            "value": 21.0,
+            "unit": "cm",
+            "status": "Poor",
+            "color": "Danger",
+            "ideal_range": "0-10",
+            "feedback": "Maintain head stability throughout the swing."
+        }
+    ],
+    "priority_fixes": [
+        {
+            "score_impact": 101.24453524130013,
+            "issue": "Shoulder Turn",
+            "advice": "Increase shoulder rotation to generate better coil/power."
+        },
+        {
+            "score_impact": 68.48242014484083,
+            "issue": "X-Factor Separation",
+            "advice": "Increase separation between shoulders and hips to optimize power."
+        },
+        {
+            "score_impact": 68.46542947943584,
+            "issue": "Trail Knee Stability",
+            "advice": "Maintain trail knee flex for lower body stability."
+        },
+        {
+            "score_impact": 15.990476286660034,
+            "issue": "Head Stability (Fluctuation)",
+            "advice": "Maintain head stability throughout the swing."
+        }
+    ]
+}

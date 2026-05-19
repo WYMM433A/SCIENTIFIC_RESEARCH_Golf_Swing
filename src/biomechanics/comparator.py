@@ -19,8 +19,8 @@ class SwingBiomechanicsEvaluator:
 
     def evaluate(self, poses_df: pd.DataFrame, phase_keyframes: Dict[str, int]) -> Dict:
         """
-        Phân tích toàn bộ swing dựa trên các keyframes đã detect.
-        phase_keyframes: ví dụ {'Top': 124, 'Impact': 150, 'Address': 20}
+        Analyzes the entire swing based on detected keyframes.
+        phase_keyframes: e.g., {'Top': 124, 'Impact': 150, 'Address': 20}
         """
         report = {
             "summary": {},
@@ -28,24 +28,24 @@ class SwingBiomechanicsEvaluator:
             "priority_fixes": []
         }
         
-        # 1. Xác định Baseline Target Line từ Address (nếu có) để tính góc xoay tương đối
+        # 1. Determine Baseline Target Line from Address (if available) for relative rotation
         baseline_h_vec = None
         if 'Address' in phase_keyframes:
             addr_idx = phase_keyframes['Address']
             if addr_idx < len(poses_df):
                 row = poses_df.iloc[addr_idx]
-                # Tạo vector hông trên mặt phẳng X-Z làm chuẩn
-                # Đảm bảo các cột tồn tại trước khi truy cập
+                # Create hip vector on X-Z plane as baseline
+                # Ensure columns exist before access
                 if not all(col in row for col in ['left_hip_x', 'left_hip_z', 'right_hip_x', 'right_hip_z']):
-                    print(f"⚠️ Cảnh báo: Thiếu dữ liệu hông tại frame Address ({addr_idx}). Không thể xác định baseline.")
+                    print(f"WARNING: Missing hip data at Address frame ({addr_idx}). Cannot determine baseline.")
                 else:
                     h_l = np.array([row['left_hip_x'], row['left_hip_z']])
                     h_r = np.array([row['right_hip_x'], row['right_hip_z']])
                     baseline_h_vec = h_r - h_l
             else:
-                print(f"⚠️ Cảnh báo: Frame Address ({addr_idx}) nằm ngoài phạm vi poses_df.")
+                print(f"WARNING: Address frame ({addr_idx}) is out of bounds for poses_df.")
 
-        # 2. Tính metrics cho từng frame quan trọng
+        # 2. Calculate metrics for critical frames
         key_metrics = {}
         for phase, frame_idx in phase_keyframes.items():
             if frame_idx < len(poses_df):
@@ -54,39 +54,40 @@ class SwingBiomechanicsEvaluator:
                 if metrics_for_frame is not None:
                     key_metrics[phase] = metrics_for_frame
                 else:
-                    print(f"⚠️ Cảnh báo: Không thể trích xuất metrics cho pha '{phase}' tại frame {frame_idx} do thiếu landmark.")
+                    print(f"WARNING: Could not extract metrics for phase '{phase}' at frame {frame_idx} due to missing landmarks.")
             else:
-                print(f"⚠️ Cảnh báo: Frame '{phase}' ({frame_idx}) nằm ngoài phạm vi poses_df.")
+                print(f"WARNING: Phase frame '{phase}' ({frame_idx}) is out of bounds for poses_df.")
 
-        # 3. Phân tích Temporal (Head Stability - Cải tiến)
-        # Thu thập tất cả vị trí đầu (nose) từ các frame có sẵn
+        # 3. Temporal Analysis (Head Stability Enhancement)
+        # Collect all head (nose) positions from available frames
         all_head_positions = []
         for _, row_data in poses_df.iterrows():
             if 'nose_x' in row_data and 'nose_y' in row_data and 'nose_z' in row_data:
-                # Sử dụng visibility nếu có (SwingAnalyzer lưu là _visibility)
-                vis = row_data.get('nose_visibility', 1.0)
+                # MediaPipe output via SwingAnalyzer uses 'nose_visibility'
+                vis = row_data.get('nose_visibility', 0.0)
                 if vis >= 0.5:
                     all_head_positions.append(np.array([row_data['nose_x'], row_data['nose_y'], row_data['nose_z']]))
         
         head_stability_val = 0.0
-        if len(all_head_positions) > 1: # Cần ít nhất 2 điểm để tính độ lệch chuẩn
+        if len(all_head_positions) > 1: # Minimum 2 points required for standard deviation
             head_pts = np.array(all_head_positions)
-            head_stability_val = np.linalg.norm(np.std(head_pts, axis=0)) * 100 # Nhân 100 để chuyển sang cm giả định
+            # Standard deviation across X, Y, Z axes, normalized and scaled
+            head_stability_val = np.linalg.norm(np.std(head_pts, axis=0)) * 100 
         
-        # Thêm global metrics vào key_metrics
+        # Append global metrics
         key_metrics["Global"] = {"head_stability": head_stability_val}
 
-        # 4. So sánh với benchmarks & Tính điểm weighted
+        # 4. Benchmarking and Weighted Scoring
         scores = []
         total_weight = 0
         for metric_id, cfg in BENCHMARKS.items():
             phase = cfg["phase"]
             
-            # Kiểm tra xem pha và metric có tồn tại trong dữ liệu đã trích xuất không
+            # Verify phase and metric exist in extracted data
             if phase in key_metrics and metric_id in key_metrics[phase]:
                 val = key_metrics[phase][metric_id]
                 
-                # Bỏ qua nếu giá trị là None (do thiếu landmark)
+                # Skip if value is None
                 if val is None:
                     continue
                 
@@ -100,7 +101,7 @@ class SwingBiomechanicsEvaluator:
                     "status": status,
                     "color": color,
                     "ideal_range": f"{cfg[self.player_level]['min']}-{cfg[self.player_level]['max']}",
-                    "feedback": cfg["hint"] if status != "Good" else "Tuyệt vời!"
+                    "feedback": cfg["hint"] if status != "Good" else "Excellent!"
                 }
                 report["detailed_metrics"].append(metric_result)
                 
@@ -108,19 +109,19 @@ class SwingBiomechanicsEvaluator:
                 scores.append(score * weight)
                 total_weight += weight
                 
-                # 5. Logic Priority Fixes dựa trên trọng số và mức độ sai lệch
+                # 5. Priority Fix Logic based on weights and deviation
                 if status != "Good":
                     deviation = abs(val - cfg[self.player_level]["ideal"])
                     report["priority_fixes"].append({
-                        "score_impact": deviation * weight, # Tính toán tác động của lỗi
+                        "score_impact": deviation * weight, # Calculate error impact
                         "issue": cfg["label"],
                         "advice": cfg["hint"]
                     })
 
-        # Sắp xếp lỗi theo tác động (score_impact) giảm dần
+        # Sort fixes by score_impact descending
         report["priority_fixes"].sort(key=lambda x: x["score_impact"], reverse=True)
         
-        # Tổng kết điểm tổng thể
+        # Final summary
         report["summary"] = {
             "overall_score": int(np.sum(scores) / total_weight) if total_weight > 0 else 0,
             "player_level": self.player_level,

@@ -37,14 +37,14 @@ def calculate_joint_angle(p_top: np.ndarray, p_mid: np.ndarray, p_bot: np.ndarra
 def calculate_rotation_xz(p_l: np.ndarray, p_r: np.ndarray, baseline_vec: np.ndarray = None) -> float:
     """Tính góc xoay của một trục trên mặt phẳng nằm ngang (X-Z)."""
     vec = p_r - p_l
-    vec_xz = np.array([vec[0], vec[2]])
-    # Sử dụng baseline từ pha Address nếu có, nếu không mặc định là trục X
-    target_line = baseline_vec if baseline_vec is not None else np.array([1, 0])
-    norm = np.linalg.norm(vec_xz)
-    if norm < 1e-6: return 0.0
-    # Đảm bảo target_line là 2D cho phép tính dot product
-    t_line_2d = target_line[:2] if len(target_line) > 2 else target_line
-    return vector_angle(vec_xz, t_line_2d)
+    # Project onto 3D horizontal plane (y=0) to use vector_angle
+    vec_h = np.array([vec[0], 0, vec[2]])
+    if baseline_vec is not None:
+        target_h = np.array([baseline_vec[0], 0, baseline_vec[1]]) # baseline_vec is 2D [x, z], so z is at index 1
+    else:
+        target_h = np.array([1, 0, 0])
+        
+    return vector_angle(vec_h, target_h)
 
 def calculate_spine_angle(sh_mid: np.ndarray, hip_mid: np.ndarray) -> float:
     """Tính Forward Tilt của cột sống so với trục đứng (Y-axis)."""

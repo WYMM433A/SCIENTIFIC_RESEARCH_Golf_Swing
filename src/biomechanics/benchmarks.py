@@ -11,7 +11,7 @@ BENCHMARKS = {
         "label": "Shoulder Turn",
         "priority_weight": 1.5,
         "unit": "°",
-        "hint": "Xoay vai thêm để tạo lực (coil) tốt hơn."
+        "hint": "Increase shoulder rotation to generate better coil/power."
     },
     "x_factor": {
         "phase": "Top",
@@ -20,7 +20,7 @@ BENCHMARKS = {
         "label": "X-Factor Separation",
         "priority_weight": 2.0,
         "unit": "°",
-        "hint": "Tăng sự phân tách giữa vai và hông để tối ưu power."
+        "hint": "Increase separation between shoulders and hips to optimize power."
     },
     "spine_angle": {
         "phase": "Impact",
@@ -29,7 +29,7 @@ BENCHMARKS = {
         "label": "Spine Angle",
         "priority_weight": 1.2,
         "unit": "°",
-        "hint": "Giữ trục xương sống ổn định khi tiếp bóng."
+        "hint": "Maintain spine angle stability through impact."
     },
     "trail_knee_flex": {
         "phase": "Top",
@@ -38,7 +38,7 @@ BENCHMARKS = {
         "label": "Trail Knee Stability",
         "priority_weight": 0.8,
         "unit": "°",
-        "hint": "Giữ gối sau hơi gập để duy trì sự ổn định thân dưới."
+        "hint": "Maintain trail knee flex for lower body stability."
     },
     "head_stability": {
         "phase": "Global",
@@ -47,17 +47,17 @@ BENCHMARKS = {
         "label": "Head Stability (Fluctuation)",
         "priority_weight": 1.0,
         "unit": "cm",
-        "hint": "Giữ đầu ổn định hơn trong suốt quá trình swing."
+        "hint": "Maintain head stability throughout the swing."
     }
 }
 
 def get_status(value, benchmark_cfg, level="amateur"):
     cfg = benchmark_cfg[level]
     if cfg["min"] <= value <= cfg["max"]:
-        return "Good", "success"
+        return "Good", "Success"
     
     diff = value - cfg["ideal"]
     if abs(diff) < 15:
-        return "Fair", "warning"
+        return "Fair", "Warning"
     else:
-        return "Poor", "danger"
+        return "Poor", "Danger"

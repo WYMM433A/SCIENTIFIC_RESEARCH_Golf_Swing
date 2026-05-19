@@ -1,0 +1,81 @@
+{
+    "summary": {
+        "overall_score": 33,
+        "player_level": "amateur",
+        "total_metrics_analyzed": 5
+    },
+    "detailed_metrics": [
+        {
+            "name": "Shoulder Turn",
+            "value": 5.4,
+            "unit": "°",
+            "status": "Poor",
+            "color": "danger",
+            "ideal_range": "70-90",
+            "feedback": "Xoay vai thêm để tạo lực (coil) tốt hơn."
+        },
+        {
+            "name": "X-Factor Separation",
+            "value": 1.7,
+            "unit": "°",
+            "status": "Poor",
+            "color": "danger",
+            "ideal_range": "30-45",
+            "feedback": "Tăng sự phân tách giữa vai và hông để tối ưu power."
+        },
+        {
+            "name": "Spine Angle",
+            "value": 22.6,
+            "unit": "°",
+            "status": "Fair",
+            "color": "warning",
+            "ideal_range": "30-42",
+            "feedback": "Giữ trục xương sống ổn định khi tiếp bóng."
+        },
+        {
+            "name": "Trail Knee Stability",
+            "value": 115.0,
+            "unit": "°",
+            "status": "Poor",
+            "color": "danger",
+            "ideal_range": "15-35",
+            "feedback": "Giữ gối sau hơi gập để duy trì sự ổn định thân dưới."
+        },
+        {
+            "name": "Head Stability (Fluctuation)",
+            "value": 13.8,
+            "unit": "cm",
+            "status": "Fair",
+            "color": "warning",
+            "ideal_range": "0-10",
+            "feedback": "Giữ đầu ổn định hơn trong suốt quá trình swing."
+        }
+    ],
+    "priority_fixes": [
+        {
+            "score_impact": 111.89506022848167,
+            "issue": "Shoulder Turn",
+            "advice": "Xoay vai thêm để tạo lực (coil) tốt hơn."
+        },
+        {
+            "score_impact": 72.55926825582515,
+            "issue": "X-Factor Separation",
+            "advice": "Tăng sự phân tách giữa vai và hông để tối ưu power."
+        },
+        {
+            "score_impact": 72.00755598806529,
+            "issue": "Trail Knee Stability",
+            "advice": "Giữ gối sau hơi gập để duy trì sự ổn định thân dưới."
+        },
+        {
+            "score_impact": 16.03218624458394,
+            "issue": "Spine Angle",
+            "advice": "Giữ trục xương sống ổn định khi tiếp bóng."
+        },
+        {
+            "score_impact": 8.83790044360401,
+            "issue": "Head Stability (Fluctuation)",
+            "advice": "Giữ đầu ổn định hơn trong suốt quá trình swing."
+        }
+    ]
+}
