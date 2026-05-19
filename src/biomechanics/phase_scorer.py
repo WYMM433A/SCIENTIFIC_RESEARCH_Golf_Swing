@@ -313,13 +313,13 @@ class PhaseScorer:
         phase = "top"
         score_components = {}
         
-        # Coil evaluation using shoulder rotation
-        shoulder_value = self._get_metric(metrics, ["shoulder_rotation"])
-        if shoulder_value is not None:
+        # Coil evaluation using x_factor (hip-shoulder differential, more reliable than shoulder_rotation)
+        x_factor_value = self._get_metric(metrics, ["x_factor"])
+        if x_factor_value is not None:
             coil_score = self._evaluate_metric(
-                shoulder_value,
-                SCORING_THRESHOLDS["shoulder_rotation"]["backswing_ideal"],
-                metric_name="shoulder_rotation"
+                x_factor_value,
+                SCORING_THRESHOLDS["x_factor"]["top_ideal"],
+                metric_name="x_factor"
             )
             score_components["coil"] = coil_score * METRIC_WEIGHTS[phase]["coil"]
         
@@ -479,7 +479,8 @@ class PhaseScorer:
             # Use arm_extension_delta when window analysis is available
             delta_result = self._apply_arm_extension_delta(metrics)
             arm_ext_delta_score = delta_result.get('score', 75)
-            score_components["arm_extension_delta"] = arm_ext_delta_score * METRIC_WEIGHTS[phase].get("x_factor_unwind", 0.45)
+            # Replace x_factor_unwind (0.45 weight) - this is the only component for Fix 1
+            score_components["x_factor_unwind"] = arm_ext_delta_score * METRIC_WEIGHTS[phase].get("x_factor_unwind", 0.45)
         else:
             # Fallback to x_factor_unwind for keyframe-only scoring
             if "x_factor" in metrics:
@@ -489,16 +490,16 @@ class PhaseScorer:
                     metric_name="x_factor"
                 )
                 score_components["x_factor_unwind"] = unwind_score * METRIC_WEIGHTS[phase]["x_factor_unwind"]
-        
-        # Arm extension (static)
-        arm_ext_value = self._get_metric(metrics, ["arm_extension", "lead_arm_angle"])
-        if arm_ext_value is not None:
-            arm_score = self._evaluate_metric(
-                arm_ext_value,
-                SCORING_THRESHOLDS["lead_arm_angle"]["impact_ideal"],
-                metric_name="lead_arm_angle"
-            )
-            score_components["arm_extension"] = arm_score * METRIC_WEIGHTS[phase]["arm_extension"]
+            
+            # Arm extension (static)
+            arm_ext_value = self._get_metric(metrics, ["arm_extension", "lead_arm_angle"])
+            if arm_ext_value is not None:
+                arm_score = self._evaluate_metric(
+                    arm_ext_value,
+                    SCORING_THRESHOLDS["lead_arm_angle"]["impact_ideal"],
+                    metric_name="lead_arm_angle"
+                )
+                score_components["arm_extension"] = arm_score * METRIC_WEIGHTS[phase]["arm_extension"]
         
         # Wrist angle at impact
         wrist_value = self._get_metric(metrics, ["wrist_angle", "wrist_hinge"])
@@ -523,7 +524,9 @@ class PhaseScorer:
         phase_score = self._normalize_phase_score(phase, score_components)
         
         # FIX 3/4: Apply window-based penalties if available
-        if context.get('use_window'):
+        # NOTE: For impact phase, skip window penalties since Fix 1 (arm_extension_delta) 
+        # already provides comprehensive window-based motion analysis
+        if context.get('use_window') and phase != "impact":
             phase_score, penalty_details = self._apply_window_metrics(phase_score, phase)
         else:
             penalty_details = {}
@@ -1010,8 +1013,8 @@ class PhaseScorer:
                     'penalty': jerk_penalty
                 }
             
-            # Apply penalties with higher ceiling (max -50 points instead of -20)
-            total_penalty = min(50, total_penalty)
+            # Apply penalties with reasonable ceiling (max -25 points for window issues)
+            total_penalty = min(25, total_penalty)
             adjusted_score = max(0, phase_score - total_penalty)
             penalty_details['total_penalty'] = total_penalty
             

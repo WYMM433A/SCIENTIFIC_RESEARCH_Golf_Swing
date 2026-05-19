@@ -1,11 +1,14 @@
 phase,score,confidence,key_frame,feedback
-Address,99.46153846153848,1.0,93,"ADDRESS: 99/100 (EXCELLENT)
+Address,99.45342480083573,1.0,93,"ADDRESS: 99/100 (EXCELLENT)
   ✓ No critical issues detected in this phase."
-Takeaway,100.0,1.0,118,"TAKEAWAY: 100/100 (EXCELLENT)
+Takeaway,99.96638889278478,1.0,118,"TAKEAWAY: 100/100 (EXCELLENT)
   ✓ No critical issues detected in this phase."
-Mid-backswing,100.0,1.0,124,"MID-BACKSWING: 100/100 (EXCELLENT)
+Mid-backswing,99.94638479110588,1.0,124,"MID-BACKSWING: 100/100 (EXCELLENT)
   ✓ No critical issues detected in this phase."
-Top,95.93849803236652,1.0,139,"TOP: 96/100 (EXCELLENT)
+Top,78.48849962543628,1.0,139,"TOP: 78/100 (GOOD)
+  ✗ coil: 178.37 vs target 170.00-185.00 (score 50)
+    Fix: Reach a full but balanced top turn.
+    Drill: Top-position hold drill: 6 reps x 3s hold.
   ✗ posture: -12.87 vs target -8.00-12.00 (score 80)
     Fix: Maintain spine posture at the top without standing up.
     Drill: Top freeze with posture check: 8 reps."
@@ -13,14 +16,14 @@ Mid-downswing,87.5,1.0,144,"MID-DOWNSWING: 88/100 (GOOD)
   ✗ kinematic_sequence: score 17
     Fix: Start down with lower body, then torso, then arms.
     Drill: Step-through sequencing drill: 2 x 8 reps."
-Impact,85.0,1.0,146,"IMPACT: 85/100 (GOOD)
-  ✗ arm_extension: 146.67 vs target 155.00-175.00 (score 50)
-    Fix: Extend lead arm through strike for compression.
-    Drill: One-arm extension drill: 2 x 8 reps."
-Follow-through,85.0,1.0,149,"FOLLOW-THROUGH: 85/100 (GOOD)
+Impact,35.71428571428571,0.8,146,"IMPACT: 36/100 (POOR)
+  ✗ x_factor_unwind: 9.93 vs target 0.00-18.00 (score 0)
+    Fix: Unwind through impact with chest and hips synced.
+    Drill: Slow-motion impact checkpoints: 10 reps."
+Follow-through,84.85013396710416,1.0,149,"FOLLOW-THROUGH: 85/100 (GOOD)
   ✗ arm_swing: 101.86 vs target 160.00-175.00 (score 50)
     Fix: Allow natural arm fold around the body.
     Drill: Finish-wrap rehearsal drill: 2 x 8 reps."
-Finish,99.85262036963763,1.0,160,"FINISH: 100/100 (EXCELLENT)
+Finish,99.37203414713879,1.0,160,"FINISH: 99/100 (EXCELLENT)
   ✓ No critical issues detected in this phase."
-Overall,90.49033850352868,1.0,-1,"OVERALL: 90.5/100 (raw=90.5, finish_rotation_penalty=0.0)"
+Overall,75.04027633849734,1.0,-1,"OVERALL: 75.0/100 (raw=75.0, finish_rotation_penalty=0.0)"

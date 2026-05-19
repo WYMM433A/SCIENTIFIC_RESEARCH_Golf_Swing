@@ -1,16 +1,19 @@
 phase,score,confidence,key_frame,feedback
-Address,100.00000000000001,1.0,98,"ADDRESS: 100/100 (EXCELLENT)
+Address,99.99245940455386,1.0,98,"ADDRESS: 100/100 (EXCELLENT)
   ✓ No critical issues detected in this phase."
-Takeaway,97.0705342183038,1.0,114,"TAKEAWAY: 97/100 (EXCELLENT)
+Takeaway,97.04935990326403,1.0,114,"TAKEAWAY: 97/100 (EXCELLENT)
   ✓ No critical issues detected in this phase."
-Mid-backswing,77.86462591705451,1.0,121,"MID-BACKSWING: 78/100 (GOOD)
+Mid-backswing,77.83587751424936,1.0,121,"MID-BACKSWING: 78/100 (GOOD)
   ✗ coil: 0.38 vs target 2.00-14.00 (score 60)
     Fix: Increase torso coil while keeping lower body stable.
     Drill: Resistance-band turn drill: 2 x 10 reps.
   ✗ shaft_plane: 154.41 vs target 155.00-180.00 (score 50)
     Fix: Keep lead arm structure and shaft on a repeatable plane.
     Drill: Pump-to-top drill with mirror feedback: 8 reps."
-Top,97.12072328667435,1.0,135,"TOP: 97/100 (EXCELLENT)
+Top,92.79266145194443,1.0,135,"TOP: 93/100 (EXCELLENT)
+  ✗ coil: 178.22 vs target 170.00-185.00 (score 88)
+    Fix: Reach a full but balanced top turn.
+    Drill: Top-position hold drill: 6 reps x 3s hold.
   ✗ posture: -11.46 vs target -8.00-12.00 (score 86)
     Fix: Maintain spine posture at the top without standing up.
     Drill: Top freeze with posture check: 8 reps."
@@ -21,16 +24,16 @@ Mid-downswing,89.11588031234038,1.0,139,"MID-DOWNSWING: 89/100 (EXCELLENT)
   ✗ upper_body_lag: 1.73 vs target 0.00-5.00 (score 89)
     Fix: Let torso follow hips; avoid throwing arms early.
     Drill: Split-grip transition drill: 2 x 8 reps."
-Impact,85.0,1.0,141,"IMPACT: 85/100 (GOOD)
-  ✗ arm_extension: 142.91 vs target 155.00-175.00 (score 50)
-    Fix: Extend lead arm through strike for compression.
-    Drill: One-arm extension drill: 2 x 8 reps."
-Follow-through,95.0,1.0,142,"FOLLOW-THROUGH: 95/100 (EXCELLENT)
+Impact,35.71428571428571,0.8,141,"IMPACT: 36/100 (POOR)
+  ✗ x_factor_unwind: 3.71 vs target 0.00-18.00 (score 0)
+    Fix: Unwind through impact with chest and hips synced.
+    Drill: Slow-motion impact checkpoints: 10 reps."
+Follow-through,94.838361265117,1.0,142,"FOLLOW-THROUGH: 95/100 (EXCELLENT)
   ✗ deceleration: 4.86 vs target 10.00-20.00 (score 50)
     Fix: Decelerate smoothly after release.
     Drill: Three-quarter finish hold drill: 8 reps."
-Finish,95.0,1.0,151,"FINISH: 95/100 (EXCELLENT)
+Finish,79.8142440982724,1.0,151,"FINISH: 80/100 (GOOD)
   ✗ symmetry: 161.04 vs target 0.00-6.00 (score 0)
     Fix: Hold a controlled, symmetric finish position.
     Drill: Count-to-two finish freeze drill: 10 reps."
-Overall,90.50750197433607,1.0,-1,"OVERALL: 90.5/100 (raw=90.5, finish_rotation_penalty=0.0)"
+Overall,73.83858802233387,1.0,-1,"OVERALL: 73.8/100 (raw=73.8, finish_rotation_penalty=0.0)"

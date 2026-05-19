@@ -121,13 +121,13 @@ SCORING_THRESHOLDS = {
     
     # WRIST ANGLE (degrees) - Hinge angle
     "wrist_angle": {
-        "acceptable": (140, 180),
+        "acceptable": (110, 180),
         "ideal": (150, 180),
         "direction": "context_dependent",
         "address_ideal": (160, 180),
         "takeaway_ideal": (160, 180),
         "mid_backswing_ideal": (150, 180),
-        "top_ideal": (145, 180),
+        "top_ideal": (130, 180),  # Relaxed from (145, 180) to accommodate front-view measurement variance
         "impact_ideal": (150, 180),
         "follow_through_ideal": (150, 180),
     },

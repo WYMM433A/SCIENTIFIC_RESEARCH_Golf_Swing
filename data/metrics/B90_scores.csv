@@ -1,13 +1,13 @@
 phase,score,confidence,key_frame,feedback
-Address,83.56051588425191,1.0,135,"ADDRESS: 84/100 (GOOD)
+Address,83.55551371698832,1.0,135,"ADDRESS: 84/100 (GOOD)
   ✗ weight_distribution: 1.38 vs target 0.90-1.20 (score 50)
     Fix: Center pressure between your feet with shoulder-width stance.
     Drill: Feet-line setup drill: align heels to a marked shoulder-width line."
-Takeaway,100.0,1.0,161,"TAKEAWAY: 100/100 (EXCELLENT)
+Takeaway,99.98126687868937,1.0,161,"TAKEAWAY: 100/100 (EXCELLENT)
   ✓ No critical issues detected in this phase."
-Mid-backswing,97.13867478253924,1.0,166,"MID-BACKSWING: 97/100 (EXCELLENT)
+Mid-backswing,97.11134324271896,1.0,166,"MID-BACKSWING: 97/100 (EXCELLENT)
   ✓ No critical issues detected in this phase."
-Top,99.8,1.0,180,"TOP: 100/100 (EXCELLENT)
+Top,99.75789803115315,1.0,180,"TOP: 100/100 (EXCELLENT)
   ✓ No critical issues detected in this phase."
 Mid-downswing,87.5,1.0,185,"MID-DOWNSWING: 88/100 (GOOD)
   ✗ upper_body_lag: 1.61 vs target 0.00-5.00 (score 75)
@@ -16,17 +16,19 @@ Mid-downswing,87.5,1.0,185,"MID-DOWNSWING: 88/100 (GOOD)
   ✗ kinematic_sequence: score 67
     Fix: Start down with lower body, then torso, then arms.
     Drill: Step-through sequencing drill: 2 x 8 reps."
-Impact,97.96417320784323,1.0,187,"IMPACT: 98/100 (EXCELLENT)
-  ✓ No critical issues detected in this phase."
-Follow-through,95.0,1.0,189,"FOLLOW-THROUGH: 95/100 (EXCELLENT)
+Impact,32.724203327752974,0.8,187,"IMPACT: 33/100 (POOR)
+  ✗ x_factor_unwind: 5.16 vs target 0.00-18.00 (score 3)
+    Fix: Unwind through impact with chest and hips synced.
+    Drill: Slow-motion impact checkpoints: 10 reps."
+Follow-through,85.7021624443274,1.0,189,"FOLLOW-THROUGH: 86/100 (GOOD)
   ✗ deceleration: 0.29 vs target 10.00-20.00 (score 50)
     Fix: Decelerate smoothly after release.
     Drill: Three-quarter finish hold drill: 8 reps."
-Finish,85.68620853626797,1.0,209,"FINISH: 86/100 (GOOD)
+Finish,77.5484217074877,1.0,209,"FINISH: 78/100 (GOOD)
   ✗ symmetry: 12.20 vs target 0.00-6.00 (score 50)
     Fix: Hold a controlled, symmetric finish position.
     Drill: Count-to-two finish freeze drill: 10 reps.
   ✗ rotation: 179.31 vs target 160.00-175.00 (score 78)
     Fix: Complete body rotation fully toward target.
     Drill: Step-and-turn finish drill: 2 x 8 reps."
-Overall,93.38868563135584,1.0,-1,"OVERALL: 93.4/100 (raw=93.4, finish_rotation_penalty=0.0)"
+Overall,73.71201252365684,1.0,-1,"OVERALL: 73.7/100 (raw=73.7, finish_rotation_penalty=0.0)"

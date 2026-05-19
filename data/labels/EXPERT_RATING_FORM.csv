@@ -1,0 +1,69 @@
+EXPERT GOLF SWING RATING FORM
+======================================================================
+
+Instructions for Pro Golfer:
+1. Watch each video 2-3 times (full swing, then focus per phase)
+2. Rate each phase on 0-100 scale where:
+   - 100 = Tour pro level (flawless execution)
+   - 75+ = Advanced amateur / very good
+   - 50-74 = Intermediate / passable
+   - 0-49 = Beginner / significant issues
+3. If phase < 70, note main issue in feedback column
+4. Skip rows where pose extraction failed (no visible pose)
+
+======================================================================
+
+swing_id,camera_angle,skill_level,address_score,takeaway_score,mid_backswing_score,top_score,mid_downswing_score,impact_score,follow_through_score,finish_score,address_feedback,takeaway_feedback,mid_backswing_feedback,top_feedback,mid_downswing_feedback,impact_feedback,follow_through_feedback,finish_feedback,overall_notes,expert_name,confidence
+0,front,intermediate,85,88,90,75,82,45,80,85,"Good posture, slightly narrow stance","Smooth takeaway","Good coil","Excessive spine tilt","Weight shift timing","Weak arm extension","Overdoes follow-through","Good balance","Needs more lag at impact; extend lead arm through ball","Pro_Coach_Name",5
+1,side,beginner,70,65,68,55,60,35,70,75,"Hunched posture","Early wrist cock","Poor lag formation","Too much head movement","Early release","Significant lag","Reverse pivot follow-through","Collapse at finish","Major issues: grip, lag, weight transfer; recommend lessons","Pro_Coach_Name",4
+akh_cleaned_poses,front,beginner,75,80,82,70,78,42,85,88,"Adequate","Good tempo","Smooth transition","Limited coil","Bit early downswing","Poor arm extension","Nice","Balanced","Arm extension at impact is weak; compensating with lower body","Pro_Coach_Name",4
+me_cleaned_poses,front,beginner,75,72,80,65,80,38,85,82,"Decent","Good tempo","Solid backswing","Head moving, limited coil","Good sequence","Minimal arm extension at impact","Good shape","Needs work on finish posture","Biggest issue: arm lag at impact; not extending through ball","Pro_Coach_Name",4
+B80O,side,pro,95,98,96,98,97,88,96,98,"Excellent posture","Perfect tempo","Deep coil","Excellent hip clearance","Aggressive lag release","Strong arm extension","Full follow-through","Perfect finish","This is the reference pro level swing","Pro_Coach_Name",5
+
+======================================================================
+
+PHASE DEFINITIONS (use these to calibrate scoring):
+
+ADDRESS (pre-swing):
+- Pro: Balanced posture, athletic stance, proper grip
+- Beginner: Hunched, narrow stance, weak grip
+
+TAKEAWAY (first 20% of backswing):
+- Pro: Low and smooth, no wrist hinge, rotational move
+- Beginner: Jerky, early wrist cock, armsy
+
+MID-BACKSWING (40% of backswing):
+- Pro: Synchronized arm-torso, good lag formation, hip coil
+- Beginner: Arms outpacing body, no lag, poor coil
+
+TOP (peak of backswing):
+- Pro: Full coil, lead arm parallel, shaft on plane, quiet head
+- Beginner: Over-rotation, lead arm dropped, poor shaft plane, excessive head movement
+
+MID-DOWNSWING (transition phase):
+- Pro: Smooth transition, weight starting forward, lag preserved
+- Beginner: Jerky transition, early arm release, poor sequencing
+
+IMPACT (ball contact):
+- Pro: Square clubface, lead arm extended, full lag release, center strike
+- Beginner: Open/closed face, weak arm extension, lag remains, toe/heel strike
+
+FOLLOW-THROUGH (post-impact):
+- Pro: Full extension, balanced, natural deceleration
+- Beginner: Reverse pivot, stumbling, collapse
+
+FINISH (end of swing):
+- Pro: Balanced on left foot, belt buckle to target, both arms up
+- Beginner: On toes, facing ball, arms low
+
+======================================================================
+
+SCORING CALIBRATION (use real swings as reference):
+
+B80O (pro): Should score 95-98 overall (reference level)
+Your test videos: Should score 60-75 overall (intermediate/advanced beginner)
+Known poor swings: Should score 40-55 overall (clear beginner issues)
+
+If any scores feel off, watch the reference B80O video first, then re-rate.
+
+======================================================================

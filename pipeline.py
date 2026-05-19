@@ -392,6 +392,11 @@ class GolfSwingPipeline:
                     start_frame=int(start_frame),
                     end_frame=int(end_frame),
                     top_frame=int(top_frame_val) if top_frame_val else None
+                )
+                
+                # Store phase score for overall calculation
+                phase_scores[phase_name] = score
+                
                 # Generate feedback
                 feedback = scorer.generate_feedback(
                     phase_name, 

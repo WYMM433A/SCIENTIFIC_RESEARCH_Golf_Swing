@@ -879,8 +879,8 @@ class GolfBiomechanics:
             
             delta = impact_arm - top_arm  # Positive = extended more
             
-            # Scoring: pros extend 10-20° into impact
-            ideal_delta = 15  # degrees
+            # Scoring: pros extend 25-35° into impact (higher extension = more power)
+            ideal_delta = 28  # degrees (adjusted from 15 to match pro swing data)
             delta_error = abs(delta - ideal_delta)
             quality = max(0, 100 - (delta_error * 5))  # -5 pts per degree error
             
