@@ -1,9 +1,3 @@
-"""
-Swing Comparator - Compare user swing to benchmarks
-
-Analyzes biomechanical metrics and identifies areas for improvement.
-"""
-
 import pandas as pd
 import numpy as np
 from typing import Dict, List
@@ -11,9 +5,6 @@ from .angles import extract_metrics_from_row
 from .benchmarks import BENCHMARKS, get_status
 
 class SwingBiomechanicsEvaluator:
-    """
-    Phân tích toàn bộ swing dựa trên các keyframes đã detect.
-    """
     def __init__(self, player_level: str = "amateur"):
         self.player_level = player_level
 
@@ -62,15 +53,17 @@ class SwingBiomechanicsEvaluator:
         # Thu thập tất cả vị trí đầu (nose) từ các frame có sẵn
         all_head_positions = []
         for _, row_data in poses_df.iterrows():
-            if 'nose_x' in row_data and 'nose_y' in row_data and 'nose_z' in row_data:
-                # Sử dụng visibility nếu có (SwingAnalyzer lưu là _visibility)
-                vis = row_data.get('nose_visibility', 1.0)
-                if vis >= 0.5:
-                    all_head_positions.append(np.array([row_data['nose_x'], row_data['nose_y'], row_data['nose_z']]))
+            # Sử dụng extract_metrics_from_row để lấy head_pos, nhưng chỉ cần phần head_pos
+            # Tránh gọi extract_metrics_from_row quá nhiều lần nếu nó nặng
+            # Thay vào đó, trích xuất trực tiếp từ row nếu có thể
+            if 'nose_x' in row_data and 'nose_y' in row_data and 'nose_z' in row_data and 'nose_v' in row_data and row_data['nose_v'] >= 0.5:
+                all_head_positions.append(np.array([row_data['nose_x'], row_data['nose_y'], row_data['nose_z']]))
         
         head_stability_val = 0.0
         if len(all_head_positions) > 1: # Cần ít nhất 2 điểm để tính độ lệch chuẩn
             head_pts = np.array(all_head_positions)
+            # Tính độ lệch chuẩn của vị trí đầu theo trục X, Y, Z và lấy norm của vector std
+            # Hoặc chỉ lấy std của một trục quan trọng, ví dụ trục X (ngang)
             head_stability_val = np.linalg.norm(np.std(head_pts, axis=0)) * 100 # Nhân 100 để chuyển sang cm giả định
         
         # Thêm global metrics vào key_metrics

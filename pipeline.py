@@ -15,7 +15,7 @@ Pipeline Steps:
 
 Usage:
     python pipeline.py <video_path>
-    python pipeline.py data/raw_videos/golf_swing_001.mp4
+    python pipeline.py data/raw_videos/videos_160/1.mp4
     python pipeline.py C:/path/to/my_swing.mp4
 """
 
