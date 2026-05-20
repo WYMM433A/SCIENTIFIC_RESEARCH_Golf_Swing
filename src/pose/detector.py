@@ -43,7 +43,7 @@ class PoseDetector:
         
         self.landmarker = PoseLandmarker.create_from_options(options)
         self.results = None
-        self.lmList = []  # Pixel coordinates [id, x, y]
+        self.lmList = []  # Pixel coordinates [id, pixel_x, pixel_y, pixel_z] (Z scaled by width)
 
     def findPose(self, img, draw=True):
         """Detect pose and optionally draw skeleton"""
@@ -75,14 +75,19 @@ class PoseDetector:
             cv2.circle(img, pos, circle_radius, circle_color, -1)
 
     def findPosition(self, img, draw=True, drawColor=(255, 0, 0), circleSize=5):
-        """Extract pixel coordinates"""
+        """Extract coordinates (pixel for X/Y, scaled pixel-like for Z)"""
         self.lmList = []
         h, w, _ = img.shape
         
         if self.results.pose_landmarks:
             for idx, lm in enumerate(self.results.pose_landmarks[0]):  # Take first pose
+                # X, Y in pixel coordinates
                 cx, cy = int(lm.x * w), int(lm.y * h)
-                self.lmList.append([idx, cx, cy])
+                # Z scaled to pixel-like range (multiply by width for consistent scale)
+                # This ensures dx, dy, dz are all in the same pixel coordinate space
+                cz = lm.z * w
+                self.lmList.append([idx, cx, cy, cz])
+                
                 if draw:
                     cv2.circle(img, (cx, cy), circleSize, drawColor, cv2.FILLED)
         return self.lmList

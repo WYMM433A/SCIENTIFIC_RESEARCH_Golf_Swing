@@ -313,8 +313,8 @@ class PhaseScorer:
         phase = "top"
         score_components = {}
         
-        # Coil evaluation using x_factor (hip-shoulder differential, more reliable than shoulder_rotation)
-        x_factor_value = self._get_metric(metrics, ["x_factor"])
+        # Coil evaluation using x_factor_3d (3D depth-based measurement for accurate rotation at TOP)
+        x_factor_value = self._get_metric(metrics, ["x_factor_3d", "x_factor"])
         if x_factor_value is not None:
             coil_score = self._evaluate_metric(
                 x_factor_value,
@@ -473,33 +473,24 @@ class PhaseScorer:
             )
             score_components["lag_release"] = lag_release_score * METRIC_WEIGHTS[phase]["lag_release"]
         
-        # FIX 1: Replace x_factor_unwind with arm_extension_delta
-        context = getattr(self, '_window_context', {})
-        if context.get('use_window'):
-            # Use arm_extension_delta when window analysis is available
-            delta_result = self._apply_arm_extension_delta(metrics)
-            arm_ext_delta_score = delta_result.get('score', 75)
-            # Replace x_factor_unwind (0.45 weight) - this is the only component for Fix 1
-            score_components["x_factor_unwind"] = arm_ext_delta_score * METRIC_WEIGHTS[phase].get("x_factor_unwind", 0.45)
-        else:
-            # Fallback to x_factor_unwind for keyframe-only scoring
-            if "x_factor" in metrics:
-                unwind_score = self._evaluate_metric(
-                    metrics["x_factor"],
-                    SCORING_THRESHOLDS["x_factor"]["impact_ideal"],
-                    metric_name="x_factor"
-                )
-                score_components["x_factor_unwind"] = unwind_score * METRIC_WEIGHTS[phase]["x_factor_unwind"]
-            
-            # Arm extension (static)
-            arm_ext_value = self._get_metric(metrics, ["arm_extension", "lead_arm_angle"])
-            if arm_ext_value is not None:
-                arm_score = self._evaluate_metric(
-                    arm_ext_value,
-                    SCORING_THRESHOLDS["lead_arm_angle"]["impact_ideal"],
-                    metric_name="lead_arm_angle"
-                )
-                score_components["arm_extension"] = arm_score * METRIC_WEIGHTS[phase]["arm_extension"]
+        # X-factor unwind (torso uncoil from top to impact)
+        if "x_factor" in metrics and metrics["x_factor"] is not None:
+            unwind_score = self._evaluate_metric(
+                metrics["x_factor"],
+                SCORING_THRESHOLDS["x_factor"]["impact_ideal"],
+                metric_name="x_factor"
+            )
+            score_components["x_factor_unwind"] = unwind_score * METRIC_WEIGHTS[phase]["x_factor_unwind"]
+        
+        # Arm extension (static at impact)
+        arm_ext_value = self._get_metric(metrics, ["arm_extension", "lead_arm_angle"])
+        if arm_ext_value is not None:
+            arm_score = self._evaluate_metric(
+                arm_ext_value,
+                SCORING_THRESHOLDS["lead_arm_angle"]["impact_ideal"],
+                metric_name="lead_arm_angle"
+            )
+            score_components["arm_extension"] = arm_score * METRIC_WEIGHTS[phase]["arm_extension"]
         
         # Wrist angle at impact
         wrist_value = self._get_metric(metrics, ["wrist_angle", "wrist_hinge"])
@@ -523,18 +514,9 @@ class PhaseScorer:
         
         phase_score = self._normalize_phase_score(phase, score_components)
         
-        # FIX 3/4: Apply window-based penalties if available
-        # NOTE: For impact phase, skip window penalties since Fix 1 (arm_extension_delta) 
-        # already provides comprehensive window-based motion analysis
-        if context.get('use_window') and phase != "impact":
-            phase_score, penalty_details = self._apply_window_metrics(phase_score, phase)
-        else:
-            penalty_details = {}
-        
         return phase_score, {
             "components": score_components,
             "confidence": len(score_components) / len(METRIC_WEIGHTS[phase]),
-            "penalty_details": penalty_details,
         }
 
 

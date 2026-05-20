@@ -1,6 +1,6 @@
 phase,score,confidence,key_frame,feedback
-Address,95.74726314308135,1.0,2,"ADDRESS: 96/100 (EXCELLENT)
-  ✗ weight_distribution: 1.23 vs target 0.90-1.20 (score 86)
+Address,83.47171630535784,1.0,2,"ADDRESS: 83/100 (GOOD)
+  ✗ weight_distribution: 0.35 vs target 0.90-1.20 (score 47)
     Fix: Center pressure between your feet with shoulder-width stance.
     Drill: Feet-line setup drill: align heels to a marked shoulder-width line."
 Takeaway,83.34150714882949,1.0,27,"TAKEAWAY: 83/100 (GOOD)
@@ -9,8 +9,10 @@ Takeaway,83.34150714882949,1.0,27,"TAKEAWAY: 83/100 (GOOD)
     Drill: Pause-at-P2 drill with hips quiet: 8 reps."
 Mid-backswing,99.96173617230848,1.0,31,"MID-BACKSWING: 100/100 (EXCELLENT)
   ✓ No critical issues detected in this phase."
-Top,99.9764777835087,1.0,42,"TOP: 100/100 (EXCELLENT)
-  ✓ No critical issues detected in this phase."
+Top,82.4764777835087,1.0,42,"TOP: 82/100 (GOOD)
+  ✗ coil: 177.17 vs target 170.00-185.00 (score 50)
+    Fix: Reach a full but balanced top turn.
+    Drill: Top-position hold drill: 6 reps x 3s hold."
 Mid-downswing,87.5,1.0,47,"MID-DOWNSWING: 88/100 (GOOD)
   ✗ kinematic_sequence: score 17
     Fix: Start down with lower body, then torso, then arms.
@@ -25,4 +27,4 @@ Finish,93.20911521461294,1.0,84,"FINISH: 93/100 (EXCELLENT)
   ✗ posture: -15.19 vs target -10.00-12.00 (score 74)
     Fix: Keep stable spine through the finish pose.
     Drill: Finish mirror holds: 2 x 8 reps."
-Overall,92.11826381344767,1.0,-1,"OVERALL: 92.1/100 (raw=92.1, finish_rotation_penalty=0.0)"
+Overall,89.49070912967531,1.0,-1,"OVERALL: 89.5/100 (raw=89.5, finish_rotation_penalty=0.0)"

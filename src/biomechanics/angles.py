@@ -252,18 +252,34 @@ class GolfBiomechanics:
     # ============================================
     
     def _get_point_from_lmlist(self, lmList: List, landmark_name: str) -> np.ndarray:
-        """Get point from real-time lmList [id, x, y]"""
+        """Get point from real-time lmList [id, x, y, z] - returns [x, y, z]"""
         idx = LANDMARK_INDICES[landmark_name]
         if idx < len(lmList):
-            return np.array([lmList[idx][1], lmList[idx][2]])
-        return np.array([0, 0])
+            point_data = lmList[idx]
+            # Handle both 3-element [id, x, y] and 4-element [id, x, y, z] formats
+            if len(point_data) >= 4:
+                return np.array([point_data[1], point_data[2], point_data[3]])
+            else:
+                return np.array([point_data[1], point_data[2], 0.0])
+        return np.array([0, 0, 0])
     
     def _get_point_from_df(self, frame: int, landmark_name: str) -> np.ndarray:
-        """Get point from DataFrame at specific frame"""
+        """Get point from DataFrame at specific frame - returns [x, y, z]
+        
+        Note: X and Y are already in pixel space (0-1920 typical), Z from MediaPipe is 
+        normalized (0-1 visible, can be negative). Scale Z to pixel space for consistent
+        3D calculations by multiplying by reference width (640).
+        """
         row = self.df[self.df['frame'] == frame].iloc[0]
         x = row[f'{landmark_name}_x']
         y = row[f'{landmark_name}_y']
-        return np.array([x, y])
+        z_normalized = row[f'{landmark_name}_z'] if f'{landmark_name}_z' in row.index else 0.0
+        
+        # Scale Z to pixel-like range for consistent atan2 calculations
+        # Using 640 as reference width (matches typical video dimensions)
+        z_scaled = z_normalized * 640
+        
+        return np.array([x, y, z_scaled])
     
     def _get_midpoint(self, p1: np.ndarray, p2: np.ndarray) -> np.ndarray:
         """Calculate midpoint between two points"""
@@ -344,6 +360,79 @@ class GolfBiomechanics:
         hip_rot = self.get_hip_rotation(lmList, frame)
 
         # Circular angular difference to avoid wrap artifacts (e.g., 355 instead of 5).
+        diff = abs(shoulder_rot - hip_rot) % 360
+        return min(diff, 360 - diff)
+    
+    def get_shoulder_rotation_3d(self, lmList: List = None, frame: int = None) -> float:
+        """
+        Calculate shoulder line rotation using 3D depth (Z coordinate).
+        Uses Z instead of Y to detect rotation perpendicular to camera.
+        
+        More accurate than 2D method when golfer rotates toward/away from camera.
+        Falls back to 2D method if Z not available.
+        
+        Returns:
+            Angle in degrees
+        """
+        if lmList:
+            left_shoulder = self._get_point_from_lmlist(lmList, 'left_shoulder')
+            right_shoulder = self._get_point_from_lmlist(lmList, 'right_shoulder')
+        else:
+            left_shoulder = self._get_point_from_df(frame, 'left_shoulder')
+            right_shoulder = self._get_point_from_df(frame, 'right_shoulder')
+        
+        # Check if Z coordinate is available
+        if len(left_shoulder) < 3 or len(right_shoulder) < 3:
+            # Fall back to 2D method if Z not available
+            return self.get_shoulder_rotation(lmList, frame)
+        
+        # Use X and Z coordinates (ignore Y depth changes)
+        dx = right_shoulder[0] - left_shoulder[0]
+        dz = right_shoulder[2] - left_shoulder[2]
+        angle = math.degrees(math.atan2(dz, dx))
+        return abs(angle)
+    
+    def get_hip_rotation_3d(self, lmList: List = None, frame: int = None) -> float:
+        """
+        Calculate hip line rotation using 3D depth (Z coordinate).
+        Uses Z instead of Y to detect rotation perpendicular to camera.
+        
+        More accurate than 2D method when golfer rotates toward/away from camera.
+        Falls back to 2D method if Z not available.
+        
+        Returns:
+            Angle in degrees
+        """
+        if lmList:
+            left_hip = self._get_point_from_lmlist(lmList, 'left_hip')
+            right_hip = self._get_point_from_lmlist(lmList, 'right_hip')
+        else:
+            left_hip = self._get_point_from_df(frame, 'left_hip')
+            right_hip = self._get_point_from_df(frame, 'right_hip')
+        
+        # Check if Z coordinate is available
+        if len(left_hip) < 3 or len(right_hip) < 3:
+            # Fall back to 2D method if Z not available
+            return self.get_hip_rotation(lmList, frame)
+        
+        # Use X and Z coordinates (ignore Y depth changes)
+        dx = right_hip[0] - left_hip[0]
+        dz = right_hip[2] - left_hip[2]
+        angle = math.degrees(math.atan2(dz, dx))
+        return abs(angle)  # abs() first, then no clipping needed
+    
+    def get_x_factor_3d(self, lmList: List = None, frame: int = None) -> float:
+        """
+        Calculate X-factor using 3D depth-based rotations.
+        More accurate when measuring shoulder-hip separation at extreme rotation angles.
+        
+        Returns:
+            Angle in degrees (absolute difference)
+        """
+        shoulder_rot = self.get_shoulder_rotation_3d(lmList, frame)
+        hip_rot = self.get_hip_rotation_3d(lmList, frame)
+        
+        # Circular angular difference to avoid wrap artifacts
         diff = abs(shoulder_rot - hip_rot) % 360
         return min(diff, 360 - diff)
     
@@ -565,11 +654,16 @@ class GolfBiomechanics:
             'spine_angle': self.get_spine_angle(lmList, frame),
             'spine_lateral_tilt': self.get_spine_lateral_tilt(lmList, frame),
             
-            # Rotation
+            # Rotation (2D version - Y-based)
             'shoulder_rotation': self.get_shoulder_rotation(lmList, frame),
             'hip_rotation': self.get_hip_rotation(lmList, frame),
             'hip_angle': self.get_hip_rotation(lmList, frame),
             'x_factor': self.get_x_factor(lmList, frame),
+            
+            # Rotation (3D version - Z-based, more accurate for deep rotations)
+            'shoulder_rotation_3d': self.get_shoulder_rotation_3d(lmList, frame),
+            'hip_rotation_3d': self.get_hip_rotation_3d(lmList, frame),
+            'x_factor_3d': self.get_x_factor_3d(lmList, frame),
             
             # Arms
             'lead_arm_angle': self.get_lead_arm_angle(lmList, frame),

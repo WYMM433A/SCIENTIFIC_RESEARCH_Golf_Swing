@@ -1,6 +1,6 @@
 phase,score,confidence,key_frame,feedback
-Address,96.08024557724472,1.0,166,"ADDRESS: 96/100 (EXCELLENT)
-  ✗ weight_distribution: 1.23 vs target 0.90-1.20 (score 87)
+Address,94.67683508006215,1.0,166,"ADDRESS: 95/100 (EXCELLENT)
+  ✗ weight_distribution: 1.23 vs target 0.90-1.20 (score 83)
     Fix: Center pressure between your feet with shoulder-width stance.
     Drill: Feet-line setup drill: align heels to a marked shoulder-width line."
 Takeaway,84.2988184472445,1.0,186,"TAKEAWAY: 84/100 (GOOD)
@@ -14,13 +14,10 @@ Mid-backswing,85.74373383710623,1.0,190,"MID-BACKSWING: 86/100 (GOOD)
   ✗ coil: 1.44 vs target 2.00-14.00 (score 86)
     Fix: Increase torso coil while keeping lower body stable.
     Drill: Resistance-band turn drill: 2 x 10 reps."
-Top,59.38430343676408,1.0,207,"TOP: 59/100 (EXCELLENT)
+Top,71.95177539287782,1.0,207,"TOP: 72/100 (ACCEPTABLE)
   ✗ posture: -27.22 vs target -8.00-12.00 (score 13)
     Fix: Maintain spine posture at the top without standing up.
     Drill: Top freeze with posture check: 8 reps.
-  ✗ coil: 177.10 vs target 170.00-185.00 (score 64)
-    Fix: Reach a full but balanced top turn.
-    Drill: Top-position hold drill: 6 reps x 3s hold.
   ✗ wrist_angle: 122.49 vs target 130.00-180.00 (score 50)
     Fix: Preserve wrist set at the top into transition.
     Drill: Top-to-transition pump drill: 10 reps."
@@ -43,4 +40,4 @@ Finish,79.94095751061228,1.0,250,"FINISH: 80/100 (GOOD)
   ✗ symmetry: 143.36 vs target 0.00-6.00 (score 0)
     Fix: Hold a controlled, symmetric finish position.
     Drill: Count-to-two finish freeze drill: 10 reps."
-Overall,69.63389473483355,1.0,-1,"OVERALL: 69.6/100 (raw=69.6, finish_rotation_penalty=0.0)"
+Overall,70.49895144160438,1.0,-1,"OVERALL: 70.5/100 (raw=70.5, finish_rotation_penalty=0.0)"

@@ -24,9 +24,9 @@ PHASE_WEIGHTS = {
 # Higher weight = metric contributes more to phase score
 METRIC_WEIGHTS = {
     "address": {
-        "posture": 0.35,           # Spine angle/posture setup
-        "grip": 0.10,              # Grip pressure indicator (wrist angle)
-        "weight_distribution": 0.20,
+        "posture": 0.54,           # Spine angle/posture setup
+        "grip": 0.15,              # Grip pressure indicator (wrist angle)
+        "weight_distribution": 0.31,  # Sum = 1.0 (was 0.65, causing ~54% inflation)
     },
     "takeaway": {
         "shoulder_rotation": 0.15, # Shoulder turn
@@ -55,12 +55,12 @@ METRIC_WEIGHTS = {
         "upper_body_lag": 0.30,
     },
     "impact": {
-        # Down-weight estimated lag proxy; emphasize directly observed pose.
-        "lag_release": 0.02,
-        "x_factor_unwind": 0.45,   # Increased from 0.35
-        "arm_extension": 0.30,     # Increased from 0.25
-        "wrist_angle": 0.10,       # Reduced from 0.20
-        "stability": 0.13,         # Reduced from 0.15
+        # Down-weight lag_release since it's inaccurate (single-frame lag, not delta)
+        "lag_release": 0.01,         # Reduced to 0.01 (was 0.02) - not accurate
+        "x_factor_unwind": 0.45,     # Increased from 0.35
+        "arm_extension": 0.30,       # Increased from 0.25
+        "wrist_angle": 0.11,         # Adjusted to 0.11 (was 0.10) to maintain sum = 1.0
+        "stability": 0.13,           # Reduced from 0.15
     },
     "follow_through": {
         # Deceleration is proxy-based, so keep it lower.
@@ -105,7 +105,7 @@ SCORING_THRESHOLDS = {
         "direction": "higher_better",  # More is better for power, but this metric is small in 2D projection
         "takeaway_ideal": (1, 10),
         "mid_backswing_ideal": (2, 14),
-        "top_ideal": (2, 18),
+        "top_ideal": (8, 22),          # Updated for 3D measurement (was 2-18 for 2D)
         "mid_downswing_ideal": (0, 5),
         "follow_through_ideal": (10, 20),
         "finish_ideal": (0, 6),

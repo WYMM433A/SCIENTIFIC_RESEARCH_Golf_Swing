@@ -99,30 +99,30 @@ class GolfSwingPipeline:
         self.video_name = video_path.stem
         
         print("\n" + "=" * 70)
-        print("🏌️ SWINGAI COACH - UNIFIED PIPELINE")
+        print("[GOLF] SWINGAI COACH - UNIFIED PIPELINE")
         print("=" * 70)
-        print(f"📹 Input: {video_path}")
-        print(f"📁 Output: {self.output_base_dir}")
+        print(f"[VIDEO] Input: {video_path}")
+        print(f"[OUTPUT] Output: {self.output_base_dir}")
         print("=" * 70 + "\n")
         
         # Step 1: Clean video
-        print("📋 STEP 1/4: Cleaning Video...")
+        print("[STEP 1/4] Cleaning Video...")
         self._clean_video(video_path)
         
         # Step 2: Extract poses
-        print("\n📋 STEP 2/4: Extracting Poses...")
+        print("\n[TASK] STEP 2/4: Extracting Poses...")
         self._extract_poses(show_preview)
         
         # Step 3: Detect phases
-        print("\n📋 STEP 3/4: Detecting 8 Swing Phases...")
+        print("\n[TASK] STEP 3/4: Detecting 8 Swing Phases...")
         self._detect_phases()
         
         # Step 3b: Score phases (NEW)
-        print("\n📋 STEP 3b/4: Scoring Phases...")
+        print("\n[TASK] STEP 3b/4: Scoring Phases...")
         self._score_swing()
         
         # Step 4: Extract key frames
-        print("\n📋 STEP 4/4: Extracting 8 Key Frames...")
+        print("\n[TASK] STEP 4/4: Extracting 8 Key Frames...")
         self._extract_keyframes()
         
         # Summary
@@ -204,8 +204,8 @@ class GolfSwingPipeline:
         
         self.cleaned_video_path = output_path
         
-        print(f"   ✓ Cleaned video saved: {output_path.name}")
-        print(f"   ✓ Frames: {swing_start}-{swing_end} → {frames_written} frames kept")
+        print(f"   [OK] Cleaned video saved: {output_path.name}")
+        print(f"   [OK] Frames: {swing_start}-{swing_end} → {frames_written} frames kept")
     
     def _extract_poses(self, show_preview=False):
         """
@@ -232,9 +232,9 @@ class GolfSwingPipeline:
             metrics_df = self.analyzer.getMetricsDataFrame()
             metrics_df.to_csv(str(self.metrics_csv_path), index=False)
             
-            print(f"   ✓ Pose CSV saved: {self.poses_csv_path.name}")
-            print(f"   ✓ Metrics CSV saved: {self.metrics_csv_path.name}")
-            print(f"   ✓ Frames processed: {len(pose_df)}, Features: {len(pose_df.columns) - 1}")
+            print(f"   [OK] Pose CSV saved: {self.poses_csv_path.name}")
+            print(f"   [OK] Metrics CSV saved: {self.metrics_csv_path.name}")
+            print(f"   [OK] Frames processed: {len(pose_df)}, Features: {len(pose_df.columns) - 1}")
         else:
             raise RuntimeError("Pose extraction failed. Check video quality.")
     
@@ -267,7 +267,7 @@ class GolfSwingPipeline:
         self.keyframes = self.phase_results['keyframes']
         self.phases_csv_path = self.phase_results['phases_csv']
         
-        print(f"   ✓ 8 phases detected (method: {self.phase_method}):")
+        print(f"   [OK] 8 phases detected (method: {self.phase_method}):")
         for phase_name in self.predictor.PHASE_NAMES:
             if phase_name in self.phase_ranges:
                 start, end = self.phase_ranges[phase_name]
@@ -322,7 +322,7 @@ class GolfSwingPipeline:
             
             # Set reference position at address
             biomechanics.set_reference_position(frame=int(address_key_frame))
-            print(f"   ✓ Reference position set at address (frame {int(address_key_frame)})")
+            print(f"   [OK] Reference position set at address (frame {int(address_key_frame)})")
             
             # Score each phase
             phase_scores = {}
@@ -436,10 +436,10 @@ class GolfSwingPipeline:
                 phase_metrics,
             )
             
-            print(f"\n   ✓ Overall Score: {overall_score:.1f}/100")
+            print(f"\n   [OK] Overall Score: {overall_score:.1f}/100")
             if calibration_details.get('finish_rotation_penalty', 0.0) > 0:
                 print(
-                    "   ✓ Calibration applied: "
+                    "   [OK] Calibration applied: "
                     f"finish rotation {calibration_details.get('finish_rotation', 0.0):.2f}°, "
                     f"penalty {calibration_details['finish_rotation_penalty']:.1f}"
                 )
@@ -459,20 +459,20 @@ class GolfSwingPipeline:
             })
             scoring_df = pd.DataFrame(scoring_details)
             scoring_df.to_csv(self.scores_csv_path, index=False)
-            print(f"   ✓ Scores saved to: {self.scores_csv_path}")
+            print(f"   [OK] Scores saved to: {self.scores_csv_path}")
 
             # Save detailed actionable feedback diagnostics
             self.feedback_details_csv_path = self.metrics_dir / f"{self.video_name}_feedback_detailed.csv"
             detailed_feedback_df = pd.DataFrame(detailed_feedback_rows)
             detailed_feedback_df.to_csv(self.feedback_details_csv_path, index=False)
-            print(f"   ✓ Detailed feedback saved to: {self.feedback_details_csv_path}")
+            print(f"   [OK] Detailed feedback saved to: {self.feedback_details_csv_path}")
             
             # Store for results
             self.phase_scores = phase_scores
             self.overall_score = overall_score
             
         except Exception as e:
-            print(f"   ✗ Error scoring swing: {e}")
+            print(f"   [FAIL] Error scoring swing: {e}")
             import traceback
             traceback.print_exc()
             self.phase_scores = {}
@@ -485,23 +485,23 @@ class GolfSwingPipeline:
         Keyframes are already extracted by the adapter in _detect_phases.
         This step just prints the summary.
         """
-        print(f"\n   ✓ 8 key frames extracted to: {self.keyframes_dir / self.output_folder_name}")
-        print(f"   ✓ Phase info saved to: {self.phases_csv_path}")
+        print(f"\n   [OK] 8 key frames extracted to: {self.keyframes_dir / self.output_folder_name}")
+        print(f"   [OK] Phase info saved to: {self.phases_csv_path}")
     
     def _print_summary(self):
         """Print pipeline completion summary."""
         print("\n" + "=" * 70)
-        print("✅ PIPELINE COMPLETE!")
+        print("[DONE] PIPELINE COMPLETE!")
         print("=" * 70)
         
         print("\n📂 OUTPUT FILES:")
-        print(f"   📹 Cleaned Video: {self.cleaned_video_path}")
-        print(f"   📊 Pose Data:     {self.poses_csv_path}")
+        print(f"   [VIDEO] Cleaned Video: {self.cleaned_video_path}")
+        print(f"   [CHART] Pose Data:     {self.poses_csv_path}")
         print(f"   📈 Metrics:       {self.metrics_csv_path}")
         print(f"   🎯 Scores:        {getattr(self, 'scores_csv_path', 'N/A')}")
-        print(f"   📋 Phase Info:    {self.phases_csv_path}")
+        print(f"   [TASK] Phase Info:    {self.phases_csv_path}")
         
-        print(f"\n🖼️  KEY FRAMES ({self.keyframes_dir / self.output_folder_name}):")
+        print(f"\n🖼[GOLF]  KEY FRAMES ({self.keyframes_dir / self.output_folder_name}):")
         for phase_name in self.predictor.PHASE_NAMES:
             if phase_name in self.keyframes:
                 frame_info = self.keyframes[phase_name]
