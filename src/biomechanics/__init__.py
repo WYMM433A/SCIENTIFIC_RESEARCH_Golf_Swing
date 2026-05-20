@@ -1,9 +1,8 @@
 """
-Biomechanics Module - Golf swing angle analysis
+Biomechanics Evaluation Module v2.0
+==================================
+Scientific-grade golf swing analysis based on professional benchmarks.
 """
 
-from .angles import GolfBiomechanics, GOLF_CRITICAL_ANGLES
-from .benchmarks import GolfBenchmarks
-from .comparator import SwingComparator
-
-__all__ = ['GolfBiomechanics', 'GOLF_CRITICAL_ANGLES', 'GolfBenchmarks', 'SwingComparator']
+from .comparator import SwingBiomechanicsEvaluator
+from .angles import GolfBiomechanics

@@ -1,0 +1,9 @@
+Video,Phase,Start_Frame,End_Frame,Duration,Key_Frame,Image_Path
+1_cleaned,Address,77,83,7,80,C:\Users\ngthtnhung\Desktop\NCKH\SCIENTIFIC_RESEARCH_Golf_Swing\data\keyframes\1_nn\1_cleaned_Address.jpg
+1_cleaned,Takeaway,102,108,7,105,C:\Users\ngthtnhung\Desktop\NCKH\SCIENTIFIC_RESEARCH_Golf_Swing\data\keyframes\1_nn\1_cleaned_Takeaway.jpg
+1_cleaned,Mid-backswing,114,120,7,117,C:\Users\ngthtnhung\Desktop\NCKH\SCIENTIFIC_RESEARCH_Golf_Swing\data\keyframes\1_nn\1_cleaned_Mid-backswing.jpg
+1_cleaned,Top,167,173,7,170,C:\Users\ngthtnhung\Desktop\NCKH\SCIENTIFIC_RESEARCH_Golf_Swing\data\keyframes\1_nn\1_cleaned_Top.jpg
+1_cleaned,Mid-downswing,188,194,7,191,C:\Users\ngthtnhung\Desktop\NCKH\SCIENTIFIC_RESEARCH_Golf_Swing\data\keyframes\1_nn\1_cleaned_Mid-downswing.jpg
+1_cleaned,Impact,201,207,7,204,C:\Users\ngthtnhung\Desktop\NCKH\SCIENTIFIC_RESEARCH_Golf_Swing\data\keyframes\1_nn\1_cleaned_Impact.jpg
+1_cleaned,Follow-through,214,220,7,217,C:\Users\ngthtnhung\Desktop\NCKH\SCIENTIFIC_RESEARCH_Golf_Swing\data\keyframes\1_nn\1_cleaned_Follow-through.jpg
+1_cleaned,Finish,269,275,7,272,C:\Users\ngthtnhung\Desktop\NCKH\SCIENTIFIC_RESEARCH_Golf_Swing\data\keyframes\1_nn\1_cleaned_Finish.jpg
