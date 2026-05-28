@@ -1,0 +1,94 @@
+swing_id,camera_angle,skill_level,confidence,address_score,take_away_score,mid_backswing_score,top_score,mid_downswing_score,impact_score,follow_through_score,finish_score,
+,,,,,,,,,,,,
+B12_F1_I_nn,front,pro,5,90,100,90,100,100,80,100,95,Address: Ball position too far right; Impact: Hip rotation too slow.
+B12_F1_O_nn,front,beginner,4,60,50,50,30,70,80,75,50,"Address: Weight too much on heels; Mid-backswing: Loose wrist structure; Top: No hip rotation; Mid-downswing: Loss of wrist lag; Impact: Bent left arm, Poor weight transfer; Follow-through: No body rotation, Left arm not straight; Finish: Incomplete body rotation"
+B12_F2_I_nn,front,beginner,4,60,40,40,70,70,50,50,30,"Address: No weight shift forward, Legs too straight; Takeaway: Loss of posture, Early extension; Mid-backswing: Early extension, Loss of balance, Sway to the right; Top: No hip rotation, Upper body sway to the right; Finish: Poor body rotation, Short swing finish"
+B12_F2_O_nn,front,beginner,4,60,70,60,65,85,70,75,60,"Address: Weight not on toes, Open clubface, Hands too close to body; Mid-backswing: Left arm not straight, No hip rotation; Top: Unstable wrist structure, Excessive lag; Follow-through: No hip rotation, Left arm not straight, Club path too inside; Finish: Right foot not rotated, Incomplete swing finish"
+B12_F3_I_nn,front,beginner,4,60,68,60,80,70,55,55,40,"Address: Weak grip; Takeaway: Right arm not straight; Mid-backswing: Right arm not straight, No wrist lag, Sway to the right; Mid-downswing: Head not maintained at original position; Follow-through: Bent left arm, Open clubface; Finish: Incomplete swing finish, Right foot not rotated toward target"
+B12_F4_I_nn,front,beginner,4,10,20,30,65,50,30,15,20,"Address: Feet not evenly aligned, Stance not shoulder-width; Takeaway: Hands and club not moving together; Mid-downswing: No wrist lag; Follow-through: Left arm tucked in; Finish: Incomplete swing finish"
+B12_F5_I_nn,front,beginner,4,5,50,60,50,50,40,30,10,"Address: No spine bend, Legs not flexed; Takeaway: No wrist lag; Mid-downswing: No hip rotation, Overuse of hands; Follow-through: No hip rotation, Left arm tucked in"
+B12_F5_O_nn,front,beginner,4,60,60,50,70,70,70,70,55,"Address: Weight not on toes; Mid-backswing: No wrist lag; Finish: Incomplete body rotation, No foot rotation"
+B12_S1_O_nn,side,beginner,4,50,70,80,40,80,75,60,30,"Address: No weight shift forward, Hands too close to body; Takeaway: Club pulled too far inside, Left arm not straight; Mid-backswing: Uncomfortable posture, Excessive tension; Follow-through: Left arm not straight, Club too far behind body; Finish: Loss of posture, Incomplete swing finish"
+B12_S2_I_nn,side,beginner,4,60,25,60,78,75,50,50,30,"Address: Legs not flexed; Takeaway: Both arms bent, Arms not maintained straight; Follow-through: Hands pulled too close to body; Finish: Loss of posture, Short swing finish"
+B12_S2_O_nn,side,beginner,4,60,65,65,69,73,70,78,30,"Address: No weight shift forward; Takeaway: Bent arms; Mid-backswing: Club too far behind body; Finish: Incomplete body rotation, Poor finish balance"
+B12_S3_O_nn,side,beginner,4,38,55,55,77,55,69,78,10,"Address: Excessive backward spine bend, No weight shift forward; Takeaway: Bent arms; Mid-backswing: Club too far behind body, In-to-out swing path; Mid-downswing: In-to-out swing path; Impact: Open clubface; Finish: Poor finish balance, Incomplete swing finish"
+B12_S4_O_nn,side,intermediate,4,95,75,90,65,80,90,90,55,"Takeaway: Closed clubface; Top: Arms too far behind body, Open clubface at top; Mid-downswing: Loss of wrist lag; Finish: Incomplete swing finish"
+B24_F1_I_nn,front,beginner,4,60,70,68,80,78,70,80,45,"Address: Upright posture, No spine bend; Takeaway: Hands and club not moving together; Mid-backswing: Left arm not straight; Top: Sway to the right; Mid-downswing: Loss of wrist lag; Impact: No hip rotation; Follow-through: Left arm tucked in slightly; Finish: Incomplete swing finish"
+B24_F1_O_nn,front,,,,,,,,,,,
+B24_F2_I_nn,front,beginner,4,80,68,60,80,70,70,80,50,"Address: No forward spine bend, Knees not flexed; Mid-backswing: Early extension; Follow-through: Left arm tucked in; Finish: Poor finish balance, Incomplete swing finish"
+B24_F2_O_nn,front,,,,,,,,,,,
+B24_F3_I_nn,front,beginner,4,75,70,65,80,75,80,75,60,"Address: No weight shift forward, No spine bend; Takeaway: Hands and club not moving together; Mid-backswing: Early extension, Sway; Follow-through: Left arm tucked in; Finish: Incomplete swing finish"
+B24_F3_O_nn,front,beginner,4,75,85,85,70,75,75,75,75,"Address: Hands too close to body; Takeaway: Hands and club not moving together; Mid-backswing: Early extension; Follow-through: Left arm tucked in; Finish: Incomplete swing finish, Right foot not rotated toward target"
+B24_F4_I_nn,front,beginner,4,80,70,70,75,80,75,70,60,"Mid-backswing: Early extension, Sway; Follow-through: Left arm tucked in; Finish: Incomplete swing finish"
+B24_F4_O_nn,front,beginner,4,70,70,70,85,85,85,85,70,"Address: Legs not flexed, No weight shift forward; Takeaway: Hands not moving together with club; Mid-backswing: No wrist lag, Early extension; Follow-through: Left arm tucked in slightly; Finish: Incomplete swing finish, Right foot not rotated toward target"
+B24_F5_I_nn,front,beginner,4,75,70,60,85,80,80,75,70,"Address: Hands too close to body; Takeaway: Hands not moving together with club; Mid-backswing: No wrist lag, Early extension; Follow-through: Left arm tucked in; Finish: Incomplete swing finish"
+B24_F5_O_nn,front,beginner,4,,,,,,,,,
+B24_S1_I_nn,side,beginner,4,65,60,67,80,70,80,60,70,"Address: Knees not flexed; Takeaway: Closed clubface; Mid-backswing: Knees not flexed, Early extension, Upper body instability; Impact: Knees not flexed; Follow-through: No body rotation toward target, Left arm tucked behind body; Finish: Incomplete swing finish"
+B24_S1_O_nn,side,beginner,4,70,62,60,85,70,85,80,70,"Address: Knees not flexed; Takeaway: Hands not moving together with club; Mid-backswing: Loss of wrist lag, Arms too far behind body; Finish: Incomplete swing finish"
+B24_S2_O_nn,side,beginner,4,80,90,75,85,85,70,70,60,Address: No weight shift toward toes; Takeaway: Hands not moving together with club; Finish: Incomplete swing finish
+B24_S3_I_nn,side,beginner,4,70,60,76,88,83,73,70,75,"Address: Knees not flexed; Takeaway: Hands not moving together with club; Mid-backswing: Loss of wrist lag, Arms too far behind body; Finish: Incomplete swing finish"
+B24_S3_O_nn,side,beginner,4,95,62,78,87,82,80,82,70,Takeaway: Hands not moving together with club; Impact: Open clubface; Finish: Incomplete swing finish
+B24_S4_I_nn,side,beginner,4,70,57,60,85,80,70,65,62,"Address: Legs not flexed, Hands too close to body; Takeaway: Hands too far behind body, Hands and club not moving together; Mid-backswing: Early extension, Knees not flexed; Follow-through: Incomplete swing finish; Finish: Incomplete swing finish"
+B24_S4_O_nn,side,beginner,4,95,85,90,78,82,75,90,90,"Top: No wrist lag at top of swing; Impact: Hip rotation slower than hands, Hips not rotated toward target; Finish: Closed clubface"
+B24_S5_I_nn,side,beginner,4,40,65,72,72,62,45,60,60,"Address: Feet not aligned evenly, Feet not parallel; Takeaway: Hands too far behind body, Not moving straight toward target, Knees not flexed; Mid-backswing: Knees not flexed, Feet not parallel; Mid-downswing: Feet not parallel, Knees not flexed, No hip rotation; Follow-through: Incomplete swing finish"
+B24_S5_O_nn,side,beginner,4,90,100,85,90,100,90,68,70,"Address: Feet slightly uneven, Feet not parallel; Takeaway: Hands too far behind body, Dipping posture, Loss of body axis; Mid-backswing: No wrist lag; Mid-downswing: Early release of wrist lag; Finish: Incomplete swing finish"
+B24_S6_O_nn,side,beginner,4,85,100,85,88,90,92,80,72,Address: Stance width too narrow; Mid-backswing: No wrist lag; Top: No optimal wrist lag; Finish: Incomplete swing finish
+B46_F1_I_nn,front,pro,5,95,100,100,100,90,100,100,95,Address: Right foot set higher than left foot; Mid-downswing: Wrist lag not optimal; Finish: Slight forward body lean
+B46_F1_O_nn,front,pro,5,100,95,75,100,90,88,70,88,"Mid-backswing: Reverse spine angle, Excessive weight shift to center; Follow-through: Chicken wing; Finish: Lower body and right foot not fully rotated"
+B46_F2_I_nn,front,pro,5,95,100,92,100,100,90,98,93,Address: Right foot set slightly higher than left foot; Mid-backswing: Reverse spine angle; Impact: Hip rotation slower than hands; Finish: Stiff left shoulder
+B46_F2_O_nn,front,Beginner,5,50,40,60,55,60,75,70,40,"Address: Knees not flexed; Takeaway: Hands and club not moving together, Weak club control; Mid-backswing: Knees not flexed, No hip rotation; Mid-downswing: No wrist lag; Finish: Incomplete swing finish"
+B46_F3_I_nn,front,Beginner,5,45,52,62,78,60,61,30,30,"Address: Feet excessively flared outward, Hands too close to body; Mid-backswing: Early extension, Loss of balance, No wrist lag; Top: Excessive weight shift to the right; Impact: No hip rotation; Follow-through: Left arm not straight, Left arm tucked behind body, No hip rotation; Finish: Incomplete swing finish, Feet not rotated toward target"
+B46_F4_I_nn,front,Beginner,4,45,52,60,78,60,62,61,30,"Address: Feet excessively flared outward, Knees not flexed, Hands too close to body; Mid-backswing: Early extension, Loss of balance, No wrist lag; Top: Excessive weight shift to the right; Impact: No hip rotation; Follow-through: Left arm not straight, Chicken wing, Left arm tucked behind body, No hip rotation; Finish: Incomplete swing finish, Feet not rotated toward target"
+B46_F4_O_nn,front,Beginner,4,61,30,80,30,49,80,30,30,"Address: Hands and club pushed too far to the right; Mid-backswing: Sway to the right, No wrist lag; Mid-downswing: Loss of wrist lag, Left arm not straight; Finish: Incomplete swing finish, Feet not rotated toward target"
+B46_F5_I_nn,front,Beginner,4,45,52,60,78,60,62,61,30,"Address: Feet excessively flared outward, Knees not flexed, Hands too close to body; Mid-backswing: Early extension, Loss of balance, No wrist lag; Top: Excessive weight shift to the right; Impact: No hip rotation; Follow-through: Left arm not straight, Chicken wing, Left arm tucked behind body, No hip rotation; Finish: Incomplete swing finish, Feet not rotated toward target"
+B46_F5_O_nn,front,Beginner,4,100,85,60,90,70,70,30,70,"Address: Left foot set significantly higher than right foot, Uneven foot setup; Impact: Hitting ground before ball, Bent left arm at impact; Finish: Chicken wing"
+B46_S1_I_nn,side,Pro,5,100,100,82,100,78,100,100,90,"Mid-backswing: Overswing, Arms too far behind body"
+B46_S1_O_nn,side,Beginner,4,55,72,78,88,92,75,92,60,"Address: Knees not flexed, Hands too close to body, No swing space; Takeaway: Excessively open clubface; Finish: Right foot not rotated toward target"
+B46_S2_I_nn,side,Beginner,4,55,72,78,88,72,72,70,55,"Address: Knees not flexed, Feet excessively flared outward; Impact: Hip rotation slower than hands; Follow-through: Hands tucked inside, Knees not flexed; Finish: Incomplete body rotation, Right foot not rotated toward target, Incomplete swing finish"
+B46_S2_O_nn,side,Beginner,4,55,89,72,95,80,82,60,55,"Address: Knees not bending, No hip hinge; Finish: Short swing finish, Incomplete swing finish, Right foot not rotated toward target"
+B46_S3_I_nn,side,pro,4,100,100,91,100,91,100,97,90,"Mid-backswing: Arms too far behind body; Mid-downswing: In-to-out club path; Finish: Stiff swing motion, Lack of flexibility"
+B46_S3_O_nn,side,Beginner,4,92,100,90,100,79,97,97,95,Address: Left foot set higher than right foot; Mid-backswing: Flat swing plane; Mid-downswing: In-to-out club path
+B46_S4_I_nn,side,Beginner,4,62,52,57,78,58,57,40,60,"Address: Knees not bending, Sway to the right; Mid-backswing: Sway to the right; Impact: Legs straightening at impact, Hip rotation slower than hands; Finish: Incomplete swing finish, Right foot not rotated toward target"
+B46_S4_O_nn,side,Beginner,4,82,100,95,100,95,83,83,88,"Address: Stance too narrow, Uneven foot setup, Left foot set higher than right foot; Finish: Swing arc not fully extended"
+B46_S5_I_nn,side,Beginner,4,40,62,50,85,72,67,65,40,"Address: Knees not bending, Sway to the right; Mid-backswing: Sway to the right; Impact: Legs straightening at impact, Hip rotation slower than hands; Finish: Incomplete swing finish, Right foot not rotated toward target"
+B46_S5_O_nn,side,Beginner,4,100,75,72,88,73,73,78,63,"Takeaway: Hands and club not moving together; Mid-backswing: Club too far behind body; Mid-downswing: In-to-out club path; Impact: Right heel lifting too early, Open clubface; Finish: Incomplete swing finish"
+B68_F1_I_nn,front,Pro,5,100,100,92,100,100,100,100,100,Mid-backswing: Reverse spine angle
+B68_F1_O_nn,front,Pro,5,100,100,92,100,100,100,100,100,Mid-backswing: Reverse spine angle
+B68_F2_I_nn,,,,,,,,,,,,
+B68_F2_O_nn,front,Pro,5,100,100,92,100,100,100,100,92,Mid-backswing: Reverse spine angle; Finish: Lower back not moving toward target
+B68_F3_I_nn,front,Pro,5,100,100,92,100,100,100,100,92,Mid-backswing: Reverse spine angle; Finish: Lower back not moving toward target
+B68_F3_O_nn,front,Beginner,5,100,87,80,95,100,92,70,97,"Takeaway: Excessive sway to the right; Mid-backswing: Excessive sway to the right, Reverse spine angle; Follow-through: Chicken wing"
+B68_F4_I_nn,front,Pro,5,100,100,92,100,100,100,100,100,Mid-backswing: Reverse spine angle
+B68_F4_O_nn,front,Beginner,5,72,65,80,100,70,72,50,40,Address: Left arm excessively bent; Follow-through: Chicken wing; Finish: Chicken wing
+B68_F5_I_nn,front,Pro,5,100,100,92,100,100,100,100,92,Mid-backswing: Reverse spine angle; Finish: Lower back not moving toward target
+B68_F5_O_nn,front,Pro,5,100,100,92,100,100,100,100,100,Mid-backswing: Reverse spine angle
+B68_S1_I_nn,side,Pro,5,100,100,95,100,100,100,100,100,Mid-backswing: Flat swing plane
+B68_S1_O_nn,side,Pro,5,100,100,95,100,100,100,100,100,Mid-backswing: Flat swing plane
+B68_S2_I_nn,side,Pro,5,100,100,95,100,100,100,100,100,Mid-backswing: Flat swing plane
+B68_S2_O_nn,side,Pro,5,100,100,95,100,100,100,100,100,Mid-backswing: Flat swing plane
+B68_S3_I_nn,side,Pro,5,100,100,95,100,100,100,100,100,Mid-backswing: Flat swing plane
+B68_S3_O_nn,side,Beginner,4,100,95,90,100,90,87,90,72,Impact: Hip rotation slower than hands; Finish: Incomplete swing finish
+B68_S4_I_nn,side,Pro,5,100,100,95,100,100,100,100,100,Mid-backswing: Flat swing plane
+B68_S4_O_nn,side,Beginner,4,93,90,95,100,95,97,97,73,Address: Stance slightly narrower than shoulder width; Finish: Incomplete swing finish
+B68_S5_I_nn,side,Pro,5,100,100,95,100,100,100,100,100,Mid-backswing: Flat swing plane
+B68_S5_O_nn,side,Pro,5,100,100,95,100,100,100,100,100,Mid-backswing: Flat swing plane
+B80_F1_I_nn,front,Pro,5,100,100,92,100,100,100,100,100,Mid-backswing: Reverse spine angle
+B80_F1_O_nn,front,Beginner,5,97,82,82,100,88,89,73,90,Mid-backswing: Sway to the right; Follow-through: Chicken wing
+B80_F2_I_nn,front,Pro,5,100,100,92,100,100,100,100,100,Mid-backswing: Reverse spine angle
+B80_F2_O_nn,front,Beginner,5,97,82,82,100,88,89,73,100,Mid-backswing: Sway to the right; Follow-through: Chicken wing
+B80_F3_I_nn,front,Pro,5,97,100,92,100,100,100,100,100,"Address: Uneven foot setup, Left foot set higher than; Mid-backswing: Reverse spine angle right foot"
+B80_F3_O_nn,front,Beginner,5,100,93,82,100,86,87,73,100,Mid-backswing: Excessive sway; Mid-downswing: Excessive sway
+B80_F4_I_nn,front,Pro,5,97,100,92,100,100,100,100,100,"Address: Uneven foot setup, Left foot set higher than; Mid-backswing: Reverse spine angle right foot"
+B80_F4_O_nn,front,Pro,5,97,100,92,100,100,100,100,100,"Address: Uneven foot setup, Left foot set higher than; Mid-backswing: Reverse spine angle right foot"
+B80_F5_I_nn,front,Pro,5,97,100,92,100,100,100,100,100,Mid-backswing: Reverse spine angle right foot
+B80_F5_O_nn,front,Pro,5,97,100,92,100,100,100,100,100,Mid-backswing: Reverse spine angle right foot
+B80_S1_I_nn,side,Pro,5,100,100,100,97,95,100,100,100,Mid-backswing: Flat swing plane
+B80_S1_O_nn,side,intermediate,4,97,100,97,100,91,92,92,99,Address: Stance slightly narrower than shoulder width; Mid-downswing: In-to-out club path
+B80_S2_I_nn,side,Pro,5,100,100,100,97,95,100,100,100,Mid-backswing: Flat swing plane
+B80_S2_O_nn,side,intermediate,4,100,100,90,100,85,95,93,100,Mid-downswing: In-to-out club path
+B80_S3_I_nn,side,Pro,5,100,100,92,100,100,95,100,100,Mid-backswing: Flat swing plane
+B80_S4_I_nn,side,Pro,4,100,92,93,100,100,100,100,100,Takeaway: In-to-out club path; Mid-downswing: In-to-out club path
+B80_S4_O_nn,side,intermediate,4,92,100,90,100,85,95,98,95,Address: Right foot set higher than left foot; Mid-downswing: In-to-out club path
+B80_S5_I_nn,side,Pro,5,100,100,92,100,100,95,100,100,Mid-backswing: Flat swing plane
+B80_S5_O_nn,side,Pro,5,100,100,92,100,100,95,100,100,Mid-backswing: Flat swing plane
+B80_S6_O_nn,side,Pro,5,100,90,92,100,100,95,100,100,Mid-backswing: Flat swing plane

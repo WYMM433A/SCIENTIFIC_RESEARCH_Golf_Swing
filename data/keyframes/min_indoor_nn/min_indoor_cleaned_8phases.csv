@@ -1,9 +1,0 @@
-Video,Phase,Start_Frame,End_Frame,Duration,Key_Frame,Image_Path
-min_indoor_cleaned,Address,90,96,7,93,data\keyframes\min_indoor_nn\min_indoor_cleaned_Address.jpg
-min_indoor_cleaned,Takeaway,115,121,7,118,data\keyframes\min_indoor_nn\min_indoor_cleaned_Takeaway.jpg
-min_indoor_cleaned,Mid-backswing,121,127,7,124,data\keyframes\min_indoor_nn\min_indoor_cleaned_Mid-backswing.jpg
-min_indoor_cleaned,Top,136,142,7,139,data\keyframes\min_indoor_nn\min_indoor_cleaned_Top.jpg
-min_indoor_cleaned,Mid-downswing,141,147,7,144,data\keyframes\min_indoor_nn\min_indoor_cleaned_Mid-downswing.jpg
-min_indoor_cleaned,Impact,143,149,7,146,data\keyframes\min_indoor_nn\min_indoor_cleaned_Impact.jpg
-min_indoor_cleaned,Follow-through,146,152,7,149,data\keyframes\min_indoor_nn\min_indoor_cleaned_Follow-through.jpg
-min_indoor_cleaned,Finish,157,163,7,160,data\keyframes\min_indoor_nn\min_indoor_cleaned_Finish.jpg

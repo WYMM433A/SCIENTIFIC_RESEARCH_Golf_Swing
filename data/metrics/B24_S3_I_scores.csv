@@ -1,0 +1,10 @@
+phase,score,confidence,key_frame,feedback
+Address,55.4,1.0,4,Too much forward bend at address — stand slightly more upright | Hands positioned too close to body at address
+Takeaway,73.1,1.0,10,Lead arm bent at takeaway checkpoint
+Mid-backswing,71.2,1.0,17,Low hip-shoulder separation at mid-backswing | 3D hip-shoulder separation low at mid-backswing
+Top,82.7,1.0,25,No issues detected
+Mid-downswing,71.1,1.0,28,Low hip-shoulder separation at mid-downswing | 3D hip rotation low at mid-downswing
+Impact,69.5,1.0,33,Lead arm bent at impact position | Hip rotation low at impact position
+Follow-through,66.3,1.0,45,Lead arm bent at follow-through checkpoint | 3D hip rotation low at follow-through
+Finish,65.6,1.0,45,Shoulder rotation low at finish position | Hip rotation low at finish position
+Overall,69.4,1.0,-1,OVERALL: 69.4/100

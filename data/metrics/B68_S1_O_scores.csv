@@ -1,0 +1,10 @@
+phase,score,confidence,key_frame,feedback
+Address,97.9,1.0,71,No issues detected
+Takeaway,99.4,1.0,88,No issues detected
+Mid-backswing,93.0,1.0,93,No issues detected
+Top,98.7,1.0,106,No issues detected
+Mid-downswing,92.4,1.0,111,No issues detected
+Impact,95.7,1.0,114,No issues detected
+Follow-through,94.3,1.0,117,No issues detected
+Finish,91.3,1.0,137,No issues detected
+Overall,95.3,1.0,-1,OVERALL: 95.3/100

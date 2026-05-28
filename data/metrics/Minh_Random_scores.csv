@@ -1,0 +1,10 @@
+phase,score,confidence,key_frame,feedback
+Address,80.6,1.0,36,No issues detected
+Takeaway,84.9,1.0,53,No issues detected
+Mid-backswing,74.8,1.0,57,Low hip-shoulder separation at mid-backswing | Limited wrist hinge at mid-backswing
+Top,74.7,1.0,72,Low hip-shoulder separation at top of swing | Limited wrist hinge at top of swing
+Mid-downswing,78.8,1.0,77,Low hip-shoulder separation at mid-downswing | Shoulder rotation high relative to hips at mid-downswing
+Impact,81.2,1.0,81,No issues detected
+Follow-through,80.1,1.0,83,No issues detected
+Finish,68.1,1.0,98,No issues detected
+Overall,77.9,1.0,-1,OVERALL: 77.9/100

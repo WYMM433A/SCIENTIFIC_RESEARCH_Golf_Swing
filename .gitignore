@@ -36,6 +36,7 @@ desktop.ini
 # data/extracted_poses/
 # data/keyframes/
 # data/metrics/
+#outputs/
 
 # Large files
 *.mp4

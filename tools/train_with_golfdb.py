@@ -55,13 +55,14 @@ from src.constants import PHASE_NAMES
 # STEP 1: EXTRACT POSES FROM GOLFDB VIDEOS
 # ============================================
 
-def extract_poses_from_golfdb(golfdb_path, output_dir, max_videos=None):
+def extract_poses_from_golfdb(golfdb_path, output_dir, videos_dir_name='videos_160', max_videos=None):
     """
     Extract poses from GolfDB videos using your SwingAnalyzer.
     
     Args:
-        golfdb_path: Path to golfdb data folder (contains videos_160/, golfDB.pkl)
+        golfdb_path: Path to golfdb data folder (contains videos/, golfDB.pkl)
         output_dir: Where to save extracted poses
+        videos_dir_name: Name of videos subdirectory ('videos_160' or 'videos')
         max_videos: Limit for testing (None = all)
     
     Returns:
@@ -71,7 +72,7 @@ def extract_poses_from_golfdb(golfdb_path, output_dir, max_videos=None):
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
     
-    videos_dir = golfdb_path / "videos_160"
+    videos_dir = golfdb_path / videos_dir_name
     pkl_path = golfdb_path / "golfDB.pkl"
     
     # Check paths
@@ -403,6 +404,7 @@ def evaluate_model(model, dataset, device):
 def main():
     parser = argparse.ArgumentParser(description='Train PoseSwingNet with GolfDB')
     parser.add_argument('--golfdb', default=None, help='Path to GolfDB data folder (default: data/)')
+    parser.add_argument('--videos-dir', default='videos_160', help='Videos subdirectory (videos_160 or videos for full dataset)')
     parser.add_argument('--epochs', type=int, default=50, help='Number of training epochs')
     parser.add_argument('--batch-size', type=int, default=16, help='Batch size')
     parser.add_argument('--lr', type=float, default=0.001, help='Learning rate')
@@ -427,6 +429,7 @@ def main():
     print("🏌️ TRAIN POSESWINGNET WITH GOLFDB")
     print("="*70)
     print(f"GolfDB path: {golfdb_path}")
+    print(f"Videos directory: {args.videos_dir}")
     print(f"Poses dir: {poses_dir}")
     if args.resume:
         print(f"Resume from: {args.resume}")
@@ -438,7 +441,7 @@ def main():
     if not args.skip_extraction:
         print("STEP 1: Extracting poses from GolfDB videos...")
         print("-"*50)
-        extract_poses_from_golfdb(golfdb_path, poses_dir, args.max_videos)
+        extract_poses_from_golfdb(golfdb_path, poses_dir, args.videos_dir, args.max_videos)
     else:
         print("STEP 1: Skipping pose extraction (--skip-extraction)")
     

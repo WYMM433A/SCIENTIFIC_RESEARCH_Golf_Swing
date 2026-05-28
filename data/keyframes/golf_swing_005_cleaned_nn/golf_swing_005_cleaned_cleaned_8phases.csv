@@ -1,9 +1,0 @@
-Video,Phase,Start_Frame,End_Frame,Duration,Key_Frame,Image_Path
-golf_swing_005_cleaned_cleaned,Address,48,54,7,51,data\keyframes\golf_swing_005_cleaned_nn\golf_swing_005_cleaned_cleaned_Address.jpg
-golf_swing_005_cleaned_cleaned,Takeaway,68,74,7,71,data\keyframes\golf_swing_005_cleaned_nn\golf_swing_005_cleaned_cleaned_Takeaway.jpg
-golf_swing_005_cleaned_cleaned,Mid-backswing,79,85,7,82,data\keyframes\golf_swing_005_cleaned_nn\golf_swing_005_cleaned_cleaned_Mid-backswing.jpg
-golf_swing_005_cleaned_cleaned,Top,93,99,7,96,data\keyframes\golf_swing_005_cleaned_nn\golf_swing_005_cleaned_cleaned_Top.jpg
-golf_swing_005_cleaned_cleaned,Mid-downswing,97,103,7,100,data\keyframes\golf_swing_005_cleaned_nn\golf_swing_005_cleaned_cleaned_Mid-downswing.jpg
-golf_swing_005_cleaned_cleaned,Impact,102,108,7,105,data\keyframes\golf_swing_005_cleaned_nn\golf_swing_005_cleaned_cleaned_Impact.jpg
-golf_swing_005_cleaned_cleaned,Follow-through,104,110,7,107,data\keyframes\golf_swing_005_cleaned_nn\golf_swing_005_cleaned_cleaned_Follow-through.jpg
-golf_swing_005_cleaned_cleaned,Finish,186,192,7,189,data\keyframes\golf_swing_005_cleaned_nn\golf_swing_005_cleaned_cleaned_Finish.jpg

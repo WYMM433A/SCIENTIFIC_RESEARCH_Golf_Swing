@@ -1,0 +1,10 @@
+phase,score,confidence,key_frame,feedback
+Address,78.2,1.0,148,Too much forward bend at address — stand slightly more upright | Stance too wide at address — bring feet to shoulder width
+Takeaway,75.3,1.0,166,Lead arm bent at takeaway checkpoint | Hip-shoulder separation low at takeaway position
+Mid-backswing,79.2,1.0,170,Low hip-shoulder separation at mid-backswing | 3D hip-shoulder separation low at mid-backswing
+Top,75.2,1.0,187,Low hip-shoulder separation at top of swing | 3D shoulder rotation low at top of swing
+Mid-downswing,78.5,1.0,194,Low hip-shoulder separation at mid-downswing | Shoulder rotation high relative to hips at mid-downswing
+Impact,81.5,1.0,195,No issues detected
+Follow-through,76.2,1.0,197,No issues detected
+Finish,75.8,1.0,210,Shoulder rotation low at finish position | Limited weight transfer at finish — lead knee over-flexed
+Overall,77.5,1.0,-1,OVERALL: 77.5/100

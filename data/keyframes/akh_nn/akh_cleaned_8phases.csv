@@ -1,9 +1,0 @@
-Video,Phase,Start_Frame,End_Frame,Duration,Key_Frame,Image_Path
-akh_cleaned,Address,24,30,7,27,data\keyframes\akh_nn\akh_cleaned_Address.jpg
-akh_cleaned,Takeaway,44,50,7,47,data\keyframes\akh_nn\akh_cleaned_Takeaway.jpg
-akh_cleaned,Mid-backswing,49,55,7,52,data\keyframes\akh_nn\akh_cleaned_Mid-backswing.jpg
-akh_cleaned,Top,81,87,7,84,data\keyframes\akh_nn\akh_cleaned_Top.jpg
-akh_cleaned,Mid-downswing,84,90,7,87,data\keyframes\akh_nn\akh_cleaned_Mid-downswing.jpg
-akh_cleaned,Impact,88,94,7,91,data\keyframes\akh_nn\akh_cleaned_Impact.jpg
-akh_cleaned,Follow-through,90,96,7,93,data\keyframes\akh_nn\akh_cleaned_Follow-through.jpg
-akh_cleaned,Finish,117,123,7,120,data\keyframes\akh_nn\akh_cleaned_Finish.jpg

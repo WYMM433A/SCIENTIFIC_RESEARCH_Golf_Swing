@@ -1,9 +1,0 @@
-Video,Phase,Start_Frame,End_Frame,Duration,Key_Frame,Image_Path
-15_cleaned,Address,41,47,7,44,data\keyframes\15_nn\15_cleaned_Address.jpg
-15_cleaned,Takeaway,76,82,7,79,data\keyframes\15_nn\15_cleaned_Takeaway.jpg
-15_cleaned,Mid-backswing,85,91,7,88,data\keyframes\15_nn\15_cleaned_Mid-backswing.jpg
-15_cleaned,Top,119,125,7,122,data\keyframes\15_nn\15_cleaned_Top.jpg
-15_cleaned,Mid-downswing,136,142,7,139,data\keyframes\15_nn\15_cleaned_Mid-downswing.jpg
-15_cleaned,Impact,153,159,7,156,data\keyframes\15_nn\15_cleaned_Impact.jpg
-15_cleaned,Follow-through,158,164,7,161,data\keyframes\15_nn\15_cleaned_Follow-through.jpg
-15_cleaned,Finish,247,250,4,248,data\keyframes\15_nn\15_cleaned_Finish.jpg

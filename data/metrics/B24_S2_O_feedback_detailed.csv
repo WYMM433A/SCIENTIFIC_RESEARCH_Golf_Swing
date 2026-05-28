@@ -1,0 +1,11 @@
+phase,feedback,phase_score,key_frame
+Address,Spine angle too upright at address — add more forward tilt,79.3,95
+Address,Shoulders tilted excessively at address — level them out,79.3,95
+Mid-backswing,Low hip-shoulder separation at mid-backswing,73.7,115
+Mid-backswing,3D hip-shoulder separation low at mid-backswing,73.7,115
+Impact,Lead arm bent at impact position,69.5,131
+Impact,3D hip rotation low at impact position,69.5,131
+Follow-through,3D hip rotation low at follow-through,70.1,132
+Follow-through,Shoulder rotation low at follow-through checkpoint,70.1,132
+Finish,Shoulder rotation low at finish position,58.7,165
+Finish,Hip rotation low at finish position,58.7,165
