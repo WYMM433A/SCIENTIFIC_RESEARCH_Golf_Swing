@@ -40,6 +40,12 @@ MODEL_OUT_PATH    = os.path.join("models", "phase_scorer.pkl")
 POSES_DIR         = os.path.join(DATA_DIR, "extracted_poses")
 VISUAL_OUTPUT_DIR = os.path.join("outputs", "visual_feedback")
 
+# ── Feedback behavior knobs ───────────────────────────────────────────────────
+FEEDBACK_SCORE_THRESHOLD = 85.0
+FEEDBACK_MAX_ITEMS = 2
+MIN_LOCAL_CONTRIB = 0.02
+MIN_NORM_DEVIATION = 0.50
+
 # ── Phase definitions ─────────────────────────────────────────────────────────
 # Maps annotation CSV column  →  phase name used in the keyframe CSV
 PHASE_LABEL_MAP = {
@@ -364,7 +370,7 @@ def _get_feature_cols(df: pd.DataFrame) -> list[str]:
 
 def _build_phase_benchmarks(df: pd.DataFrame, feature_cols: list) -> dict:
     """
-    For each phase, compute the mean feature values that represent 'what a pro
+    For each phase, compute robust feature stats that represent 'what a pro
     looks like' — used as the target for feedback comparison.
 
     Priority:
@@ -404,9 +410,65 @@ def _build_phase_benchmarks(df: pd.DataFrame, feature_cols: list) -> dict:
         for col in feature_cols:
             vals = good_df[col].dropna()
             if len(vals) > 0:
-                phase_bench[col] = float(vals.mean())
+                q1 = float(vals.quantile(0.25))
+                med = float(vals.median())
+                q3 = float(vals.quantile(0.75))
+                iqr = max(q3 - q1, 1e-6)
+                phase_bench[col] = {
+                    "median": med,
+                    "q1": q1,
+                    "q3": q3,
+                    "iqr": float(iqr),
+                }
         benchmarks[score_col] = phase_bench
     return benchmarks
+
+
+def _get_benchmark_stats(benchmark: dict, col: str) -> tuple[float, float] | None:
+    """
+    Return (median, iqr) for one feature from benchmark data.
+    Supports both new dict stats format and legacy float mean format for
+    backward compatibility with old model bundles.
+    """
+    raw = benchmark.get(col, None)
+    if raw is None:
+        return None
+
+    if isinstance(raw, dict):
+        med = raw.get("median", np.nan)
+        iqr = raw.get("iqr", np.nan)
+        if np.isnan(med) or np.isnan(iqr):
+            return None
+        return float(med), float(max(iqr, 1e-6))
+
+    # Legacy model bundle: benchmark[col] was a single mean float
+    if isinstance(raw, (int, float, np.floating)):
+        med = float(raw)
+        # Conservative fallback spread so legacy bundles still work
+        iqr = max(abs(med) * 0.15, 1.0)
+        return med, iqr
+
+    return None
+
+
+def _get_local_contribs_for_phase(model, X: np.ndarray, feature_cols: list[str]) -> dict[str, float]:
+    """
+    Compute per-feature local contribution magnitudes for one sample.
+    Uses XGBoost pred_contribs when available; falls back to global
+    feature_importances if pred_contribs is not available.
+    """
+    try:
+        import xgboost as xgb  # noqa: PLC0415
+
+        booster = model.get_booster()
+        dmat = xgb.DMatrix(X, feature_names=feature_cols)
+        contribs = booster.predict(dmat, pred_contribs=True)
+        # Shape: (1, n_features + 1), last column is bias term
+        vals = np.abs(contribs[0][:-1])
+        return dict(zip(feature_cols, vals))
+    except Exception:
+        importances = dict(zip(feature_cols, model.feature_importances_))
+        return {c: float(importances.get(c, 0.0)) for c in feature_cols}
 
 
 def generate_phase_feedback(
@@ -416,19 +478,19 @@ def generate_phase_feedback(
     benchmark: dict,
     model,
     feature_cols: list,
+    local_contribs: dict[str, float],
     score: float,
-    max_items: int = 2,
+    max_items: int = FEEDBACK_MAX_ITEMS,
 ) -> list[str]:
     """
     Generate feedback for one phase by identifying which biomechanical features
     deviate most from the good-swing benchmark, weighted by XGBoost feature
     importance, then mapping to human-readable messages.
     """
-    if score >= 80:
+    if score >= FEEDBACK_SCORE_THRESHOLD:
         return []
 
     prefix = phase_name.replace("-", "_").replace(" ", "_").lower()
-    importances = dict(zip(feature_cols, model.feature_importances_))
 
     deviations = []
     for col in feature_cols:
@@ -437,14 +499,21 @@ def generate_phase_feedback(
         metric = col[len(prefix) + 1:]  # strip phase prefix
 
         val       = features.get(col, np.nan)
-        bench_val = benchmark.get(col, np.nan)
-        if np.isnan(val) or np.isnan(bench_val):
+        if np.isnan(val):
             continue
 
-        deviation  = val - bench_val
-        importance = importances.get(col, 0.0)
-        scale      = max(abs(bench_val), 1.0)
-        weighted   = (abs(deviation) / scale) * importance
+        stats = _get_benchmark_stats(benchmark, col)
+        if stats is None:
+            continue
+        med, iqr = stats
+
+        deviation = val - med
+        norm_dev = abs(deviation) / max(iqr, 1e-6)
+        local = float(local_contribs.get(col, 0.0))
+        weighted = local * norm_dev
+
+        if local < MIN_LOCAL_CONTRIB or norm_dev < MIN_NORM_DEVIATION:
+            continue
 
         direction = "high" if deviation > 0 else "low"
         key = (prefix, metric, direction)
@@ -467,6 +536,7 @@ def _top_deviated_metric_names(
     benchmark: dict,
     model,
     feature_cols: list,
+    local_contribs: dict[str, float],
     score: float,
     max_items: int = 3,
 ) -> list[str]:
@@ -475,11 +545,10 @@ def _top_deviated_metric_names(
     the benchmark, weighted by XGBoost feature importance.
     Used to determine which joints to highlight in draw_annotated_keyframe().
     """
-    if score >= 85:
+    if score >= FEEDBACK_SCORE_THRESHOLD:
         return []
 
     prefix = phase_name.replace("-", "_").replace(" ", "_").lower()
-    importances = dict(zip(feature_cols, model.feature_importances_))
 
     deviations = []
     for col in feature_cols:
@@ -487,14 +556,20 @@ def _top_deviated_metric_names(
             continue
         metric    = col[len(prefix) + 1:]
         val       = features.get(col, np.nan)
-        bench_val = benchmark.get(col, np.nan)
-        if np.isnan(val) or np.isnan(bench_val):
+        if np.isnan(val):
             continue
-        deviation  = val - bench_val
-        importance = importances.get(col, 0.0)
-        scale      = max(abs(bench_val), 1.0)
-        weighted   = (abs(deviation) / scale) * importance
-        if weighted > 0:
+
+        stats = _get_benchmark_stats(benchmark, col)
+        if stats is None:
+            continue
+        med, iqr = stats
+
+        deviation = val - med
+        norm_dev = abs(deviation) / max(iqr, 1e-6)
+        local = float(local_contribs.get(col, 0.0))
+        weighted = local * norm_dev
+
+        if local >= MIN_LOCAL_CONTRIB and norm_dev >= MIN_NORM_DEVIATION and weighted > 0:
             deviations.append((weighted, metric))
 
     deviations.sort(key=lambda x: x[0], reverse=True)
@@ -783,6 +858,7 @@ def predict_scores(swing_id: str, model_path: str = MODEL_OUT_PATH,
     for score_col, phase_name in PHASE_LABEL_MAP.items():
         if score_col not in models:
             continue
+        local_contribs = _get_local_contribs_for_phase(models[score_col], X, feature_cols)
         pred  = float(np.clip(models[score_col].predict(X)[0], 0, 100))
         score = round(pred, 1)
         scores[phase_name] = score
@@ -794,6 +870,7 @@ def predict_scores(swing_id: str, model_path: str = MODEL_OUT_PATH,
             benchmark   = benchmarks.get(score_col, {}),
             model       = models[score_col],
             feature_cols= feature_cols,
+            local_contribs= local_contribs,
             score       = score,
         )
         feedback[phase_name] = phase_feedback
@@ -807,8 +884,9 @@ def predict_scores(swing_id: str, model_path: str = MODEL_OUT_PATH,
             if score_col not in models:
                 continue
             score = scores.get(phase_name, 0.0)
-            if score >= 80:
+            if score >= FEEDBACK_SCORE_THRESHOLD:
                 continue  # no annotation needed for good phases
+            local_contribs = _get_local_contribs_for_phase(models[score_col], X, feature_cols)
             deviated = _top_deviated_metric_names(
                 phase_name   = phase_name,
                 score_col    = score_col,
@@ -816,6 +894,7 @@ def predict_scores(swing_id: str, model_path: str = MODEL_OUT_PATH,
                 benchmark    = benchmarks.get(score_col, {}),
                 model        = models[score_col],
                 feature_cols = feature_cols,
+                local_contribs = local_contribs,
                 score        = score,
             )
             if deviated:

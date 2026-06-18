@@ -1,6 +1,6 @@
 # 🏌️ DataStorm - Golf Swing Analysis Pipeline
 
-A computer vision pipeline for analyzing golf swings using pose estimation and phase detection. This project extracts body landmarks from golf swing videos, detects the 8 phases of a golf swing, and provides biomechanical analysis.
+A computer vision pipeline for golf swing analysis using pose estimation, 8-phase segmentation, and XGBoost-based phase scoring + feedback.
 
 ---
 
@@ -8,10 +8,11 @@ A computer vision pipeline for analyzing golf swings using pose estimation and p
 
 | Task | Command |
 |------|---------|
-| **Full pipeline (rule-based)** | `python pipeline.py data/raw_videos/video.mp4` |
-| **Full pipeline (neural network)** | `python pipeline.py data/raw_videos/video.mp4 --method neural-network` |
-| **Test neural network** | `python tools/test_neural_network.py --video golf_swing_007` |
-| **Compare RB vs NN** | `python tools/test_neural_network.py --video golf_swing_007 --compare` |
+| **Full pipeline (RB + XGBoost scoring)** | `python pipeline.py data/raw_videos/video.mp4 --method rule-based --scoring-backend xgboost` |
+| **Full pipeline (NN + XGBoost scoring)** | `python pipeline.py data/raw_videos/video.mp4 --method neural-network --scoring-backend xgboost` |
+| **Pipeline with legacy scorer (for comparison)** | `python pipeline.py data/raw_videos/video.mp4 --method neural-network --scoring-backend biomechanics` |
+| **Train XGBoost phase scorer** | `python train_phase_scorer.py --prepare --train` |
+| **Predict with trained XGBoost scorer** | `python train_phase_scorer.py --predict your_video_nn --annotate` |
 | **Train model** | `python tools/train_with_golfdb.py --epochs 50` |
 | **Extract GolfDB poses** | `python tools/extract_poses_range.py --start 0 --end 50` |
 
@@ -33,6 +34,7 @@ DataStorm/
 ├── pipeline.py                 # Main entry point - runs full pipeline
 ├── README.md                   # This file
 ├── ANNOTATION_AND_TRAINING_GUIDE.md
+├── train_phase_scorer.py       # XGBoost phase scoring + feedback model
 │
 ├── src/                        # Source code modules
 │   ├── __init__.py
@@ -58,7 +60,8 @@ DataStorm/
 ├── models/                     # ML models
 │   ├── pose_landmarker_lite.task   # MediaPipe pose model
 │   ├── pose_swingnet_trained.pth   # Trained Bi-LSTM (after training)
-│   └── pose_swingnet_best.pth      # Best validation checkpoint
+│   ├── pose_swingnet_best.pth      # Best validation checkpoint
+│   └── phase_scorer.pkl            # Trained XGBoost phase scorer bundle
 │
 ├── data/                       # Data directory
 │   ├── raw_videos/             # Input: Original golf videos
@@ -79,6 +82,8 @@ DataStorm/
 │   └── visualize_trajectories.py
 │
 ├── notebooks/                  # Jupyter notebooks
+├── outputs/
+│   └── visual_feedback/         # Annotated keyframes from XGBoost feedback
 └── tests/                      # Unit tests
 ```
 
@@ -143,17 +148,20 @@ python -c "from src.pose.detector import PoseDetector; print('✓ Setup complete
 Process a single video through all steps:
 
 ```bash
-# Using rule-based phase detection (default)
-python pipeline.py data/raw_videos/your_video.mp4
+# Neural phase segmentation + XGBoost scoring/feedback (main pipeline)
+python pipeline.py data/raw_videos/your_video.mp4 --method neural-network --scoring-backend xgboost
 
-# Using neural network phase detection
-python pipeline.py data/raw_videos/your_video.mp4 --method neural-network
+# Rule-based phase segmentation + XGBoost scoring/feedback
+python pipeline.py data/raw_videos/your_video.mp4 --method rule-based --scoring-backend xgboost
+
+# Neural phase segmentation + biomechanics scoring/feedback (will delete later)
+python pipeline.py data/raw_videos/your_video.mp4 --method neural-network --scoring-backend biomechanics
 
 # Using neural network with custom model
-python pipeline.py data/raw_videos/your_video.mp4 -m neural-network --model models/pose_swingnet_best.pth
+python pipeline.py data/raw_videos/your_video.mp4 -m neural-network --model models/pose_swingnet_best.pth --scoring-backend xgboost
 
 # With live preview
-python pipeline.py data/raw_videos/your_video.mp4 --preview
+python pipeline.py data/raw_videos/your_video.mp4 --method neural-network --scoring-backend xgboost --preview
 ```
 
 ### Pipeline Options
@@ -162,6 +170,7 @@ python pipeline.py data/raw_videos/your_video.mp4 --preview
 |------|-------------|---------|
 | `--method`, `-m` | Phase detection: `rule-based` or `neural-network` | `rule-based` |
 | `--model` | Path to trained model (for neural-network) | `models/pose_swingnet_trained.pth` |
+| `--scoring-backend` | Scoring backend: `xgboost` or `biomechanics` | `xgboost` |
 | `--preview`, `-p` | Show live preview during processing | Off |
 
 ### Pipeline Steps
@@ -169,7 +178,8 @@ python pipeline.py data/raw_videos/your_video.mp4 --preview
 1. **Clean** the video (auto-crop to swing motion)
 2. **Extract** 33 body landmarks per frame
 3. **Detect** 8 swing phases (rule-based or neural network)
-4. **Save** key frames and data
+4. **Score + feedback** using selected scoring backend (XGBoost)
+5. **Save** key frames, scores, diagnostics, and optional visual feedback
 
 ### Output Files
 
@@ -183,6 +193,9 @@ After running the pipeline, you'll find:
 | Phase CSV | `data/keyframes/{name}_rb/{name}_cleaned_8phases.csv` | Frame ranges for each phase |
 | Key frames | `data/keyframes/{name}_rb/*.jpg` | 8 images (one per phase) |
 | Metrics | `data/metrics/{name}_cleaned_metrics.csv` | Biomechanics angles per frame |
+| Scores | `data/metrics/{name}_scores.csv` | Per-phase and overall score |
+| Feedback details | `data/metrics/{name}_feedback_detailed.csv` | Per-phase feedback rows |
+| Visual feedback images | `outputs/visual_feedback/{name}_{rb|nn}/` | Red-highlighted annotated keyframes |
 
 > **Note**: The keyframes folder uses `_rb` suffix for rule-based and `_nn` suffix for neural-network detection, so you can easily compare both methods on the same video.
 
@@ -190,34 +203,37 @@ After running the pipeline, you'll find:
 
 ## 📋 Usage Examples
 
-### 1. Full Pipeline with Rule-Based Detection
+### 1. Full Pipeline with Neural Phase Detection + XGBoost Scoring (Recommended)
 
 ```bash
-python pipeline.py data/raw_videos/golf_swing_001.mp4
+python pipeline.py data/raw_videos/golf_swing_001.mp4 --method neural-network --scoring-backend xgboost
+```
+
+**Output:**
+- `data/keyframes/golf_swing_001_nn/` - 8 key frame images + phase CSV
+- `data/metrics/golf_swing_001_scores.csv`
+- `data/metrics/golf_swing_001_feedback_detailed.csv`
+- `outputs/visual_feedback/golf_swing_001_nn/`
+
+### 2. Full Pipeline with Rule-Based Phase Detection + XGBoost Scoring
+
+```bash
+python pipeline.py data/raw_videos/golf_swing_001.mp4 --method rule-based --scoring-backend xgboost
 ```
 
 **Output:**
 - `data/keyframes/golf_swing_001_rb/` - 8 key frame images + phase CSV
 
-### 2. Full Pipeline with Neural Network Detection
-
-```bash
-python pipeline.py data/raw_videos/golf_swing_001.mp4 --method neural-network
-```
-
-**Output:**
-- `data/keyframes/golf_swing_001_nn/` - 8 key frame images + phase CSV
-
-### 3. Compare Both Methods on Same Video
+### 3. Compare Phase Segmentation Methods on Same Video (same XGBoost scorer)
 
 Run both methods on the same video to compare results:
 
 ```bash
 # First run with rule-based
-python pipeline.py data/raw_videos/golf_swing_001.mp4 --method rule-based
+python pipeline.py data/raw_videos/golf_swing_001.mp4 --method rule-based --scoring-backend xgboost
 
 # Then run with neural network
-python pipeline.py data/raw_videos/golf_swing_001.mp4 --method neural-network
+python pipeline.py data/raw_videos/golf_swing_001.mp4 --method neural-network --scoring-backend xgboost
 ```
 
 This creates two separate folders:
@@ -276,14 +292,14 @@ metrics_csv = result['metrics_csv']  # Path to biomechanics metrics
 ```bash
 # Process all videos in a folder
 for video in data/raw_videos/*.mp4; do
-    python pipeline.py "$video" --method neural-network
+    python pipeline.py "$video" --method neural-network --scoring-backend xgboost
 done
 ```
 
 PowerShell version:
 ```powershell
 Get-ChildItem data/raw_videos/*.mp4 | ForEach-Object {
-    python pipeline.py $_.FullName --method neural-network
+    python pipeline.py $_.FullName --method neural-network --scoring-backend xgboost
 }
 ```
 
@@ -593,17 +609,20 @@ The `src/biomechanics/` module calculates golf-critical angles:
 
 ---
 
-## 📌 Current Status (May 2026)
+## 📌 Current Status (June 2026)
 
-The project is now running an end-to-end swing evaluation pipeline with both phase detection and phase scoring in production.
+The project is running an end-to-end swing evaluation pipeline with:
+- phase segmentation: rule-based or neural-network
+- scoring + feedback: XGBoost phase scorer integrated into pipeline
 
 ### What is working now
 
 - Full pipeline from raw video to scored 8-phase output
 - Rule-based and neural-network phase segmentation via a unified adapter
-- Per-phase biomechanical scoring with weighted metrics
-- Human-readable coaching feedback in score output
-- Detailed component-level feedback export for diagnostics and UI
+- XGBoost per-phase scoring using trained `models/phase_scorer.pkl`
+- Deterministic textual feedback from benchmark deviation + local model contribution
+- Visual feedback overlays (red-highlighted deviated body segments)
+- Score and feedback CSV export for downstream UI/debugging
 
 ### Latest completed improvements
 
@@ -636,8 +655,8 @@ Processing flow:
 1. Video cleaning (`src/video/cleaner.py`)
 2. Pose extraction (`src/pose/analyzer.py`, `src/pose/detector.py`)
 3. Phase segmentation (`src/phase/adapter.py` -> rule-based or neural)
-4. Biomechanical scoring (`src/biomechanics/angles.py`, `src/biomechanics/phase_scorer.py`)
-5. Feedback generation (summary in scores CSV + detailed diagnostics CSV)
+4. XGBoost scoring + feedback (`train_phase_scorer.py`, `models/phase_scorer.pkl`)
+5. Feedback generation (summary in scores CSV + detailed diagnostics CSV + optional visual overlays)
 6. Keyframe export and summary report
 
 Primary outputs:
@@ -675,17 +694,24 @@ Best for deterministic behavior and no model dependency.
 
 Best for learned timing patterns and noisy real-world swings.
 
-### 3. How Analysis and Scoring Work Per Phase
+### 3. How Scoring and Feedback Work Per Phase
 
-Scoring engine: `src/biomechanics/phase_scorer.py`
-Configuration: `src/biomechanics/scoring_config.py`
+Scoring and feedback engine: `train_phase_scorer.py`
+Model bundle: `models/phase_scorer.pkl`
 
 Scoring structure:
 
-- Each phase has component metrics and weights (`METRIC_WEIGHTS`)
-- Each metric is evaluated against target ranges (`SCORING_THRESHOLDS`)
-- Component scores are combined into a normalized phase score (0-100)
-- Overall score uses phase importance weights (`PHASE_WEIGHTS`)
+- One XGBoost regressor per phase
+- Input features: per-phase keyframe biomechanics metrics + phase durations
+- Overall score: average of 8 phase scores
+
+Feedback structure:
+
+- Compare phase features against stored benchmark stats (`median/q1/q3/iqr`)
+- Compute local feature contribution for the current swing (`pred_contribs`)
+- Rank issues by `local_contrib * normalized_deviation`
+- Keep only mapped feedback messages that pass gating thresholds
+- Generate optional visual overlays by mapping deviated metrics to body segments
 
 #### Phase-by-phase factors
 
@@ -721,11 +747,8 @@ Summary feedback (`{name}_scores.csv`):
 
 Detailed feedback (`{name}_feedback_detailed.csv`):
 
-- One row per phase component
-- Raw score and weighted score
-- Measured value and target range
-- Delta from target, severity, priority
-- Coaching cue and drill text
+- One row per generated phase feedback message
+- Includes phase score and key frame for downstream diagnostics
 
 This dual-output design supports both:
 
@@ -734,14 +757,14 @@ This dual-output design supports both:
 
 ### 5. Data and Control Flow in `pipeline.py`
 
-At scoring time:
+At scoring time (XGBoost backend):
 
-1. Set biomechanical reference frame at Address keyframe
-2. For each phase, select keyframe and compute metrics
-3. For Mid-downswing, additionally compute kinematic sequence data
-4. Score phase through `PhaseScorer`
-5. Generate summary feedback and detailed component diagnostics
-6. Compute full-swing overall score and save all artifacts
+1. Build `swing_id` from phase method suffix (`_rb` or `_nn`)
+2. Load trained scorer bundle (`models/phase_scorer.pkl`)
+3. Extract keyframe features from metrics + phase CSV
+4. Predict 8 phase scores and total
+5. Generate textual feedback from benchmark deviation + local contribution
+6. Save score/feedback CSVs and optional visual overlays
 
 Implementation notes:
 
@@ -768,11 +791,10 @@ flowchart LR
     H --> J[Phase Ranges + Keyframes]
     I --> J
 
-    E --> K[Biomechanics Engine<br/>src/biomechanics/angles.py]
-    J --> L[Phase Scorer<br/>src/biomechanics/phase_scorer.py]
-    K --> L
+    J --> L[XGBoost Scorer<br/>train_phase_scorer.py]
     L --> M[Scores CSV<br/>data/metrics/*_scores.csv]
     L --> N[Detailed Feedback CSV<br/>data/metrics/*_feedback_detailed.csv]
+    L --> P[Visual Feedback<br/>outputs/visual_feedback/*]
 
     J --> O[Keyframe Export<br/>data/keyframes/*_rb or *_nn]
 ```
@@ -785,8 +807,8 @@ flowchart LR
 | Video preprocessing | `src/video/cleaner.py` | Crops video to swing motion boundaries |
 | Pose extraction | `src/pose/detector.py`, `src/pose/analyzer.py` | Extracts 33 landmarks/frame and derived frame metrics |
 | Phase segmentation | `src/phase/adapter.py`, `src/phase/rule_based.py`, `src/phase/neural.py` | Produces 8 ordered phase ranges and keyframes |
-| Biomechanics | `src/biomechanics/angles.py` | Computes golf-specific angles and kinematic sequence signals |
-| Scoring + feedback | `src/biomechanics/phase_scorer.py`, `src/biomechanics/scoring_config.py` | Converts metrics to phase scores, overall score, and coaching feedback |
+| Feature/metrics | `src/biomechanics/angles.py` | Computes golf-specific angles used by scorer features |
+| Scoring + feedback | `train_phase_scorer.py`, `models/phase_scorer.pkl` | Predicts phase scores, builds textual feedback, and creates visual overlays |
 | Artifacts | `data/metrics/`, `data/keyframes/`, `data/extracted_poses/` | Stores analysis outputs for downstream UI/reporting/training |
 
 ---

@@ -252,34 +252,18 @@ class GolfBiomechanics:
     # ============================================
     
     def _get_point_from_lmlist(self, lmList: List, landmark_name: str) -> np.ndarray:
-        """Get point from real-time lmList [id, x, y, z] - returns [x, y, z]"""
+        """Get point from real-time lmList [id, x, y]"""
         idx = LANDMARK_INDICES[landmark_name]
         if idx < len(lmList):
-            point_data = lmList[idx]
-            # Handle both 3-element [id, x, y] and 4-element [id, x, y, z] formats
-            if len(point_data) >= 4:
-                return np.array([point_data[1], point_data[2], point_data[3]])
-            else:
-                return np.array([point_data[1], point_data[2], 0.0])
-        return np.array([0, 0, 0])
+            return np.array([lmList[idx][1], lmList[idx][2]])
+        return np.array([0, 0])
     
     def _get_point_from_df(self, frame: int, landmark_name: str) -> np.ndarray:
-        """Get point from DataFrame at specific frame - returns [x, y, z]
-        
-        Note: X and Y are already in pixel space (0-1920 typical), Z from MediaPipe is 
-        normalized (0-1 visible, can be negative). Scale Z to pixel space for consistent
-        3D calculations by multiplying by reference width (640).
-        """
+        """Get point from DataFrame at specific frame"""
         row = self.df[self.df['frame'] == frame].iloc[0]
         x = row[f'{landmark_name}_x']
         y = row[f'{landmark_name}_y']
-        z_normalized = row[f'{landmark_name}_z'] if f'{landmark_name}_z' in row.index else 0.0
-        
-        # Scale Z to pixel-like range for consistent atan2 calculations
-        # Using 640 as reference width (matches typical video dimensions)
-        z_scaled = z_normalized * 640
-        
-        return np.array([x, y, z_scaled])
+        return np.array([x, y])
     
     def _get_midpoint(self, p1: np.ndarray, p2: np.ndarray) -> np.ndarray:
         """Calculate midpoint between two points"""
@@ -360,79 +344,6 @@ class GolfBiomechanics:
         hip_rot = self.get_hip_rotation(lmList, frame)
 
         # Circular angular difference to avoid wrap artifacts (e.g., 355 instead of 5).
-        diff = abs(shoulder_rot - hip_rot) % 360
-        return min(diff, 360 - diff)
-    
-    def get_shoulder_rotation_3d(self, lmList: List = None, frame: int = None) -> float:
-        """
-        Calculate shoulder line rotation using 3D depth (Z coordinate).
-        Uses Z instead of Y to detect rotation perpendicular to camera.
-        
-        More accurate than 2D method when golfer rotates toward/away from camera.
-        Falls back to 2D method if Z not available.
-        
-        Returns:
-            Angle in degrees
-        """
-        if lmList:
-            left_shoulder = self._get_point_from_lmlist(lmList, 'left_shoulder')
-            right_shoulder = self._get_point_from_lmlist(lmList, 'right_shoulder')
-        else:
-            left_shoulder = self._get_point_from_df(frame, 'left_shoulder')
-            right_shoulder = self._get_point_from_df(frame, 'right_shoulder')
-        
-        # Check if Z coordinate is available
-        if len(left_shoulder) < 3 or len(right_shoulder) < 3:
-            # Fall back to 2D method if Z not available
-            return self.get_shoulder_rotation(lmList, frame)
-        
-        # Use X and Z coordinates (ignore Y depth changes)
-        dx = right_shoulder[0] - left_shoulder[0]
-        dz = right_shoulder[2] - left_shoulder[2]
-        angle = math.degrees(math.atan2(dz, dx))
-        return abs(angle)
-    
-    def get_hip_rotation_3d(self, lmList: List = None, frame: int = None) -> float:
-        """
-        Calculate hip line rotation using 3D depth (Z coordinate).
-        Uses Z instead of Y to detect rotation perpendicular to camera.
-        
-        More accurate than 2D method when golfer rotates toward/away from camera.
-        Falls back to 2D method if Z not available.
-        
-        Returns:
-            Angle in degrees
-        """
-        if lmList:
-            left_hip = self._get_point_from_lmlist(lmList, 'left_hip')
-            right_hip = self._get_point_from_lmlist(lmList, 'right_hip')
-        else:
-            left_hip = self._get_point_from_df(frame, 'left_hip')
-            right_hip = self._get_point_from_df(frame, 'right_hip')
-        
-        # Check if Z coordinate is available
-        if len(left_hip) < 3 or len(right_hip) < 3:
-            # Fall back to 2D method if Z not available
-            return self.get_hip_rotation(lmList, frame)
-        
-        # Use X and Z coordinates (ignore Y depth changes)
-        dx = right_hip[0] - left_hip[0]
-        dz = right_hip[2] - left_hip[2]
-        angle = math.degrees(math.atan2(dz, dx))
-        return abs(angle)  # abs() first, then no clipping needed
-    
-    def get_x_factor_3d(self, lmList: List = None, frame: int = None) -> float:
-        """
-        Calculate X-factor using 3D depth-based rotations.
-        More accurate when measuring shoulder-hip separation at extreme rotation angles.
-        
-        Returns:
-            Angle in degrees (absolute difference)
-        """
-        shoulder_rot = self.get_shoulder_rotation_3d(lmList, frame)
-        hip_rot = self.get_hip_rotation_3d(lmList, frame)
-        
-        # Circular angular difference to avoid wrap artifacts
         diff = abs(shoulder_rot - hip_rot) % 360
         return min(diff, 360 - diff)
     
@@ -654,16 +565,11 @@ class GolfBiomechanics:
             'spine_angle': self.get_spine_angle(lmList, frame),
             'spine_lateral_tilt': self.get_spine_lateral_tilt(lmList, frame),
             
-            # Rotation (2D version - Y-based)
+            # Rotation
             'shoulder_rotation': self.get_shoulder_rotation(lmList, frame),
             'hip_rotation': self.get_hip_rotation(lmList, frame),
             'hip_angle': self.get_hip_rotation(lmList, frame),
             'x_factor': self.get_x_factor(lmList, frame),
-            
-            # Rotation (3D version - Z-based, more accurate for deep rotations)
-            'shoulder_rotation_3d': self.get_shoulder_rotation_3d(lmList, frame),
-            'hip_rotation_3d': self.get_hip_rotation_3d(lmList, frame),
-            'x_factor_3d': self.get_x_factor_3d(lmList, frame),
             
             # Arms
             'lead_arm_angle': self.get_lead_arm_angle(lmList, frame),
@@ -942,203 +848,6 @@ class GolfBiomechanics:
             
         except Exception as e:
             print(f"Error computing kinematic sequence: {e}")
-            return {}
-    
-    # ============================================
-    # FIX 1: ARM EXTENSION DELTA
-    # ============================================
-    
-    def calculate_arm_extension_delta(self, top_frame: int, impact_frame: int) -> Dict[str, float]:
-        """
-        Calculate change in arm extension from top to impact (Fix 1).
-        
-        Pros: Arms extend toward 170-175° at impact
-        Amateurs: Arms often stay bent or collapse
-        
-        Args:
-            top_frame: Frame number at top of swing
-            impact_frame: Frame number at impact
-            
-        Returns:
-            {
-                'top_lead_arm': angle at top,
-                'impact_lead_arm': angle at impact,
-                'delta': change (positive = extended more),
-                'quality': 0-100 score based on delta
-            }
-        """
-        try:
-            top_arm = self.get_lead_arm_angle(frame=top_frame)
-            impact_arm = self.get_lead_arm_angle(frame=impact_frame)
-            
-            delta = impact_arm - top_arm  # Positive = extended more
-            
-            # Scoring: pros extend 25-35° into impact (higher extension = more power)
-            ideal_delta = 28  # degrees (adjusted from 15 to match pro swing data)
-            delta_error = abs(delta - ideal_delta)
-            quality = max(0, 100 - (delta_error * 5))  # -5 pts per degree error
-            
-            return {
-                'top_lead_arm': float(top_arm),
-                'impact_lead_arm': float(impact_arm),
-                'delta': float(delta),
-                'quality': float(quality),
-            }
-        except Exception as e:
-            print(f"Error calculating arm extension delta: {e}")
-            return {}
-    
-    # ============================================
-    # FIX 3: PHASE WINDOW ANALYSIS
-    # ============================================
-    
-    def calculate_metrics_window(self, start_frame: int, end_frame: int, 
-                                 metric_name: str = 'spine_angle') -> Dict[str, float]:
-        """
-        Calculate metric statistics across a frame window (Fix 3).
-        
-        Instead of scoring a single keyframe, analyze the entire phase window:
-        - Mean: average value across frames
-        - Std: consistency (std > 5° = jerky/inconsistent = deduct points)
-        - Min/Max: range of motion
-        
-        Args:
-            start_frame: Start frame of phase
-            end_frame: End frame of phase
-            metric_name: Which metric to analyze ('spine_angle', 'lead_arm_angle', etc.)
-            
-        Returns:
-            {
-                'mean': average value,
-                'std': standard deviation,
-                'min': minimum value,
-                'max': maximum value,
-                'range': max - min,
-                'consistency_penalty': 0-30 points to deduct
-            }
-        """
-        try:
-            phase_df = self.df[(self.df['frame'] >= start_frame) & 
-                              (self.df['frame'] <= end_frame)].copy()
-            
-            if len(phase_df) < 2:
-                return {}
-            
-            # Collect metric values across window
-            values = []
-            for _, row in phase_df.iterrows():
-                frame_num = row['frame']
-                if metric_name == 'spine_angle':
-                    val = self.get_spine_angle(frame=frame_num)
-                elif metric_name == 'lead_arm_angle':
-                    val = self.get_lead_arm_angle(frame=frame_num)
-                elif metric_name == 'x_factor':
-                    val = self.get_x_factor(frame=frame_num)
-                elif metric_name == 'wrist_angle':
-                    val = self.get_wrist_hinge(frame=frame_num)
-                else:
-                    continue
-                values.append(val)
-            
-            if len(values) < 2:
-                return {}
-            
-            values = np.array(values, dtype=float)
-            
-            # Calculate statistics
-            mean = float(np.mean(values))
-            std = float(np.std(values))
-            min_val = float(np.min(values))
-            max_val = float(np.max(values))
-            range_val = max_val - min_val
-            
-            # Consistency penalty: high jitter = amateur-like
-            # std > 3° for most metrics = inconsistent motion (lowered from 5)
-            consistency_penalty = min(50, max(0, (std - 3) * 5))  # 0 pts at std=3, 50 pts at std=13 (was 30 at std=15)
-            
-            return {
-                'mean': mean,
-                'std': std,
-                'min': min_val,
-                'max': max_val,
-                'range': range_val,
-                'consistency_penalty': consistency_penalty,
-            }
-        except Exception as e:
-            print(f"Error calculating metrics window: {e}")
-            return {}
-    
-    # ============================================
-    # FIX 4: WRIST JERK METRIC
-    # ============================================
-    
-    def calculate_wrist_jerk(self, start_frame: int, end_frame: int) -> Dict[str, float]:
-        """
-        Calculate wrist motion smoothness using jerk (second derivative) (Fix 4).
-        
-        Wrist jerk = mean(abs(second_derivative(wrist_position)))
-        
-        Low jerk = smooth motion = pro-like
-        High jerk = jerky motion = amateur-like
-        
-        Args:
-            start_frame: Start frame of phase
-            end_frame: End frame of phase
-            
-        Returns:
-            {
-                'wrist_jerk': average jerk value,
-                'jerk_quality': 0-100 score (inverse of jerk),
-                'smoothness_percentile': where this falls in distribution
-            }
-        """
-        try:
-            phase_df = self.df[(self.df['frame'] >= start_frame) & 
-                              (self.df['frame'] <= end_frame)].copy()
-            
-            if len(phase_df) < 3:  # Need at least 3 frames for second derivative
-                return {}
-            
-            # Extract wrist positions
-            wrist_x = phase_df['left_wrist_x'].values
-            wrist_y = phase_df['left_wrist_y'].values
-            
-            if len(wrist_x) < 3 or np.all(np.isnan(wrist_x)) or np.all(np.isnan(wrist_y)):
-                return {}
-            
-            # First derivative (velocity)
-            velocity_x = np.diff(wrist_x)
-            velocity_y = np.diff(wrist_y)
-            
-            # Second derivative (acceleration/jerk)
-            accel_x = np.diff(velocity_x)
-            accel_y = np.diff(velocity_y)
-            
-            # Magnitude of acceleration
-            accel_magnitude = np.sqrt(accel_x**2 + accel_y**2)
-            
-            # Remove NaN and inf
-            accel_magnitude = accel_magnitude[np.isfinite(accel_magnitude)]
-            
-            if len(accel_magnitude) == 0:
-                return {}
-            
-            # Jerk = mean of absolute acceleration
-            wrist_jerk = float(np.mean(np.abs(accel_magnitude)))
-            
-            # Convert to quality score (inverse: low jerk = high score)
-            # Pro swing: jerk ~5-15 pixels/frame²
-            # Amateur swing: jerk ~20-50 pixels/frame²
-            jerk_quality = max(0, 100 - (wrist_jerk * 3))  # -3 pts per unit jerk (was -2)
-            
-            return {
-                'wrist_jerk': wrist_jerk,
-                'jerk_quality': float(jerk_quality),
-                'mean_acceleration': float(np.mean(accel_magnitude)),
-                'max_acceleration': float(np.max(accel_magnitude)),
-            }
-        except Exception as e:
-            print(f"Error calculating wrist jerk: {e}")
             return {}
     
     def analyze_full_swing(self, phase_frames: Dict[str, int]) -> pd.DataFrame:

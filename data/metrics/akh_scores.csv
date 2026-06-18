@@ -1,10 +1,10 @@
 phase,score,confidence,key_frame,feedback
-Address,75.0,1.0,27,Too much forward bend at address — stand slightly more upright | Stance too wide at address — bring feet to shoulder width
-Takeaway,65.3,1.0,47,Hip-shoulder separation low at takeaway position | Lead arm bent at takeaway checkpoint
-Mid-backswing,70.5,1.0,52,Low hip-shoulder separation at mid-backswing | 3D hip-shoulder separation low at mid-backswing
-Top,83.5,1.0,84,No issues detected
-Mid-downswing,75.8,1.0,87,Low hip-shoulder separation at mid-downswing | Shoulder rotation high relative to hips at mid-downswing
-Impact,71.4,1.0,91,Wrist lag angle low at impact position
-Follow-through,54.3,1.0,93,Spine angle above ideal range at follow-through
-Finish,62.7,1.0,120,Shoulder rotation low at finish position | Hip rotation low at finish position
-Overall,69.8,1.0,-1,OVERALL: 69.8/100
+Address,78.0,1.0,27,Hands positioned too far from body at address | Stance too wide at address — bring feet to shoulder width
+Takeaway,70.4,1.0,47,Lead arm bent at takeaway checkpoint | Hip-shoulder separation low at takeaway position
+Mid-backswing,69.5,1.0,52,Low hip-shoulder separation at mid-backswing
+Top,84.3,1.0,84,Wrist hinge low at top of swing
+Mid-downswing,77.0,1.0,87,Low hip-shoulder separation at mid-downswing
+Impact,76.8,1.0,91,No issues detected
+Follow-through,61.2,1.0,93,No issues detected
+Finish,73.3,1.0,120,No issues detected
+Overall,73.8,1.0,-1,OVERALL: 73.8/100
