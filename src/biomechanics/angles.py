@@ -14,6 +14,68 @@ from typing import Dict, List, Tuple, Optional
 import pandas as pd
 
 
+# ========== BIOMECHANICS V2 HELPERS (Scientific-grade) ==========
+
+def get_vector(p1: np.ndarray, p2: np.ndarray) -> np.ndarray:
+    return p2 - p1
+
+def vector_angle(v1: np.ndarray, v2: np.ndarray) -> float:
+    """Tính góc giữa 2 vector trong không gian 3D (độ)."""
+    norm1 = np.linalg.norm(v1)
+    norm2 = np.linalg.norm(v2)
+    if norm1 < 1e-6 or norm2 < 1e-6:
+        return 0.0
+    cos_ang = np.dot(v1, v2) / (norm1 * norm2)
+    return np.degrees(np.arccos(np.clip(cos_ang, -1.0, 1.0)))
+
+def calculate_joint_angle(p_top: np.ndarray, p_mid: np.ndarray, p_bot: np.ndarray) -> float:
+    """Tính góc tại khớp (p_mid) giữa 3 điểm."""
+    v1 = get_vector(p_mid, p_top)
+    v2 = get_vector(p_mid, p_bot)
+    return vector_angle(v1, v2)
+
+def calculate_rotation_xz(p_l: np.ndarray, p_r: np.ndarray, baseline_vec: np.ndarray = None) -> float:
+    """Tính góc xoay của một trục trên mặt phẳng nằm ngang (X-Z)."""
+    vec = p_r - p_l
+    # Project onto 3D horizontal plane (y=0) to use vector_angle
+    vec_h = np.array([vec[0], 0, vec[2]])
+    if baseline_vec is not None:
+        target_h = np.array([baseline_vec[0], 0, baseline_vec[1]]) # baseline_vec is 2D [x, z], so z is at index 1
+    else:
+        target_h = np.array([1, 0, 0])
+        
+    return vector_angle(vec_h, target_h)
+
+def calculate_spine_angle(sh_mid: np.ndarray, hip_mid: np.ndarray) -> float:
+    """Tính Forward Tilt của cột sống so với trục đứng (Y-axis)."""
+    spine_vec = sh_mid - hip_mid
+    vertical = np.array([0, -1, 0]) # MediaPipe Y hướng xuống
+    return vector_angle(spine_vec, vertical)
+
+def extract_metrics_from_row(row: Dict, baseline_h_vec: np.ndarray = None) -> Dict[str, float]:
+    """Trích xuất các góc quan trọng từ một frame dữ liệu (v2.0)."""
+    def to_np(prefix):
+        return np.array([row[f"{prefix}_x"], row[f"{prefix}_y"], row[f"{prefix}_z"]])
+
+    try:
+        sh_l, sh_r = to_np("left_shoulder"), to_np("right_shoulder")
+        hip_l, hip_r = to_np("left_hip"), to_np("right_hip")
+        k_l, a_l = to_np("left_knee"), to_np("left_ankle")
+        k_r, a_r = to_np("right_knee"), to_np("right_ankle")
+        sh_mid, hip_mid = (sh_l + sh_r) / 2, (hip_l + hip_r) / 2
+
+        return {
+            "shoulder_turn": calculate_rotation_xz(sh_l, sh_r, baseline_h_vec),
+            "hip_turn": calculate_rotation_xz(hip_l, hip_r, baseline_h_vec),
+            "x_factor": abs(calculate_rotation_xz(sh_l, sh_r, baseline_h_vec) - calculate_rotation_xz(hip_l, hip_r, baseline_h_vec)),
+            "spine_angle": calculate_spine_angle(sh_mid, hip_mid),
+            "lead_knee_flex": calculate_joint_angle(hip_l, k_l, a_l),
+            "trail_knee_flex": calculate_joint_angle(hip_r, k_r, a_r),
+            "head_pos": to_np("nose")
+        }
+    except KeyError:
+        return None
+
 # MediaPipe landmark indices for reference
 LANDMARK_INDICES = {
     'nose': 0,

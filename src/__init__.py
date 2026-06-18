@@ -6,8 +6,10 @@ Modules:
     pose: Pose detection and analysis (MediaPipe)
     phase: Swing phase detection (rule-based and neural)
     video: Video preprocessing utilities
+    biomechanics: Scientific swing evaluation
 """
 
 from . import pose
 from . import phase
 from . import video
+from . import biomechanics

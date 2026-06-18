@@ -4,247 +4,128 @@ Swing Comparator - Compare user swing to benchmarks
 Analyzes biomechanical metrics and identifies areas for improvement.
 """
 
-from typing import Dict, List, Tuple, Optional
 import pandas as pd
-from .angles import GolfBiomechanics, GOLF_CRITICAL_ANGLES
-from .benchmarks import GolfBenchmarks
+import numpy as np
+from typing import Dict, List
+from .angles import extract_metrics_from_row
+from .benchmarks import BENCHMARKS, get_status
 
+class SwingBiomechanicsEvaluator:
+    """
+    Phân tích toàn bộ swing dựa trên các keyframes đã detect.
+    """
+    def __init__(self, player_level: str = "amateur"):
+        self.player_level = player_level
 
-class SwingComparator:
-    """
-    Compare user's swing metrics to benchmarks and identify issues.
-    """
-    
-    def __init__(self, benchmarks: GolfBenchmarks = None):
+    def evaluate(self, poses_df: pd.DataFrame, phase_keyframes: Dict[str, int]) -> Dict:
         """
-        Initialize with benchmark data.
-        
-        Args:
-            benchmarks: GolfBenchmarks instance or None for defaults
+        Analyzes the entire swing based on detected keyframes.
+        phase_keyframes: e.g., {'Top': 124, 'Impact': 150, 'Address': 20}
         """
-        self.benchmarks = benchmarks or GolfBenchmarks()
-    
-    def compare_phase(self, phase: str, metrics: Dict[str, float]) -> Dict:
-        """
-        Compare metrics for a single phase to benchmarks.
-        
-        Args:
-            phase: Phase name (e.g., 'top', 'impact')
-            metrics: Dictionary of metric name -> value
-            
-        Returns:
-            Comparison results with deviations and issues
-        """
-        results = {
-            'phase': phase,
-            'metrics': {},
-            'issues': [],
-            'strengths': [],
-            'overall_score': 0
+        report = {
+            "summary": {},
+            "detailed_metrics": [],
+            "priority_fixes": []
         }
         
-        total_metrics = 0
-        good_metrics = 0
-        
-        for metric_name, value in metrics.items():
-            if metric_name in ['frame', 'phase']:
-                continue
-                
-            deviation = self.benchmarks.get_deviation(phase, metric_name, value)
-            
-            if deviation:
-                results['metrics'][metric_name] = deviation
-                total_metrics += 1
-                
-                if deviation['severity'] == 'good':
-                    good_metrics += 1
-                    results['strengths'].append({
-                        'metric': metric_name,
-                        'value': value,
-                        'ideal': deviation['ideal']
-                    })
-                elif deviation['severity'] in ['moderate', 'major']:
-                    # Get description from GOLF_CRITICAL_ANGLES
-                    angle_info = GOLF_CRITICAL_ANGLES.get(metric_name, {})
-                    results['issues'].append({
-                        'metric': metric_name,
-                        'value': value,
-                        'ideal': deviation['ideal'],
-                        'deviation': deviation['deviation'],
-                        'severity': deviation['severity'],
-                        'description': angle_info.get('description', ''),
-                        'importance': angle_info.get('importance', '')
-                    })
-        
-        # Calculate overall score (0-100)
-        if total_metrics > 0:
-            results['overall_score'] = int((good_metrics / total_metrics) * 100)
-        
-        # Sort issues by severity
-        severity_order = {'major': 0, 'moderate': 1, 'minor': 2}
-        results['issues'].sort(key=lambda x: severity_order.get(x['severity'], 3))
-        
-        return results
-    
-    def compare_full_swing(self, phase_metrics: Dict[str, Dict[str, float]]) -> Dict:
-        """
-        Compare all phases of a swing to benchmarks.
-        
-        Args:
-            phase_metrics: Dictionary of phase -> metrics dictionary
-            
-        Returns:
-            Full swing comparison with per-phase and overall analysis
-        """
-        results = {
-            'phases': {},
-            'summary': {
-                'total_issues': 0,
-                'major_issues': 0,
-                'overall_score': 0,
-                'priority_fixes': [],
-                'strengths': []
-            }
-        }
-        
-        total_score = 0
-        phase_count = 0
-        all_issues = []
-        all_strengths = []
-        
-        for phase, metrics in phase_metrics.items():
-            phase_comparison = self.compare_phase(phase, metrics)
-            results['phases'][phase] = phase_comparison
-            
-            total_score += phase_comparison['overall_score']
-            phase_count += 1
-            
-            # Collect issues with phase context
-            for issue in phase_comparison['issues']:
-                issue['phase'] = phase
-                all_issues.append(issue)
-            
-            for strength in phase_comparison['strengths']:
-                strength['phase'] = phase
-                all_strengths.append(strength)
-        
-        # Calculate overall score
-        if phase_count > 0:
-            results['summary']['overall_score'] = int(total_score / phase_count)
-        
-        # Count issues by severity
-        results['summary']['total_issues'] = len(all_issues)
-        results['summary']['major_issues'] = len([i for i in all_issues if i['severity'] == 'major'])
-        
-        # Get top priority fixes (major issues first, then by phase importance)
-        phase_priority = {
-            'address': 1,
-            'top': 2, 
-            'impact': 3,
-            'mid_downswing': 4,
-            'takeaway': 5,
-            'mid_backswing': 6,
-            'follow_through': 7,
-            'finish': 8
-        }
-        
-        all_issues.sort(key=lambda x: (
-            0 if x['severity'] == 'major' else 1,
-            phase_priority.get(x['phase'].lower().replace('-', '_'), 10)
-        ))
-        
-        results['summary']['priority_fixes'] = all_issues[:3]  # Top 3 issues
-        results['summary']['strengths'] = all_strengths[:3]  # Top 3 strengths
-        
-        return results
-    
-    def generate_report(self, comparison: Dict) -> str:
-        """
-        Generate a text report from comparison results.
-        
-        Args:
-            comparison: Results from compare_full_swing()
-            
-        Returns:
-            Formatted text report
-        """
-        lines = []
-        
-        lines.append("=" * 60)
-        lines.append("GOLF SWING ANALYSIS REPORT")
-        lines.append("=" * 60)
-        lines.append("")
-        
-        # Overall score
-        score = comparison['summary']['overall_score']
-        lines.append(f"Overall Score: {score}/100")
-        lines.append(f"Total Issues: {comparison['summary']['total_issues']}")
-        lines.append(f"Major Issues: {comparison['summary']['major_issues']}")
-        lines.append("")
-        
-        # Priority fixes
-        lines.append("-" * 40)
-        lines.append("PRIORITY IMPROVEMENTS:")
-        lines.append("-" * 40)
-        
-        for i, issue in enumerate(comparison['summary']['priority_fixes'], 1):
-            lines.append(f"\n{i}. {issue['metric'].replace('_', ' ').title()} [{issue['phase']}]")
-            lines.append(f"   Current: {issue['value']:.1f}° | Ideal: {issue['ideal']:.1f}°")
-            lines.append(f"   Issue: {issue['description']}")
-            lines.append(f"   Why it matters: {issue['importance']}")
-        
-        # Strengths
-        if comparison['summary']['strengths']:
-            lines.append("")
-            lines.append("-" * 40)
-            lines.append("STRENGTHS:")
-            lines.append("-" * 40)
-            
-            for strength in comparison['summary']['strengths']:
-                lines.append(f"• {strength['metric'].replace('_', ' ').title()} "
-                           f"[{strength['phase']}]: {strength['value']:.1f}°")
-        
-        # Per-phase breakdown
-        lines.append("")
-        lines.append("-" * 40)
-        lines.append("PHASE-BY-PHASE BREAKDOWN:")
-        lines.append("-" * 40)
-        
-        for phase, phase_data in comparison['phases'].items():
-            lines.append(f"\n{phase.upper()} - Score: {phase_data['overall_score']}/100")
-            
-            if phase_data['issues']:
-                for issue in phase_data['issues']:
-                    severity_icon = "⚠️" if issue['severity'] == 'major' else "⚡"
-                    lines.append(f"  {severity_icon} {issue['metric']}: {issue['value']:.1f}° "
-                               f"(ideal: {issue['ideal']:.1f}°)")
-        
-        lines.append("")
-        lines.append("=" * 60)
-        
-        return "\n".join(lines)
-    
-    def get_feedback_for_phase(self, phase: str, metrics: Dict[str, float]) -> List[str]:
-        """
-        Get concise feedback strings for a phase.
-        
-        Args:
-            phase: Phase name
-            metrics: Dictionary of metric values
-            
-        Returns:
-            List of feedback strings
-        """
-        comparison = self.compare_phase(phase, metrics)
-        feedback = []
-        
-        for issue in comparison['issues']:
-            metric_name = issue['metric'].replace('_', ' ').title()
-            deviation = issue['deviation']
-            
-            if deviation > 0:
-                feedback.append(f"{metric_name}: {abs(deviation):.0f}° too high")
+        # 1. Determine Baseline Target Line from Address (if available) for relative rotation
+        baseline_h_vec = None
+        if 'Address' in phase_keyframes:
+            addr_idx = phase_keyframes['Address']
+            if addr_idx < len(poses_df):
+                row = poses_df.iloc[addr_idx]
+                # Create hip vector on X-Z plane as baseline
+                # Ensure columns exist before access
+                if not all(col in row for col in ['left_hip_x', 'left_hip_z', 'right_hip_x', 'right_hip_z']):
+                    print(f"WARNING: Missing hip data at Address frame ({addr_idx}). Cannot determine baseline.")
+                else:
+                    h_l = np.array([row['left_hip_x'], row['left_hip_z']])
+                    h_r = np.array([row['right_hip_x'], row['right_hip_z']])
+                    baseline_h_vec = h_r - h_l
             else:
-                feedback.append(f"{metric_name}: {abs(deviation):.0f}° too low")
+                print(f"WARNING: Address frame ({addr_idx}) is out of bounds for poses_df.")
+
+        # 2. Calculate metrics for critical frames
+        key_metrics = {}
+        for phase, frame_idx in phase_keyframes.items():
+            if frame_idx < len(poses_df):
+                row = poses_df.iloc[frame_idx].to_dict()
+                metrics_for_frame = extract_metrics_from_row(row, baseline_h_vec=baseline_h_vec)
+                if metrics_for_frame is not None:
+                    key_metrics[phase] = metrics_for_frame
+                else:
+                    print(f"WARNING: Could not extract metrics for phase '{phase}' at frame {frame_idx} due to missing landmarks.")
+            else:
+                print(f"WARNING: Phase frame '{phase}' ({frame_idx}) is out of bounds for poses_df.")
+
+        # 3. Temporal Analysis (Head Stability Enhancement)
+        # Collect all head (nose) positions from available frames
+        all_head_positions = []
+        for _, row_data in poses_df.iterrows():
+            if 'nose_x' in row_data and 'nose_y' in row_data and 'nose_z' in row_data:
+                # MediaPipe output via SwingAnalyzer uses 'nose_visibility'
+                vis = row_data.get('nose_visibility', 0.0)
+                if vis >= 0.5:
+                    all_head_positions.append(np.array([row_data['nose_x'], row_data['nose_y'], row_data['nose_z']]))
         
-        return feedback
+        head_stability_val = 0.0
+        if len(all_head_positions) > 1: # Minimum 2 points required for standard deviation
+            head_pts = np.array(all_head_positions)
+            # Standard deviation across X, Y, Z axes, normalized and scaled
+            head_stability_val = np.linalg.norm(np.std(head_pts, axis=0)) * 100 
+        
+        # Append global metrics
+        key_metrics["Global"] = {"head_stability": head_stability_val}
+
+        # 4. Benchmarking and Weighted Scoring
+        scores = []
+        total_weight = 0
+        for metric_id, cfg in BENCHMARKS.items():
+            phase = cfg["phase"]
+            
+            # Verify phase and metric exist in extracted data
+            if phase in key_metrics and metric_id in key_metrics[phase]:
+                val = key_metrics[phase][metric_id]
+                
+                # Skip if value is None
+                if val is None:
+                    continue
+                
+                status, color = get_status(val, cfg, self.player_level)
+                weight = cfg.get("priority_weight", 1.0)
+                
+                metric_result = {
+                    "name": cfg["label"],
+                    "value": round(val, 1),
+                    "unit": cfg["unit"],
+                    "status": status,
+                    "color": color,
+                    "ideal_range": f"{cfg[self.player_level]['min']}-{cfg[self.player_level]['max']}",
+                    "feedback": cfg["hint"] if status != "Good" else "Excellent!"
+                }
+                report["detailed_metrics"].append(metric_result)
+                
+                score = 100 if status == "Good" else (60 if status == "Fair" else 20)
+                scores.append(score * weight)
+                total_weight += weight
+                
+                # 5. Priority Fix Logic based on weights and deviation
+                if status != "Good":
+                    deviation = abs(val - cfg[self.player_level]["ideal"])
+                    report["priority_fixes"].append({
+                        "score_impact": deviation * weight, # Calculate error impact
+                        "issue": cfg["label"],
+                        "advice": cfg["hint"]
+                    })
+
+        # Sort fixes by score_impact descending
+        report["priority_fixes"].sort(key=lambda x: x["score_impact"], reverse=True)
+        
+        # Final summary
+        report["summary"] = {
+            "overall_score": int(np.sum(scores) / total_weight) if total_weight > 0 else 0,
+            "player_level": self.player_level,
+            "total_metrics_analyzed": len(scores)
+        }
+        
+        return report

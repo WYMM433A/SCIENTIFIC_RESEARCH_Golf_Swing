@@ -198,27 +198,26 @@ class GolfDBPoseDataset(Dataset):
         num_frames = len(poses)
         
         if self.train:
-            # Random window sampling
-            if num_frames > self.seq_length:
-                start = np.random.randint(0, num_frames - self.seq_length)
+            # Cải tiến lấy mẫu: 80% cơ hội chọn cửa sổ chứa sự kiện swing
+            valid_events = [e for e in events[1:9] if 0 <= e < num_frames]
+            if len(valid_events) > 0 and np.random.random() < 0.8:
+                target_event = int(np.random.choice(valid_events))
+                # Đặt sự kiện ở một vị trí ngẫu nhiên trong cửa sổ (không nhất thiết phải ở giữa)
+                offset = np.random.randint(10, self.seq_length - 10)
+                start = max(0, target_event - offset)
+                start = min(start, max(0, num_frames - self.seq_length))
             else:
-                start = 0
+                start = np.random.randint(0, max(1, num_frames - self.seq_length))
             
             end = start + self.seq_length
+            poses_seq = poses[start:end]
             
-            # Handle short videos
-            if end > num_frames:
-                # Pad with last frame
-                poses_seq = np.vstack([
-                    poses[start:],
-                    np.tile(poses[-1:], (end - num_frames, 1))
-                ])
-                labels = self._create_labels(events, num_frames, start, end)
-                # Pad labels too
-                labels = np.concatenate([labels, np.full(end - num_frames, 8)])
-            else:
-                poses_seq = poses[start:end]
-                labels = self._create_labels(events, num_frames, start, end)
+            # Xử lý padding nếu video ngắn hơn seq_length
+            if len(poses_seq) < self.seq_length:
+                pad_len = self.seq_length - len(poses_seq)
+                poses_seq = np.vstack([poses_seq, np.tile(poses_seq[-1:], (pad_len, 1))])
+
+            labels = self._create_labels(events, num_frames, start, start + self.seq_length)
         else:
             # Full video for validation
             poses_seq = poses
@@ -235,7 +234,10 @@ class GolfDBPoseDataset(Dataset):
         Create per-frame labels from events array.
         events[1] through events[8] are the 8 phases.
         """
-        labels = np.full(end - start, 8, dtype=np.int32)  # Default: no-event (class 8)
+        seq_len = end - start
+        labels = np.full(seq_len, 8, dtype=np.int32)
+        # Mở rộng nhãn ra +/- 2 frames (tổng cộng 5 frames cho mỗi sự kiện)
+        radius = 2
         
         for phase_id in range(8):
             event_idx = phase_id + 1  # events[1] = Address, events[2] = Takeaway, etc.
@@ -243,11 +245,11 @@ class GolfDBPoseDataset(Dataset):
             if event_idx < len(events):
                 event_frame = int(events[event_idx])
                 
-                # Map to position in our window
-                rel_pos = event_frame - start
-                
-                if 0 <= rel_pos < len(labels):
-                    labels[rel_pos] = phase_id
+                 # Áp dụng mở rộng nhãn
+                for offset in range(-radius, radius + 1):
+                    rel_pos = event_frame + offset - start
+                    if 0 <= rel_pos < seq_len:
+                        labels[rel_pos] = phase_id
         
         return labels
 
@@ -288,7 +290,7 @@ def train_model(
     
     # Loss with class weighting (8 phases + no-event)
     # Events are rare (~1:35 ratio), so weight them higher
-    weights = torch.FloatTensor([1/8]*8 + [1/35]).to(device)
+    weights = torch.FloatTensor([10.0]*8 + [1.0]).to(device)
     criterion = nn.CrossEntropyLoss(weight=weights)
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
     
