@@ -29,9 +29,8 @@ from datetime import datetime
 # Import from src package
 from src.pose import SwingAnalyzer
 from src.phase import create_predictor
-from src.biomechanics import SwingBiomechanicsEvaluator
+from src.biomechanics import GolfBiomechanics, SwingBiomechanicsEvaluator
 from src.video.cleaner import detect_swing_bounds, crop_video
-from src.biomechanics import GolfBiomechanics
 from train_phase_scorer import predict_scores, MODEL_OUT_PATH
 from src import config
 import pandas as pd
@@ -105,7 +104,6 @@ class GolfSwingPipeline:
         self.video_name = video_path.stem
         
         print("\n" + "=" * 70)
-<<<<<<< HEAD
         print("[GOLF] SWINGAI COACH - UNIFIED PIPELINE")
         print("=" * 70)
         print(f"[VIDEO] Input: {video_path}")
@@ -113,49 +111,27 @@ class GolfSwingPipeline:
         print("=" * 70 + "\n")
         
         # Step 1: Clean video
-        print("[STEP 1/4] Cleaning Video...")
+        print("[STEP 1/5] Cleaning Video...")
         self._clean_video(video_path)
         
         # Step 2: Extract poses
-        print("\n[TASK] STEP 2/4: Extracting Poses...")
+        print("\n[TASK] STEP 2/5: Extracting Poses...")
         self._extract_poses(show_preview)
         
         # Step 3: Detect phases
-        print("\n[TASK] STEP 3/4: Detecting 8 Swing Phases...")
+        print("\n[TASK] STEP 3/5: Detecting 8 Swing Phases...")
         self._detect_phases()
         
-        # Step 3b: Score phases (NEW)
-        print("\n[TASK] STEP 3b/4: Scoring Phases...")
+        # Step 4: Score phases
+        print("\n[TASK] STEP 4/5: Scoring Phases...")
         self._score_swing()
         
-        # Step 4: Extract key frames
-        print("\n[TASK] STEP 4/4: Extracting 8 Key Frames...")
-=======
-        print("SWINGAI COACH - UNIFIED PIPELINE")
-        print("=" * 70)
-        print(f"Input: {video_path}")
-        print(f"Output: {self.output_base_dir}")
-        print("=" * 70 + "\n")
-        
-        # Step 1: Clean video
-        print("STEP 1/5: Cleaning Video...")
-        self._clean_video(video_path)
-        
-        # Step 2: Extract poses
-        print("\nSTEP 2/5: Extracting Poses...")
-        self._extract_poses(show_preview)
-        
-        # Step 3: Detect phases
-        print("\nSTEP 3/5: Detecting 8 Swing Phases...")
-        self._detect_phases()
-        
-        # Step 4: Evaluate Biomechanics
-        print("\nSTEP 4/5: Performing Biomechanics Evaluation...")
+        # Step 4b: Evaluate Biomechanics
+        print("\n[TASK] STEP 4b/5: Performing Biomechanics Evaluation...")
         self._evaluate_biomechanics()
         
         # Step 5: Extract key frames
-        print("\nSTEP 5/5: Extracting 8 Key Frames...")
->>>>>>> origin/main
+        print("\n[TASK] STEP 5/5: Extracting 8 Key Frames...")
         self._extract_keyframes()
         
         # Summary
@@ -237,13 +213,8 @@ class GolfSwingPipeline:
         
         self.cleaned_video_path = output_path
         
-<<<<<<< HEAD
         print(f"   [OK] Cleaned video saved: {output_path.name}")
         print(f"   [OK] Frames: {swing_start}-{swing_end} → {frames_written} frames kept")
-=======
-        print(f"   [DONE] Cleaned video saved: {output_path.name}")
-        print(f"   [INFO] Frames: {swing_start}-{swing_end} -> {frames_written} frames kept")
->>>>>>> origin/main
     
     def _extract_poses(self, show_preview=False):
         """
@@ -270,15 +241,9 @@ class GolfSwingPipeline:
             metrics_df = self.analyzer.getMetricsDataFrame()
             metrics_df.to_csv(str(self.metrics_csv_path), index=False)
             
-<<<<<<< HEAD
             print(f"   [OK] Pose CSV saved: {self.poses_csv_path.name}")
             print(f"   [OK] Metrics CSV saved: {self.metrics_csv_path.name}")
             print(f"   [OK] Frames processed: {len(pose_df)}, Features: {len(pose_df.columns) - 1}")
-=======
-            print(f"   [DONE] Pose CSV saved: {self.poses_csv_path.name}")
-            print(f"   [DONE] Metrics CSV saved: {self.metrics_csv_path.name}")
-            print(f"   [INFO] Frames processed: {len(pose_df)}, Features: {len(pose_df.columns) - 1}")
->>>>>>> origin/main
         else:
             raise RuntimeError("Pose extraction failed. Check video quality.")
     
@@ -311,18 +276,13 @@ class GolfSwingPipeline:
         self.keyframes = self.phase_results['keyframes']
         self.phases_csv_path = self.phase_results['phases_csv']
         
-<<<<<<< HEAD
         print(f"   [OK] 8 phases detected (method: {self.phase_method}):")
-=======
-        print(f"   [DONE] 8 phases detected (method: {self.phase_method}):")
->>>>>>> origin/main
         for phase_name in self.predictor.PHASE_NAMES:
             if phase_name in self.phase_ranges:
                 start, end = self.phase_ranges[phase_name]
                 duration = end - start + 1
                 print(f"      • {phase_name:<18} frames {start:>4d}-{end:>4d} ({duration:>3d} frames)")
     
-<<<<<<< HEAD
     def _score_swing(self):
         print(f"   [DEBUG] phases_csv   = {self.phases_csv_path}")
         print(f"   [DEBUG] metrics_csv  = {self.metrics_csv_path}")
@@ -443,7 +403,7 @@ class GolfSwingPipeline:
                 for score_col, phase_name in PHASE_LABEL_MAP.items():
                     if score_col not in models:
                         continue
-                    score = phase_scores.get(phase_name, 0.0)
+                    score = self.phase_scores.get(phase_name, 0.0)
                     if score >= 80:
                         continue  # no annotation needed for good phases
 
@@ -473,52 +433,42 @@ class GolfSwingPipeline:
             import traceback
             traceback.print_exc()
 
-    
-=======
     def _evaluate_biomechanics(self):
         """
-        Step 4: Perform scientific biomechanics evaluation using detected keyframes.
+        Step 4b: Perform scientific biomechanics evaluation using detected keyframes.
         """
-        import pandas as pd
         import json
-        
+
         # Load extracted pose data
         poses_df = pd.read_csv(str(self.poses_csv_path))
-        
+
         # Convert keyframes to simple format {phase_name: frame_idx} for the evaluator
         eval_keyframes = {name: info['key_frame'] for name, info in self.keyframes.items()}
-        
+
         # Run scientific evaluation
         self.evaluation_report = self.evaluator.evaluate(poses_df, eval_keyframes)
-        
+
         # Save detailed report as JSON
         report_path = self.metrics_dir / f"{self.video_name}_evaluation.json"
         with open(report_path, 'w', encoding='utf-8') as f:
             json.dump(self.evaluation_report, f, indent=4, ensure_ascii=False)
-        
-        print(f"   [DONE] Evaluation complete. Overall Score: {self.evaluation_report['summary']['overall_score']}/100")
-        print(f"   [DONE] Report saved: {report_path.name}")
 
->>>>>>> origin/main
+        print(f"   [OK] Evaluation complete. Overall Score: {self.evaluation_report['summary']['overall_score']}/100")
+        print(f"   [OK] Report saved: {report_path.name}")
+
     def _extract_keyframes(self):
         """
-        Step 4: Extract 8 key frames (one per phase).
+        Step 5: Extract 8 key frames (one per phase).
         
         Keyframes are already extracted by the adapter in _detect_phases.
         This step just prints the summary.
         """
-<<<<<<< HEAD
         print(f"\n   [OK] 8 key frames extracted to: {self.keyframes_dir / self.output_folder_name}")
         print(f"   [OK] Phase info saved to: {self.phases_csv_path}")
-=======
-        print(f"\n   [DONE] 8 key frames extracted to: {self.keyframes_dir / self.output_folder_name}")
-        print(f"   [DONE] Phase info saved to: {self.phases_csv_path}")
->>>>>>> origin/main
     
     def _print_summary(self):
         """Print pipeline completion summary."""
         print("\n" + "=" * 70)
-<<<<<<< HEAD
         print("[DONE] PIPELINE COMPLETE!")
         print("=" * 70)
         
@@ -529,28 +479,16 @@ class GolfSwingPipeline:
         print(f"   🎯 Scores:        {getattr(self, 'scores_csv_path', 'N/A')}")
         print(f"   [TASK] Phase Info:    {self.phases_csv_path}")
         
-        print(f"\n🖼[GOLF]  KEY FRAMES ({self.keyframes_dir / self.output_folder_name}):")
-=======
-        print("PIPELINE COMPLETE!")
-        print("=" * 70)
-        
-        print("\nOUTPUT FILES:")
-        print(f"   Video:      {self.cleaned_video_path}")
-        print(f"   Pose Data:  {self.poses_csv_path}")
-        print(f"   Metrics:    {self.metrics_csv_path}")
-        print(f"   Phase Info: {self.phases_csv_path}")
-        
         if self.evaluation_report:
             print(f"\nBIOMECHANICS SUMMARY (Score: {self.evaluation_report['summary']['overall_score']}/100):")
-            if self.evaluation_report['priority_fixes']:
+            if self.evaluation_report.get('priority_fixes'):
                 print("   TOP IMPROVEMENTS:")
                 for fix in self.evaluation_report['priority_fixes'][:3]:
                     print(f"      • {fix['issue']}: {fix['advice']}")
             else:
                 print("   Excellent form! No major issues detected.")
         
-        print(f"\nKEY FRAMES ({self.keyframes_dir / self.output_folder_name}):")
->>>>>>> origin/main
+        print(f"\n🖼[GOLF]  KEY FRAMES ({self.keyframes_dir / self.output_folder_name}):")
         for phase_name in self.predictor.PHASE_NAMES:
             if phase_name in self.keyframes:
                 frame_info = self.keyframes[phase_name]
@@ -571,12 +509,9 @@ class GolfSwingPipeline:
             'keyframes_dir': str(self.keyframes_dir / self.output_folder_name),
             'keyframes': self.keyframes,
             'phase_ranges': self.phase_ranges,
-<<<<<<< HEAD
             'overall_score': getattr(self, 'overall_score', 0),
-            'phase_scores': getattr(self, 'phase_scores', {})
-=======
+            'phase_scores': getattr(self, 'phase_scores', {}),
             'evaluation': self.evaluation_report
->>>>>>> origin/main
         }
 
 
