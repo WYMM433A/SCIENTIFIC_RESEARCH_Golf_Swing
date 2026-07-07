@@ -739,6 +739,14 @@ def _top_deviated_metric_names(
 
     prefix = phase_name.replace("-", "_").replace(" ", "_").lower()
 
+    # Mirror the same all_local_zero bypass used in generate_phase_feedback so
+    # red joints always match the text feedback for bias-only phases (e.g. Finish).
+    phase_locals = [
+        float(local_contribs.get(col, 0.0))
+        for col in feature_cols if col.startswith(prefix + "_")
+    ]
+    all_local_zero = bool(phase_locals) and all(abs(v) < 1e-6 for v in phase_locals)
+
     deviations = []
     relaxed_deviations = []
     for col in feature_cols:
@@ -757,12 +765,15 @@ def _top_deviated_metric_names(
         deviation = val - med
         norm_dev = abs(deviation) / max(iqr, 1e-6)
         local = float(local_contribs.get(col, 0.0))
-        weighted = local * norm_dev
+        weighted = norm_dev if all_local_zero else local * norm_dev
 
         if weighted > 0:
             relaxed_deviations.append((weighted, metric))
 
-        if local >= MIN_LOCAL_CONTRIB and norm_dev >= MIN_NORM_DEVIATION and weighted > 0:
+        passes = norm_dev >= MIN_NORM_DEVIATION and (
+            all_local_zero or (local >= MIN_LOCAL_CONTRIB and weighted > 0)
+        )
+        if passes:
             deviations.append((weighted, metric))
 
     if deviations:
