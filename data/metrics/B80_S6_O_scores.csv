@@ -1,0 +1,10 @@
+phase,score,confidence,key_frame,feedback
+Address,85.3,1.0,77,No issues detected
+Takeaway,85.7,1.0,95,No issues detected
+Mid-backswing,87.4,1.0,101,No issues detected
+Top,0.0,1.0,114,No issues detected
+Mid-downswing,91.4,1.0,118,No issues detected
+Impact,78.3,1.0,122,Hip rotation low at impact position
+Follow-through,76.3,1.0,124,Lead arm bent at follow-through checkpoint
+Finish,91.0,1.0,143,No issues detected
+Overall,85.7,1.0,-1,OVERALL: 85.7/100

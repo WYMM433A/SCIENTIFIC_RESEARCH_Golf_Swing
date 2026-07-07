@@ -1,0 +1,10 @@
+phase,score,confidence,key_frame,feedback
+Address,81.2,1.0,71,Stance too wide at address — bring feet to shoulder width | Spine angle too upright at address — add more forward tilt
+Takeaway,84.3,1.0,101,No issues detected
+Mid-backswing,88.1,1.0,121,No issues detected
+Top,0.0,1.0,144,No issues detected
+Mid-downswing,89.1,1.0,149,No issues detected
+Impact,74.4,1.0,161,Lead arm bent at impact position
+Follow-through,75.5,1.0,166,Lead arm bent at follow-through checkpoint
+Finish,86.4,1.0,202,No issues detected
+Overall,84.3,1.0,-1,OVERALL: 84.3/100

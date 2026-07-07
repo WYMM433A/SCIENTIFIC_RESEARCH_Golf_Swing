@@ -1,0 +1,9 @@
+Video,Phase,Start_Frame,End_Frame,Duration,Key_Frame,Image_Path
+B68_F1_I_cleaned,Address,148,154,7,151,data\keyframes\B68_F1_I_nn\B68_F1_I_cleaned_Address.jpg
+B68_F1_I_cleaned,Takeaway,159,165,7,162,data\keyframes\B68_F1_I_nn\B68_F1_I_cleaned_Takeaway.jpg
+B68_F1_I_cleaned,Mid-backswing,164,170,7,167,data\keyframes\B68_F1_I_nn\B68_F1_I_cleaned_Mid-backswing.jpg
+B68_F1_I_cleaned,Top,181,187,7,184,data\keyframes\B68_F1_I_nn\B68_F1_I_cleaned_Top.jpg
+B68_F1_I_cleaned,Mid-downswing,186,192,7,189,data\keyframes\B68_F1_I_nn\B68_F1_I_cleaned_Mid-downswing.jpg
+B68_F1_I_cleaned,Impact,188,194,7,191,data\keyframes\B68_F1_I_nn\B68_F1_I_cleaned_Impact.jpg
+B68_F1_I_cleaned,Follow-through,191,197,7,194,data\keyframes\B68_F1_I_nn\B68_F1_I_cleaned_Follow-through.jpg
+B68_F1_I_cleaned,Finish,216,219,4,217,data\keyframes\B68_F1_I_nn\B68_F1_I_cleaned_Finish.jpg

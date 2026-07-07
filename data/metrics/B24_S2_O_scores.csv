@@ -1,0 +1,10 @@
+phase,score,confidence,key_frame,feedback
+Address,70.1,1.0,124,Stance too wide at address — bring feet to shoulder width | Trail leg too straight at address — add knee flex
+Takeaway,67.1,1.0,137,Wrist hinge low at takeaway — wrists not yet loading | Wrists relatively flat at takeaway position
+Mid-backswing,73.3,1.0,143,Low hip-shoulder separation at mid-backswing | Trail knee relatively straight at mid-backswing
+Top,0.0,1.0,151,No issues detected
+Mid-downswing,79.0,1.0,155,Low hip-shoulder separation at mid-downswing
+Impact,64.1,1.0,158,No issues detected
+Follow-through,64.7,1.0,160,No issues detected
+Finish,48.3,1.0,192,No issues detected
+Overall,67.9,1.0,-1,OVERALL: 67.9/100

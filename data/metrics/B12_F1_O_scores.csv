@@ -1,0 +1,10 @@
+phase,score,confidence,key_frame,feedback
+Address,68.7,1.0,51,Trail leg too straight at address — add knee flex | Hands positioned too close to body at address
+Takeaway,59.0,1.0,71,Hip-shoulder separation low at takeaway position | Lead arm bent at takeaway checkpoint
+Mid-backswing,64.9,1.0,76,Low hip-shoulder separation at mid-backswing
+Top,0.0,1.0,87,No issues detected
+Mid-downswing,74.2,1.0,91,No issues detected
+Impact,76.0,1.0,94,No issues detected
+Follow-through,62.4,1.0,96,No issues detected
+Finish,53.6,1.0,115,No issues detected
+Overall,63.8,1.0,-1,OVERALL: 63.8/100

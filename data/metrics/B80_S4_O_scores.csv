@@ -1,0 +1,10 @@
+phase,score,confidence,key_frame,feedback
+Address,82.8,1.0,83,Spine angle too upright at address — add more forward tilt | Stance too wide at address — bring feet to shoulder width
+Takeaway,85.8,1.0,98,No issues detected
+Mid-backswing,80.4,1.0,102,Lead arm bent at mid-backswing checkpoint | Trail knee relatively straight at mid-backswing
+Top,0.0,1.0,114,No issues detected
+Mid-downswing,89.7,1.0,118,No issues detected
+Impact,78.7,1.0,121,No issues detected
+Follow-through,78.7,1.0,124,Lead arm bent at follow-through checkpoint
+Finish,85.9,1.0,204,No issues detected
+Overall,84.6,1.0,-1,OVERALL: 84.6/100

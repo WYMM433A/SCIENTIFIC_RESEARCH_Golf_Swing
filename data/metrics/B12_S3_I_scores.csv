@@ -1,0 +1,10 @@
+phase,score,confidence,key_frame,feedback
+Address,67.7,1.0,106,Stance too wide at address — bring feet to shoulder width | Shoulders tilted excessively at address — level them out
+Takeaway,74.6,1.0,121,Wrist hinge low at takeaway — wrists not yet loading | Wrists relatively flat at takeaway position
+Mid-backswing,70.3,1.0,125,No issues detected
+Top,0.0,1.0,138,No issues detected
+Mid-downswing,73.4,1.0,146,No issues detected
+Impact,63.9,1.0,149,No issues detected
+Follow-through,58.6,1.0,150,No issues detected
+Finish,58.2,1.0,185,Limited weight transfer at finish — lead knee over-flexed
+Overall,69.0,1.0,-1,OVERALL: 69.0/100

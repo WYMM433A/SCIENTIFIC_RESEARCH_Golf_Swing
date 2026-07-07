@@ -1,0 +1,10 @@
+phase,score,confidence,key_frame,feedback
+Address,67.2,1.0,102,Trail leg too straight at address — add knee flex | Stance too wide at address — bring feet to shoulder width
+Takeaway,67.3,1.0,113,Lead arm bent at takeaway checkpoint | Wrist hinge low at takeaway — wrists not yet loading
+Mid-backswing,76.9,1.0,119,Trail knee relatively straight at mid-backswing | Lead arm bent at mid-backswing checkpoint
+Top,0.0,1.0,123,No issues detected
+Mid-downswing,77.8,1.0,125,No issues detected
+Impact,77.4,1.0,126,No issues detected
+Follow-through,65.7,1.0,137,Lead arm bent at follow-through checkpoint
+Finish,47.2,1.0,195,No issues detected
+Overall,69.0,1.0,-1,OVERALL: 69.0/100

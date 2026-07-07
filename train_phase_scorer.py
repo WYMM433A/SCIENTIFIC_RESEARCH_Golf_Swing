@@ -493,6 +493,8 @@ def generate_phase_feedback(
     prefix = phase_name.replace("-", "_").replace(" ", "_").lower()
 
     deviations = []
+    fallback_candidates = []
+    relaxed_candidates = []
     for col in feature_cols:
         if not col.startswith(prefix + "_"):
             continue
@@ -512,6 +514,13 @@ def generate_phase_feedback(
         local = float(local_contribs.get(col, 0.0))
         weighted = local * norm_dev
 
+        weighted = local * norm_dev
+
+        # Keep a relaxed ranking list so low-score phases still get at least
+        # one concrete checkpoint when strict gates filter everything out.
+        if weighted > 0:
+            relaxed_candidates.append((weighted, metric))
+
         if local < MIN_LOCAL_CONTRIB or norm_dev < MIN_NORM_DEVIATION:
             continue
 
@@ -519,6 +528,8 @@ def generate_phase_feedback(
         key = (prefix, metric, direction)
         if key in FEATURE_FEEDBACK_MAP:
             deviations.append((weighted, FEATURE_FEEDBACK_MAP[key]))
+        else:
+            fallback_candidates.append((weighted, metric))
 
     deviations.sort(key=lambda x: x[0], reverse=True)
     seen, feedback = set(), []
@@ -526,6 +537,33 @@ def generate_phase_feedback(
         if msg not in seen and len(feedback) < max_items:
             seen.add(msg)
             feedback.append(msg)
+
+    # Fallback: if a phase is weak but no hand-authored mapping exists for the
+    # strongest deviated metrics, still provide actionable generic guidance.
+    if not feedback and fallback_candidates:
+        fallback_candidates.sort(key=lambda x: x[0], reverse=True)
+        for _, metric in fallback_candidates[:max_items]:
+            metric_label = metric.replace("_", " ")
+            feedback.append(
+                f"{phase_name}: {metric_label} deviates from benchmark; prioritize correcting this checkpoint"
+            )
+
+    # Last fallback: if strict gates filtered everything for a weak phase,
+    # use top relaxed deviations so detailed feedback is never empty.
+    if not feedback and relaxed_candidates:
+        relaxed_candidates.sort(key=lambda x: x[0], reverse=True)
+        for _, metric in relaxed_candidates[:max_items]:
+            metric_label = metric.replace("_", " ")
+            feedback.append(
+                f"{phase_name}: {metric_label} is the largest measurable deviation in this phase"
+            )
+
+    # Absolute safety net: do not leave weak phases without guidance text.
+    if not feedback:
+        feedback.append(
+            f"{phase_name}: phase score is below target; review posture, rotation, and balance checkpoints"
+        )
+
     return feedback
 
 
@@ -551,6 +589,7 @@ def _top_deviated_metric_names(
     prefix = phase_name.replace("-", "_").replace(" ", "_").lower()
 
     deviations = []
+    relaxed_deviations = []
     for col in feature_cols:
         if not col.startswith(prefix + "_"):
             continue
@@ -569,11 +608,19 @@ def _top_deviated_metric_names(
         local = float(local_contribs.get(col, 0.0))
         weighted = local * norm_dev
 
+        if weighted > 0:
+            relaxed_deviations.append((weighted, metric))
+
         if local >= MIN_LOCAL_CONTRIB and norm_dev >= MIN_NORM_DEVIATION and weighted > 0:
             deviations.append((weighted, metric))
 
-    deviations.sort(key=lambda x: x[0], reverse=True)
-    return [m for _, m in deviations[:max_items]]
+    if deviations:
+        deviations.sort(key=lambda x: x[0], reverse=True)
+        return [m for _, m in deviations[:max_items]]
+
+    # Fallback for weak phases when strict gates produce no metrics.
+    relaxed_deviations.sort(key=lambda x: x[0], reverse=True)
+    return [m for _, m in relaxed_deviations[:max_items]]
 
 
 def draw_annotated_keyframe(
@@ -848,7 +895,18 @@ def predict_scores(swing_id: str, model_path: str = MODEL_OUT_PATH,
     feature_cols = bundle["feature_cols"]
     benchmarks   = bundle.get("benchmarks", {})
 
-    row   = {col: feats.get(col, np.nan) for col in feature_cols}
+    # Backward compatibility:
+    # older model bundles may contain legacy top-phase feature names prefixed
+    # with "t__op_" due a historical typo. Map both ways at inference so
+    # existing bundles keep working after the phase-name fix.
+    row = {}
+    for col in feature_cols:
+        val = feats.get(col, np.nan)
+        if pd.isna(val) and col.startswith("t__op_"):
+            val = feats.get("top_" + col[len("t__op_"):], np.nan)
+        elif pd.isna(val) and col.startswith("top_"):
+            val = feats.get("t__op_" + col[len("top_"):], np.nan)
+        row[col] = val
     X_raw = np.array([[row[c] for c in feature_cols]])
     X     = imputer.transform(X_raw)
 

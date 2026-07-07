@@ -1,10 +1,10 @@
 phase,score,confidence,key_frame,feedback
-Address,66.7,1.0,137,Stance too wide at address — bring feet to shoulder width
-Takeaway,59.0,1.0,158,Lead arm bent at takeaway checkpoint | Wrist hinge low at takeaway — wrists not yet loading
-Mid-backswing,66.8,1.0,165,No issues detected
-Top,85.1,1.0,182,No issues detected
-Mid-downswing,71.2,1.0,186,No issues detected
-Impact,70.0,1.0,189,Lead arm bent at impact position | Body rotation ahead of arm position at impact
-Follow-through,53.3,1.0,190,No issues detected
-Finish,53.6,1.0,220,Limited weight transfer at finish — lead knee over-flexed
-Overall,65.7,1.0,-1,OVERALL: 65.7/100
+Address,68.3,1.0,137,Address: trail elbow angle deviates from benchmark; prioritize correcting this checkpoint
+Takeaway,56.7,1.0,158,Takeaway: stance width ratio deviates from benchmark; prioritize correcting this checkpoint
+Mid-backswing,67.9,1.0,165,Mid-backswing: lead knee flex is the largest measurable deviation in this phase | Mid-backswing: trail elbow angle is the largest measurable deviation in this phase
+Top,81.8,1.0,182,Top: lag angle is the largest measurable deviation in this phase | Top: wrist hinge is the largest measurable deviation in this phase
+Mid-downswing,68.3,1.0,186,Mid-downswing: shoulder width is the largest measurable deviation in this phase | Mid-downswing: arm extension is the largest measurable deviation in this phase
+Impact,67.1,1.0,189,Hip rotation low at impact position
+Follow-through,56.1,1.0,190,Follow-through: trail elbow angle is the largest measurable deviation in this phase | Follow-through: stance width is the largest measurable deviation in this phase
+Finish,61.5,1.0,220,"Finish: phase score is below target; review posture, rotation, and balance checkpoints"
+Overall,66.0,1.0,-1,OVERALL: 66.0/100

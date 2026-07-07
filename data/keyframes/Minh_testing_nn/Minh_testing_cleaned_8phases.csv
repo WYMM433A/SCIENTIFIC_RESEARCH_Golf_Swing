@@ -1,9 +1,0 @@
-Video,Phase,Start_Frame,End_Frame,Duration,Key_Frame,Image_Path
-Minh_testing_cleaned,Address,62,68,7,65,data\keyframes\Minh_testing_nn\Minh_testing_cleaned_Address.jpg
-Minh_testing_cleaned,Takeaway,85,91,7,88,data\keyframes\Minh_testing_nn\Minh_testing_cleaned_Takeaway.jpg
-Minh_testing_cleaned,Mid-backswing,91,97,7,94,data\keyframes\Minh_testing_nn\Minh_testing_cleaned_Mid-backswing.jpg
-Minh_testing_cleaned,Top,105,111,7,108,data\keyframes\Minh_testing_nn\Minh_testing_cleaned_Top.jpg
-Minh_testing_cleaned,Mid-downswing,109,115,7,112,data\keyframes\Minh_testing_nn\Minh_testing_cleaned_Mid-downswing.jpg
-Minh_testing_cleaned,Impact,113,119,7,116,data\keyframes\Minh_testing_nn\Minh_testing_cleaned_Impact.jpg
-Minh_testing_cleaned,Follow-through,115,121,7,118,data\keyframes\Minh_testing_nn\Minh_testing_cleaned_Follow-through.jpg
-Minh_testing_cleaned,Finish,140,146,7,143,data\keyframes\Minh_testing_nn\Minh_testing_cleaned_Finish.jpg

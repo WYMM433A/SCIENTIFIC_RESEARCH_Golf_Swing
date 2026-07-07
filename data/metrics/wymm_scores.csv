@@ -1,0 +1,10 @@
+phase,score,confidence,key_frame,feedback
+Address,82.2,1.0,175,Address: trail elbow angle deviates from benchmark; prioritize correcting this checkpoint
+Takeaway,66.8,1.0,194,Takeaway: shoulder rotation deviates from benchmark; prioritize correcting this checkpoint
+Mid-backswing,72.1,1.0,199,Mid-backswing: lead knee flex deviates from benchmark; prioritize correcting this checkpoint
+Top,81.0,1.0,215,Top: lag angle is the largest measurable deviation in this phase | Top: spine lateral tilt is the largest measurable deviation in this phase
+Mid-downswing,76.4,1.0,220,Mid-downswing: spine lateral tilt is the largest measurable deviation in this phase | Mid-downswing: trail elbow angle is the largest measurable deviation in this phase
+Impact,72.9,1.0,223,Impact: arm extension is the largest measurable deviation in this phase | Impact: spine angle is the largest measurable deviation in this phase
+Follow-through,64.8,1.0,224,Follow-through: stance width deviates from benchmark; prioritize correcting this checkpoint
+Finish,55.0,1.0,262,"Finish: phase score is below target; review posture, rotation, and balance checkpoints"
+Overall,71.4,1.0,-1,OVERALL: 71.4/100

@@ -1,0 +1,10 @@
+phase,score,confidence,key_frame,feedback
+Address,73.8,1.0,27,Stance too narrow at address — widen to shoulder width | Hands positioned too far from body at address
+Takeaway,78.3,1.0,51,Shoulder rotation low at takeaway checkpoint | Hip-shoulder separation low at takeaway position
+Mid-backswing,76.5,1.0,52,Shoulder rotation low at mid-backswing checkpoint | Trail knee relatively straight at mid-backswing
+Top,0.0,1.0,77,No issues detected
+Mid-downswing,75.8,1.0,85,No issues detected
+Impact,82.1,1.0,88,Lead arm bent at impact position
+Follow-through,68.0,1.0,96,No issues detected
+Finish,60.1,1.0,97,No issues detected
+Overall,75.4,1.0,-1,OVERALL: 75.4/100

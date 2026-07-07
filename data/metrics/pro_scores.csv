@@ -1,10 +1,10 @@
 phase,score,confidence,key_frame,feedback
-Address,87.7,1.0,129,No issues detected
-Takeaway,93.8,1.0,142,No issues detected
-Mid-backswing,80.8,1.0,147,Low hip-shoulder separation at mid-backswing
-Top,97.3,1.0,168,No issues detected
-Mid-downswing,85.4,1.0,172,No issues detected
-Impact,86.2,1.0,173,No issues detected
-Follow-through,87.1,1.0,175,No issues detected
-Finish,82.7,1.0,195,No issues detected
-Overall,87.6,1.0,-1,OVERALL: 87.6/100
+Address,90.3,1.0,129,No issues detected
+Takeaway,92.2,1.0,142,No issues detected
+Mid-backswing,91.3,1.0,147,No issues detected
+Top,95.8,1.0,168,No issues detected
+Mid-downswing,92.2,1.0,172,No issues detected
+Impact,92.1,1.0,173,No issues detected
+Follow-through,97.1,1.0,175,No issues detected
+Finish,93.0,1.0,195,No issues detected
+Overall,93.0,1.0,-1,OVERALL: 93.0/100

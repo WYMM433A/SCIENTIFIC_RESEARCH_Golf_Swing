@@ -1,0 +1,10 @@
+phase,score,confidence,key_frame,feedback
+Address,52.4,1.0,42,Stance too wide at address — bring feet to shoulder width | Shoulders tilted excessively at address — level them out
+Takeaway,64.0,1.0,60,Lead arm bent at takeaway checkpoint | Wrist hinge low at takeaway — wrists not yet loading
+Mid-backswing,72.1,1.0,63,Lead arm bent at mid-backswing checkpoint
+Top,0.0,1.0,75,No issues detected
+Mid-downswing,77.2,1.0,79,No issues detected
+Impact,59.1,1.0,80,Lead arm bent at impact position | Hip rotation low at impact position
+Follow-through,61.6,1.0,82,No issues detected
+Finish,50.5,1.0,110,No issues detected
+Overall,64.6,1.0,-1,OVERALL: 64.6/100

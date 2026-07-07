@@ -1,0 +1,10 @@
+phase,score,confidence,key_frame,feedback
+Address,83.1,1.0,1,Stance too wide at address — bring feet to shoulder width | Hands positioned too far from body at address
+Takeaway,78.8,1.0,119,No issues detected
+Mid-backswing,83.2,1.0,124,Trail knee relatively straight at mid-backswing | Lead arm bent at mid-backswing checkpoint
+Top,0.0,1.0,134,No issues detected
+Mid-downswing,90.2,1.0,138,No issues detected
+Impact,71.0,1.0,141,Body rotation ahead of arm position at impact
+Follow-through,72.5,1.0,143,Lead arm bent at follow-through checkpoint
+Finish,80.5,1.0,189,No issues detected
+Overall,81.3,1.0,-1,OVERALL: 81.3/100

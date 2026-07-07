@@ -1,10 +1,10 @@
 phase,score,confidence,key_frame,feedback
-Address,81.3,1.0,95,Stance too wide at address — bring feet to shoulder width | Hands positioned too far from body at address
-Takeaway,64.1,1.0,117,No issues detected
-Mid-backswing,71.5,1.0,125,Lead arm bent at mid-backswing checkpoint
-Top,93.4,1.0,141,No issues detected
-Mid-downswing,79.8,1.0,146,No issues detected
-Impact,80.7,1.0,149,Hip rotation low at impact position | Lead arm bent at impact position
-Follow-through,65.1,1.0,151,No issues detected
-Finish,72.4,1.0,177,Limited weight transfer at finish — lead knee over-flexed
-Overall,76.0,1.0,-1,OVERALL: 76.0/100
+Address,88.5,1.0,95,No issues detected
+Takeaway,89.9,1.0,117,No issues detected
+Mid-backswing,73.4,1.0,125,Mid-backswing: lead arm angle is the largest measurable deviation in this phase | Mid-backswing: lead knee flex is the largest measurable deviation in this phase
+Top,86.9,1.0,141,No issues detected
+Mid-downswing,81.4,1.0,146,Mid-downswing: arm extension is the largest measurable deviation in this phase | Mid-downswing: lead arm angle is the largest measurable deviation in this phase
+Impact,76.8,1.0,149,Hip rotation low at impact position
+Follow-through,84.0,1.0,151,Follow-through: stance width ratio is the largest measurable deviation in this phase | Follow-through: lead knee flex is the largest measurable deviation in this phase
+Finish,84.0,1.0,177,"Finish: phase score is below target; review posture, rotation, and balance checkpoints"
+Overall,83.1,1.0,-1,OVERALL: 83.1/100

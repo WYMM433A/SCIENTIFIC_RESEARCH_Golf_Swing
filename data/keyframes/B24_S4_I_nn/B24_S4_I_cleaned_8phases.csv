@@ -1,0 +1,9 @@
+Video,Phase,Start_Frame,End_Frame,Duration,Key_Frame,Image_Path
+B24_S4_I_cleaned,Address,86,92,7,89,data\keyframes\B24_S4_I_nn\B24_S4_I_cleaned_Address.jpg
+B24_S4_I_cleaned,Takeaway,105,111,7,108,data\keyframes\B24_S4_I_nn\B24_S4_I_cleaned_Takeaway.jpg
+B24_S4_I_cleaned,Mid-backswing,112,118,7,115,data\keyframes\B24_S4_I_nn\B24_S4_I_cleaned_Mid-backswing.jpg
+B24_S4_I_cleaned,Top,131,137,7,134,data\keyframes\B24_S4_I_nn\B24_S4_I_cleaned_Top.jpg
+B24_S4_I_cleaned,Mid-downswing,135,141,7,138,data\keyframes\B24_S4_I_nn\B24_S4_I_cleaned_Mid-downswing.jpg
+B24_S4_I_cleaned,Impact,136,142,7,139,data\keyframes\B24_S4_I_nn\B24_S4_I_cleaned_Impact.jpg
+B24_S4_I_cleaned,Follow-through,138,144,7,141,data\keyframes\B24_S4_I_nn\B24_S4_I_cleaned_Follow-through.jpg
+B24_S4_I_cleaned,Finish,166,172,7,169,data\keyframes\B24_S4_I_nn\B24_S4_I_cleaned_Finish.jpg

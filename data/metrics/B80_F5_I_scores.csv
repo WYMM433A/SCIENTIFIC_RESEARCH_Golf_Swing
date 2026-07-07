@@ -1,0 +1,10 @@
+phase,score,confidence,key_frame,feedback
+Address,89.1,1.0,138,No issues detected
+Takeaway,86.6,1.0,161,No issues detected
+Mid-backswing,78.3,1.0,167,Low hip-shoulder separation at mid-backswing | Wrist hinge low at mid-backswing checkpoint
+Top,0.0,1.0,179,No issues detected
+Mid-downswing,81.5,1.0,183,Low hip-shoulder separation at mid-downswing
+Impact,81.3,1.0,185,Lead arm bent at impact position
+Follow-through,80.2,1.0,187,No issues detected
+Finish,82.5,1.0,207,No issues detected
+Overall,83.2,1.0,-1,OVERALL: 83.2/100

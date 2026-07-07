@@ -31,7 +31,7 @@ from src.pose import SwingAnalyzer
 from src.phase import create_predictor
 from src.video.cleaner import detect_swing_bounds, crop_video
 from src.biomechanics import PhaseScorer, GolfBiomechanics
-from train_phase_scorer import predict_scores, MODEL_OUT_PATH
+from train_phase_scorer import predict_scores, MODEL_OUT_PATH, FEEDBACK_SCORE_THRESHOLD
 from src import config
 import pandas as pd
 
@@ -313,23 +313,37 @@ class GolfSwingPipeline:
             total = result.get("total", 0.0) or 0.0
             images = result.get("images", {})
 
+            def _norm_phase_key(name):
+                return "".join(ch.lower() for ch in str(name) if ch.isalnum())
+
+            scores_norm = {_norm_phase_key(k): v for k, v in scores.items()}
+            feedback_norm = {_norm_phase_key(k): v for k, v in feedback.items()}
+
             scoring_details = []
             detailed_feedback_rows = []
 
             print("   Phase scores:")
             for phase_name in self.predictor.PHASE_NAMES:
-                score = float(scores.get(phase_name, 0.0))
-                msgs = feedback.get(phase_name, []) or []
+                norm_key = _norm_phase_key(phase_name)
+                score = float(scores.get(phase_name, scores_norm.get(norm_key, 0.0)))
+                msgs = feedback.get(phase_name, feedback_norm.get(norm_key, [])) or []
 
                 print(f"      • {phase_name:<18} Score: {score:>6.1f}/100")
 
                 key_frame = self.keyframes.get(phase_name, {}).get('key_frame', -1)
+                if msgs:
+                    feedback_text = " | ".join(msgs)
+                elif score < FEEDBACK_SCORE_THRESHOLD:
+                    feedback_text = "Needs attention (no mapped coaching text; see annotated keyframe)"
+                else:
+                    feedback_text = "No issues detected"
+
                 scoring_details.append({
                     'phase': phase_name,
                     'score': score,
                     'confidence': 1.0,
                     'key_frame': int(key_frame) if key_frame is not None else -1,
-                    'feedback': " | ".join(msgs) if msgs else "No issues detected",
+                    'feedback': feedback_text,
                 })
 
                 for msg in msgs:

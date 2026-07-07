@@ -1,0 +1,10 @@
+phase,score,confidence,key_frame,feedback
+Address,76.5,1.0,132,No issues detected
+Takeaway,74.6,1.0,149,Lead arm bent at takeaway checkpoint | Hip-shoulder separation low at takeaway position
+Mid-backswing,64.3,1.0,154,Low hip-shoulder separation at mid-backswing
+Top,0.0,1.0,172,No issues detected
+Mid-downswing,80.6,1.0,177,No issues detected
+Impact,75.9,1.0,181,No issues detected
+Follow-through,82.1,1.0,183,No issues detected
+Finish,62.8,1.0,200,Limited weight transfer at finish — lead knee over-flexed
+Overall,75.6,1.0,-1,OVERALL: 75.6/100

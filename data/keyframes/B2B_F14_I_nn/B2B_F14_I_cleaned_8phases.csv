@@ -1,0 +1,9 @@
+Video,Phase,Start_Frame,End_Frame,Duration,Key_Frame,Image_Path
+B2B_F14_I_cleaned,Address,0,4,5,2,data\keyframes\B2B_F14_I_nn\B2B_F14_I_cleaned_Address.jpg
+B2B_F14_I_cleaned,Takeaway,7,13,7,10,data\keyframes\B2B_F14_I_nn\B2B_F14_I_cleaned_Takeaway.jpg
+B2B_F14_I_cleaned,Mid-backswing,11,17,7,14,data\keyframes\B2B_F14_I_nn\B2B_F14_I_cleaned_Mid-backswing.jpg
+B2B_F14_I_cleaned,Top,24,30,7,27,data\keyframes\B2B_F14_I_nn\B2B_F14_I_cleaned_Top.jpg
+B2B_F14_I_cleaned,Mid-downswing,29,35,7,32,data\keyframes\B2B_F14_I_nn\B2B_F14_I_cleaned_Mid-downswing.jpg
+B2B_F14_I_cleaned,Impact,33,39,7,36,data\keyframes\B2B_F14_I_nn\B2B_F14_I_cleaned_Impact.jpg
+B2B_F14_I_cleaned,Follow-through,34,40,7,37,data\keyframes\B2B_F14_I_nn\B2B_F14_I_cleaned_Follow-through.jpg
+B2B_F14_I_cleaned,Finish,48,54,7,51,data\keyframes\B2B_F14_I_nn\B2B_F14_I_cleaned_Finish.jpg

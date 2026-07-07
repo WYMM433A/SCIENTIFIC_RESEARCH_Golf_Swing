@@ -1,0 +1,10 @@
+phase,score,confidence,key_frame,feedback
+Address,92.8,1.0,173,No issues detected
+Takeaway,93.5,1.0,189,No issues detected
+Mid-backswing,82.6,1.0,194,Low hip-shoulder separation at mid-backswing | Trail knee relatively straight at mid-backswing
+Top,0.0,1.0,210,No issues detected
+Mid-downswing,84.6,1.0,214,Low hip-shoulder separation at mid-downswing
+Impact,87.2,1.0,216,No issues detected
+Follow-through,88.1,1.0,217,No issues detected
+Finish,85.4,1.0,234,No issues detected
+Overall,87.7,1.0,-1,OVERALL: 87.7/100

@@ -1,0 +1,10 @@
+phase,score,confidence,key_frame,feedback
+Address,85.6,1.0,69,No issues detected
+Takeaway,89.6,1.0,90,No issues detected
+Mid-backswing,77.9,1.0,96,Low hip-shoulder separation at mid-backswing
+Top,0.0,1.0,111,No issues detected
+Mid-downswing,86.6,1.0,115,No issues detected
+Impact,87.9,1.0,118,No issues detected
+Follow-through,83.4,1.0,120,No issues detected
+Finish,74.0,1.0,217,Limited weight transfer at finish — lead knee over-flexed
+Overall,85.3,1.0,-1,OVERALL: 85.3/100

@@ -1,0 +1,10 @@
+phase,score,confidence,key_frame,feedback
+Address,73.6,1.0,134,Stance too wide at address — bring feet to shoulder width | Hands positioned too far from body at address
+Takeaway,63.3,1.0,153,Lead arm bent at takeaway checkpoint
+Mid-backswing,66.4,1.0,162,Lead arm bent at mid-backswing checkpoint | Wrist hinge low at mid-backswing checkpoint
+Top,0.0,1.0,176,No issues detected
+Mid-downswing,76.3,1.0,181,No issues detected
+Impact,72.9,1.0,183,Lead arm bent at impact position | Body rotation ahead of arm position at impact
+Follow-through,59.0,1.0,185,No issues detected
+Finish,55.5,1.0,211,Limited weight transfer at finish — lead knee over-flexed
+Overall,68.6,1.0,-1,OVERALL: 68.6/100

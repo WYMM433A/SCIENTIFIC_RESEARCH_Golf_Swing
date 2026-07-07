@@ -1,0 +1,10 @@
+phase,score,confidence,key_frame,feedback
+Address,58.3,1.0,96,Hands positioned too far from body at address | Stance too wide at address — bring feet to shoulder width
+Takeaway,54.6,1.0,124,Lead arm bent at takeaway checkpoint | Hip-shoulder separation low at takeaway position
+Mid-backswing,65.4,1.0,129,Low hip-shoulder separation at mid-backswing
+Top,0.0,1.0,130,No issues detected
+Mid-downswing,68.9,1.0,132,Low hip-shoulder separation at mid-downswing
+Impact,62.5,1.0,141,No issues detected
+Follow-through,55.2,1.0,148,No issues detected
+Finish,49.0,1.0,148,No issues detected
+Overall,61.0,1.0,-1,OVERALL: 61.0/100

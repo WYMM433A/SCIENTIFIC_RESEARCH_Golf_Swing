@@ -1,0 +1,10 @@
+phase,score,confidence,key_frame,feedback
+Address,69.7,1.0,83,Hands positioned too close to body at address
+Takeaway,69.3,1.0,104,Lead arm bent at takeaway checkpoint | Hip-shoulder separation low at takeaway position
+Mid-backswing,62.5,1.0,109,Low hip-shoulder separation at mid-backswing
+Top,0.0,1.0,124,No issues detected
+Mid-downswing,75.7,1.0,130,Low hip-shoulder separation at mid-downswing
+Impact,73.7,1.0,133,No issues detected
+Follow-through,75.9,1.0,135,No issues detected
+Finish,57.1,1.0,160,No issues detected
+Overall,70.7,1.0,-1,OVERALL: 70.7/100

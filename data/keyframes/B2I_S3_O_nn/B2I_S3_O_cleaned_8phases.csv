@@ -1,0 +1,9 @@
+Video,Phase,Start_Frame,End_Frame,Duration,Key_Frame,Image_Path
+B2I_S3_O_cleaned,Address,21,27,7,24,data\keyframes\B2I_S3_O_nn\B2I_S3_O_cleaned_Address.jpg
+B2I_S3_O_cleaned,Takeaway,41,47,7,44,data\keyframes\B2I_S3_O_nn\B2I_S3_O_cleaned_Takeaway.jpg
+B2I_S3_O_cleaned,Mid-backswing,52,58,7,55,data\keyframes\B2I_S3_O_nn\B2I_S3_O_cleaned_Mid-backswing.jpg
+B2I_S3_O_cleaned,Top,64,70,7,67,data\keyframes\B2I_S3_O_nn\B2I_S3_O_cleaned_Top.jpg
+B2I_S3_O_cleaned,Mid-downswing,69,75,7,72,data\keyframes\B2I_S3_O_nn\B2I_S3_O_cleaned_Mid-downswing.jpg
+B2I_S3_O_cleaned,Impact,74,80,7,77,data\keyframes\B2I_S3_O_nn\B2I_S3_O_cleaned_Impact.jpg
+B2I_S3_O_cleaned,Follow-through,76,82,7,79,data\keyframes\B2I_S3_O_nn\B2I_S3_O_cleaned_Follow-through.jpg
+B2I_S3_O_cleaned,Finish,165,171,7,168,data\keyframes\B2I_S3_O_nn\B2I_S3_O_cleaned_Finish.jpg
