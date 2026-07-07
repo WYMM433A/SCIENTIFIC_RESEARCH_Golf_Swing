@@ -44,7 +44,7 @@ VISUAL_OUTPUT_DIR = os.path.join("outputs", "visual_feedback")
 FEEDBACK_SCORE_THRESHOLD = 85.0
 FEEDBACK_MAX_ITEMS = 2
 MIN_LOCAL_CONTRIB = 0.02
-MIN_NORM_DEVIATION = 0.50
+MIN_NORM_DEVIATION = 0.35
 
 # ── Phase definitions ─────────────────────────────────────────────────────────
 # Maps annotation CSV column  →  phase name used in the keyframe CSV
@@ -77,75 +77,217 @@ METRIC_COLS = [
 
 # ── Feature-to-feedback map: (phase_prefix, metric_name, 'high'|'low') → message
 FEATURE_FEEDBACK_MAP = {
-    # ADDRESS — all valid static checks
-    ("address", "spine_angle",           "high"): "Spine angle too upright at address — add more forward tilt",
-    ("address", "spine_angle",           "low"):  "Too much forward bend at address — stand slightly more upright",
-    ("address", "spine_lateral_tilt",    "high"): "Shoulders tilted excessively at address — level them out",
-    ("address", "stance_width_ratio",    "low"):  "Stance too narrow at address — widen to shoulder width",
-    ("address", "stance_width_ratio",    "high"): "Stance too wide at address — bring feet to shoulder width",
-    ("address", "wrist_angle",           "high"): "Hands positioned too far from body at address",
-    ("address", "wrist_angle",           "low"):  "Hands positioned too close to body at address",
-    ("address", "lead_knee_flex",        "low"):  "Lead leg too straight at address — add knee flex",
-    ("address", "trail_knee_flex",       "low"):  "Trail leg too straight at address — add knee flex",
+    # ADDRESS
+    ("address", "spine_angle",            "high"): "Spine angle too upright at address — add more forward tilt",
+    ("address", "spine_angle",            "low"):  "Too much forward bend at address — stand slightly more upright",
+    ("address", "spine_lateral_tilt",     "high"): "Shoulders tilted excessively at address — level them out",
+    ("address", "shoulder_rotation",      "low"):  "Shoulders closed at address — align square to target line",
+    ("address", "shoulder_rotation",      "high"): "Shoulders open at address — square up to target line",
+    ("address", "stance_width_ratio",     "low"):  "Stance too narrow at address — widen to shoulder width",
+    ("address", "stance_width_ratio",     "high"): "Stance too wide at address — bring feet to shoulder width",
+    ("address", "stance_width",           "low"):  "Stance too narrow at address — widen to shoulder width",
+    ("address", "stance_width",           "high"): "Stance too wide at address — bring feet to shoulder width",
+    ("address", "wrist_angle",            "high"): "Hands positioned too far from body at address",
+    ("address", "wrist_angle",            "low"):  "Hands positioned too close to body at address",
+    ("address", "lead_arm_angle",         "low"):  "Lead arm bent at address — extend naturally toward the ball",
+    ("address", "lead_arm_angle",         "high"): "Lead arm too rigid at address — relax into natural extension",
+    ("address", "trail_elbow_angle",      "low"):  "Trail arm too bent at address — extend naturally",
+    ("address", "trail_elbow_angle",      "high"): "Trail arm too extended at address — relax arms",
+    ("address", "arm_extension",          "low"):  "Arms too bent at address — extend toward the ball",
+    ("address", "arm_extension",          "high"): "Arms too rigid at address — relax natural arm extension",
+    ("address", "shoulder_width",         "low"):  "Narrow shoulder posture at address — open chest slightly",
+    ("address", "shoulder_width",         "high"): "Wide shoulder posture detected at address — check setup",
+    ("address", "lead_knee_flex",         "low"):  "Lead leg too straight at address — add knee flex",
+    ("address", "lead_knee_flex",         "high"): "Excessive lead knee flex at address — stand more upright",
+    ("address", "trail_knee_flex",        "low"):  "Trail leg too straight at address — add knee flex",
+    ("address", "trail_knee_flex",        "high"): "Excessive trail knee flex at address — stand more upright",
 
     # TAKEAWAY
-    ("takeaway", "x_factor",             "low"):  "Hip-shoulder separation low at takeaway position",
-    ("takeaway", "shoulder_rotation",    "low"):  "Shoulder rotation low at takeaway checkpoint",
-    ("takeaway", "wrist_angle",          "low"):  "Wrists relatively flat at takeaway position",
-    ("takeaway", "wrist_hinge",          "low"):  "Wrist hinge low at takeaway — wrists not yet loading",
-    ("takeaway", "lead_arm_angle",       "low"):  "Lead arm bent at takeaway checkpoint",
-    ("takeaway", "head_displacement",    "high"): "Head displaced from address position at takeaway",
+    ("takeaway", "x_factor",              "low"):  "Hip-shoulder separation low at takeaway position",
+    ("takeaway", "x_factor",              "high"): "Hips over-rotating relative to shoulders at takeaway",
+    ("takeaway", "shoulder_rotation",     "low"):  "Shoulder rotation low at takeaway checkpoint",
+    ("takeaway", "shoulder_rotation",     "high"): "Shoulder over-rotation at takeaway — keep upper body controlled",
+    ("takeaway", "wrist_angle",           "low"):  "Wrists relatively flat at takeaway position",
+    ("takeaway", "wrist_angle",           "high"): "Wrists cupping at takeaway — keep them neutral",
+    ("takeaway", "wrist_hinge",           "low"):  "Wrist hinge low at takeaway — wrists not yet loading",
+    ("takeaway", "wrist_hinge",           "high"): "Wrists over-hinging early at takeaway",
+    ("takeaway", "lead_arm_angle",        "low"):  "Lead arm bent at takeaway checkpoint",
+    ("takeaway", "lead_arm_angle",        "high"): "Lead arm over-extended at takeaway — stay relaxed",
+    ("takeaway", "trail_elbow_angle",     "low"):  "Trail elbow tucking too early at takeaway",
+    ("takeaway", "trail_elbow_angle",     "high"): "Trail elbow flaring at takeaway — keep it soft",
+    ("takeaway", "arm_extension",         "low"):  "Arms collapsing at takeaway — maintain extension",
+    ("takeaway", "arm_extension",         "high"): "Arms overly extended at takeaway — stay relaxed",
+    ("takeaway", "shoulder_width",        "low"):  "Narrow shoulder posture at takeaway",
+    ("takeaway", "shoulder_width",        "high"): "Wide shoulder posture at takeaway",
+    ("takeaway", "stance_width",          "low"):  "Narrow stance at takeaway — check foot position",
+    ("takeaway", "stance_width",          "high"): "Stance too wide at takeaway",
+    ("takeaway", "stance_width_ratio",    "low"):  "Stance width narrow relative to shoulders at takeaway",
+    ("takeaway", "stance_width_ratio",    "high"): "Stance width wide relative to shoulders at takeaway",
+    ("takeaway", "head_displacement",     "high"): "Head displaced from address position at takeaway",
 
     # MID-BACKSWING
-    ("mid_backswing", "x_factor",        "low"):  "Low hip-shoulder separation at mid-backswing",
-    ("mid_backswing", "x_factor_3d",     "low"):  "3D hip-shoulder separation low at mid-backswing",
-    ("mid_backswing", "shoulder_rotation","low"): "Shoulder rotation low at mid-backswing checkpoint",
-    ("mid_backswing", "lead_arm_angle",  "low"):  "Lead arm bent at mid-backswing checkpoint",
-    ("mid_backswing", "wrist_angle",     "high"): "Limited wrist hinge at mid-backswing",
-    ("mid_backswing", "wrist_hinge",     "low"):  "Wrist hinge low at mid-backswing checkpoint",
-    ("mid_backswing", "head_displacement","high"): "Head displaced from address position at mid-backswing",
-    ("mid_backswing", "trail_knee_flex", "low"):  "Trail knee relatively straight at mid-backswing",
+    ("mid_backswing", "x_factor",         "low"):  "Low hip-shoulder separation at mid-backswing",
+    ("mid_backswing", "x_factor",         "high"): "Hips over-rotating at mid-backswing — maintain separation",
+    ("mid_backswing", "x_factor_3d",      "low"):  "3D hip-shoulder separation low at mid-backswing",
+    ("mid_backswing", "shoulder_rotation", "low"): "Shoulder rotation low at mid-backswing checkpoint",
+    ("mid_backswing", "shoulder_rotation", "high"): "Excessive shoulder rotation at mid-backswing",
+    ("mid_backswing", "lead_arm_angle",   "low"):  "Lead arm bent at mid-backswing checkpoint",
+    ("mid_backswing", "lead_arm_angle",   "high"): "Lead arm too rigid at mid-backswing — maintain natural flex",
+    ("mid_backswing", "wrist_angle",      "high"): "Limited wrist hinge at mid-backswing",
+    ("mid_backswing", "wrist_hinge",      "low"):  "Wrist hinge low at mid-backswing checkpoint",
+    ("mid_backswing", "wrist_hinge",      "high"): "Over-hinging wrists at mid-backswing checkpoint",
+    ("mid_backswing", "trail_elbow_angle", "low"): "Trail elbow tucking too early at mid-backswing",
+    ("mid_backswing", "trail_elbow_angle", "high"): "Trail elbow flaring at mid-backswing — tuck it",
+    ("mid_backswing", "arm_extension",    "low"):  "Loss of arm extension at mid-backswing — maintain width",
+    ("mid_backswing", "arm_extension",    "high"): "Arms overly extended at mid-backswing",
+    ("mid_backswing", "shoulder_width",   "low"):  "Narrow shoulder posture at mid-backswing",
+    ("mid_backswing", "shoulder_width",   "high"): "Wide shoulder posture at mid-backswing",
+    ("mid_backswing", "stance_width",     "low"):  "Stance too narrow at mid-backswing",
+    ("mid_backswing", "stance_width",     "high"): "Stance too wide at mid-backswing",
+    ("mid_backswing", "stance_width_ratio", "low"): "Stance width narrow relative to shoulders at mid-backswing",
+    ("mid_backswing", "stance_width_ratio", "high"): "Stance width wide relative to shoulders at mid-backswing",
+    ("mid_backswing", "trail_knee_flex",  "low"):  "Trail knee relatively straight at mid-backswing",
+    ("mid_backswing", "trail_knee_flex",  "high"): "Trail knee over-flexing at mid-backswing — maintain stability",
+    ("mid_backswing", "head_displacement", "high"): "Head displaced from address position at mid-backswing",
 
     # TOP
-    ("top", "shoulder_rotation",         "low"):  "Shoulder rotation low at top of swing",
-    ("top", "shoulder_rotation_3d",      "low"):  "3D shoulder rotation low at top of swing",
-    ("top", "head_displacement",         "high"): "Head displaced from address position at top of swing",
-    ("top", "wrist_angle",               "high"): "Limited wrist hinge at top of swing",
-    ("top", "wrist_hinge",               "low"):  "Wrist hinge low at top of swing",
-    ("top", "spine_angle",               "high"): "Spine angle above ideal range at top of swing",
-    ("top", "x_factor",                  "low"):  "Low hip-shoulder separation at top of swing",
-    ("top", "lead_arm_angle",            "low"):  "Lead arm bent at top of swing",
+    ("top", "shoulder_rotation",          "low"):  "Shoulder rotation low at top of swing",
+    ("top", "shoulder_rotation",          "high"): "Over-rotation at top — excessive shoulder turn detected",
+    ("top", "shoulder_rotation_3d",       "low"):  "3D shoulder rotation low at top of swing",
+    ("top", "x_factor",                   "low"):  "Low hip-shoulder separation at top of swing",
+    ("top", "x_factor",                   "high"): "Hips over-rotating at top — maintain hip-shoulder separation",
+    ("top", "head_displacement",          "high"): "Head displaced from address position at top of swing",
+    ("top", "wrist_angle",                "high"): "Limited wrist hinge at top of swing",
+    ("top", "wrist_hinge",                "low"):  "Wrist hinge low at top of swing",
+    ("top", "wrist_hinge",                "high"): "Wrists over-hinged at top of swing",
+    ("top", "spine_angle",                "high"): "Spine angle above ideal range at top of swing",
+    ("top", "lead_arm_angle",             "low"):  "Lead arm bent at top of swing",
+    ("top", "lead_arm_angle",             "high"): "Lead arm too rigid at top — allow natural flex",
+    ("top", "trail_elbow_angle",          "low"):  "Trail elbow over-bent at top — let it point downward",
+    ("top", "trail_elbow_angle",          "high"): "Trail elbow flaring at top of swing — tuck it",
+    ("top", "arm_extension",              "low"):  "Lead arm bending too much at top — maintain extension",
+    ("top", "arm_extension",              "high"): "Arms overly rigid at top of swing",
+    ("top", "shoulder_width",             "low"):  "Narrow shoulder posture at top of swing",
+    ("top", "shoulder_width",             "high"): "Wide shoulder posture at top of swing",
+    ("top", "stance_width",               "low"):  "Stance narrowing at top — check balance",
+    ("top", "stance_width",               "high"): "Stance too wide at top",
+    ("top", "stance_width_ratio",         "low"):  "Stance width narrow relative to shoulders at top",
+    ("top", "stance_width_ratio",         "high"): "Stance width wide relative to shoulders at top",
+    ("top", "trail_knee_flex",            "low"):  "Trail knee straightening at top — maintain flex for power",
+    ("top", "trail_knee_flex",            "high"): "Trail knee over-flexing at top of swing",
 
     # IMPACT
-    ("impact", "hip_rotation",           "low"):  "Hip rotation low at impact position",
-    ("impact", "hip_rotation_3d",        "low"):  "3D hip rotation low at impact position",
-    ("impact", "lead_arm_angle",         "low"):  "Lead arm bent at impact position",
-    ("impact", "x_factor",               "high"): "Body rotation ahead of arm position at impact",
-    ("impact", "lag_angle",              "high"): "Wrist lag angle low at impact position",
-    ("impact", "head_displacement",      "high"): "Head displaced from address position at impact",
+    ("impact", "hip_rotation",            "low"):  "Hip rotation low at impact position",
+    ("impact", "hip_rotation_3d",         "low"):  "3D hip rotation low at impact position",
+    ("impact", "shoulder_rotation",       "low"):  "Shoulders not clearing at impact — rotate through the ball",
+    ("impact", "shoulder_rotation",       "high"): "Shoulder over-rotation at impact — control body rotation",
+    ("impact", "lead_arm_angle",          "low"):  "Lead arm bent at impact position",
+    ("impact", "lead_arm_angle",          "high"): "Lead arm too rigid at impact — allow natural release",
+    ("impact", "x_factor",                "low"):  "Low hip-shoulder separation at impact",
+    ("impact", "x_factor",                "high"): "Body rotation ahead of arm position at impact",
+    ("impact", "lag_angle",               "low"):  "Releasing lag too early — maintain wrist angle into impact",
+    ("impact", "lag_angle",               "high"): "Wrist lag angle low at impact position",
+    ("impact", "wrist_angle",             "low"):  "Wrist angle low at impact — maintain lag through contact",
+    ("impact", "wrist_angle",             "high"): "Wrist angle releasing early at impact",
+    ("impact", "wrist_hinge",             "low"):  "Low wrist hinge at impact",
+    ("impact", "wrist_hinge",             "high"): "Excessive wrist hinge at impact",
+    ("impact", "trail_elbow_angle",       "low"):  "Trail elbow over-bent at impact — extend through the ball",
+    ("impact", "trail_elbow_angle",       "high"): "Trail elbow not releasing at impact",
+    ("impact", "arm_extension",           "low"):  "Arm extension low at impact — straighten through the ball",
+    ("impact", "arm_extension",           "high"): "Arms overly extended at impact",
+    ("impact", "shoulder_width",          "low"):  "Narrow shoulder posture at impact",
+    ("impact", "shoulder_width",          "high"): "Wide shoulder posture at impact",
+    ("impact", "stance_width",            "low"):  "Narrow stance at impact",
+    ("impact", "stance_width",            "high"): "Stance too wide at impact",
+    ("impact", "stance_width_ratio",      "low"):  "Stance width narrow relative to shoulders at impact",
+    ("impact", "stance_width_ratio",      "high"): "Stance width wide relative to shoulders at impact",
+    ("impact", "trail_knee_flex",         "low"):  "Trail leg straightening at impact — drive knee toward target",
+    ("impact", "trail_knee_flex",         "high"): "Trail knee over-bent at impact",
+    ("impact", "head_displacement",       "high"): "Head displaced from address position at impact",
 
     # MID-DOWNSWING
-    ("mid_downswing", "lag_angle",       "high"): "Wrist lag angle low at mid-downswing checkpoint",
-    ("mid_downswing", "hip_rotation",    "low"):  "Hip rotation low at mid-downswing position",
-    ("mid_downswing", "hip_rotation_3d", "low"):  "3D hip rotation low at mid-downswing",
-    ("mid_downswing", "x_factor",        "low"):  "Low hip-shoulder separation at mid-downswing",
-    ("mid_downswing", "shoulder_rotation","high"): "Shoulder rotation high relative to hips at mid-downswing",
-    ("mid_downswing", "head_displacement","high"): "Head displaced from address position at mid-downswing",
+    ("mid_downswing", "lag_angle",        "low"):  "Releasing lag too early in downswing — hold angle longer",
+    ("mid_downswing", "lag_angle",        "high"): "Wrist lag angle low at mid-downswing checkpoint",
+    ("mid_downswing", "hip_rotation",     "low"):  "Hip rotation low at mid-downswing position",
+    ("mid_downswing", "hip_rotation_3d",  "low"):  "3D hip rotation low at mid-downswing",
+    ("mid_downswing", "shoulder_rotation", "low"): "Shoulder rotation low at mid-downswing — clear through",
+    ("mid_downswing", "shoulder_rotation", "high"): "Shoulder rotation high relative to hips at mid-downswing",
+    ("mid_downswing", "x_factor",         "low"):  "Low hip-shoulder separation at mid-downswing",
+    ("mid_downswing", "x_factor",         "high"): "Hips over-rotating in downswing — maintain separation",
+    ("mid_downswing", "lead_arm_angle",   "low"):  "Lead arm bent in downswing — maintain extension",
+    ("mid_downswing", "lead_arm_angle",   "high"): "Lead arm too rigid in downswing — allow natural release",
+    ("mid_downswing", "trail_elbow_angle", "low"): "Trail elbow over-bent in downswing — extend through ball",
+    ("mid_downswing", "trail_elbow_angle", "high"): "Trail elbow flaring in downswing — tuck and drive",
+    ("mid_downswing", "arm_extension",    "low"):  "Loss of arm extension in downswing — maintain swing width",
+    ("mid_downswing", "arm_extension",    "high"): "Arms overly extended in downswing",
+    ("mid_downswing", "wrist_angle",      "low"):  "Wrist angle low at mid-downswing — hold the lag",
+    ("mid_downswing", "wrist_hinge",      "low"):  "Low wrist hinge at mid-downswing",
+    ("mid_downswing", "wrist_hinge",      "high"): "Over-hinging at mid-downswing checkpoint",
+    ("mid_downswing", "shoulder_width",   "low"):  "Narrow shoulder posture in downswing",
+    ("mid_downswing", "shoulder_width",   "high"): "Wide shoulder posture in downswing",
+    ("mid_downswing", "stance_width",     "low"):  "Narrow stance at mid-downswing",
+    ("mid_downswing", "stance_width",     "high"): "Stance too wide at mid-downswing",
+    ("mid_downswing", "stance_width_ratio", "low"): "Stance narrow relative to shoulders at mid-downswing",
+    ("mid_downswing", "stance_width_ratio", "high"): "Stance wide relative to shoulders at mid-downswing",
+    ("mid_downswing", "trail_knee_flex",  "low"):  "Trail leg straightening in downswing — drive knee through",
+    ("mid_downswing", "trail_knee_flex",  "high"): "Trail knee over-bent in downswing",
+    ("mid_downswing", "head_displacement", "high"): "Head displaced from address position at mid-downswing",
 
     # FOLLOW-THROUGH
-    ("follow_through", "shoulder_rotation","low"): "Shoulder rotation low at follow-through checkpoint",
-    ("follow_through", "lead_arm_angle",  "low"): "Lead arm bent at follow-through checkpoint",
-    ("follow_through", "hip_rotation",    "low"): "Hip rotation low at follow-through position",
-    ("follow_through", "hip_rotation_3d", "low"): "3D hip rotation low at follow-through",
-    ("follow_through", "spine_angle",     "high"): "Spine angle above ideal range at follow-through",
+    ("follow_through", "shoulder_rotation", "low"):  "Shoulder rotation low at follow-through checkpoint",
+    ("follow_through", "shoulder_rotation", "high"): "Shoulder over-rotation at follow-through",
+    ("follow_through", "x_factor",          "low"):  "Low hip-shoulder separation at follow-through",
+    ("follow_through", "x_factor",          "high"): "Hips over-rotating at follow-through",
+    ("follow_through", "lead_arm_angle",    "low"):  "Lead arm bent at follow-through checkpoint",
+    ("follow_through", "lead_arm_angle",    "high"): "Lead arm too rigid at follow-through — allow natural fold",
+    ("follow_through", "hip_rotation",      "low"):  "Hip rotation low at follow-through position",
+    ("follow_through", "hip_rotation_3d",   "low"):  "3D hip rotation low at follow-through",
+    ("follow_through", "trail_elbow_angle", "low"):  "Trail elbow over-bent at follow-through",
+    ("follow_through", "trail_elbow_angle", "high"): "Trail elbow flaring at follow-through",
+    ("follow_through", "arm_extension",     "low"):  "Arm extension low at follow-through",
+    ("follow_through", "arm_extension",     "high"): "Arms overly extended at follow-through",
+    ("follow_through", "wrist_angle",       "high"): "Limited wrist release at follow-through",
+    ("follow_through", "wrist_hinge",       "high"): "Wrists over-hinged at follow-through",
+    ("follow_through", "shoulder_width",    "low"):  "Narrow shoulder posture at follow-through",
+    ("follow_through", "shoulder_width",    "high"): "Wide shoulder posture at follow-through",
+    ("follow_through", "stance_width",      "low"):  "Narrow stance at follow-through",
+    ("follow_through", "stance_width",      "high"): "Stance too wide at follow-through",
+    ("follow_through", "stance_width_ratio", "low"):  "Stance narrow relative to shoulders at follow-through",
+    ("follow_through", "stance_width_ratio", "high"): "Stance wide relative to shoulders at follow-through",
+    ("follow_through", "trail_knee_flex",   "low"):  "Trail leg not releasing at follow-through — let it drive",
+    ("follow_through", "trail_knee_flex",   "high"): "Trail knee over-bent at follow-through",
+    ("follow_through", "spine_angle",       "high"): "Spine angle above ideal range at follow-through",
 
     # FINISH
-    ("finish", "shoulder_rotation",      "low"):  "Shoulder rotation low at finish position",
-    ("finish", "lead_knee_flex",         "high"): "Limited weight transfer at finish — lead knee over-flexed",
-    ("finish", "hip_rotation",           "low"):  "Hip rotation low at finish position",
-    ("finish", "hip_rotation_3d",        "low"):  "3D hip rotation low at finish position",
-    ("finish", "head_displacement",      "high"): "Head significantly displaced at finish",
-    ("finish", "spine_angle",            "high"): "Spine angle above ideal range at finish",
+    ("finish", "shoulder_rotation",       "low"):  "Shoulder rotation low at finish position",
+    ("finish", "shoulder_rotation",       "high"): "Shoulder over-rotation at finish — check hip-shoulder sequencing",
+    ("finish", "x_factor",                "low"):  "Low hip-shoulder separation at finish",
+    ("finish", "x_factor",                "high"): "Hips over-rotating at finish",
+    ("finish", "lead_knee_flex",          "high"): "Limited weight transfer at finish — lead knee over-flexed",
+    ("finish", "hip_rotation",            "low"):  "Hip rotation low at finish position",
+    ("finish", "hip_rotation_3d",         "low"):  "3D hip rotation low at finish position",
+    ("finish", "wrist_angle",             "low"):  "Wrists flat at finish — check release pattern",
+    ("finish", "wrist_angle",             "high"): "Wrists over-bent at finish position",
+    ("finish", "wrist_hinge",             "low"):  "Low wrist hinge at finish",
+    ("finish", "wrist_hinge",             "high"): "Wrists over-hinged at finish — check release",
+    ("finish", "lag_angle",               "low"):  "Lag angle low at finish — release was early",
+    ("finish", "lag_angle",               "high"): "Lag carried too long into finish position",
+    ("finish", "lead_arm_angle",          "low"):  "Lead arm straight at finish — allow natural fold",
+    ("finish", "lead_arm_angle",          "high"): "Lead arm over-bent at finish",
+    ("finish", "trail_knee_flex",         "low"):  "Trail knee not flexing at finish — check weight transfer",
+    ("finish", "trail_knee_flex",         "high"): "Trail knee over-bent at finish",
+    ("finish", "trail_elbow_angle",       "low"):  "Trail elbow over-bent at finish",
+    ("finish", "trail_elbow_angle",       "high"): "Trail elbow not folding at finish",
+    ("finish", "arm_extension",           "low"):  "Arms folding too early at finish",
+    ("finish", "arm_extension",           "high"): "Arms too extended at finish position",
+    ("finish", "shoulder_width",          "low"):  "Narrow shoulder posture at finish — check balance",
+    ("finish", "shoulder_width",          "high"): "Wide shoulder posture at finish",
+    ("finish", "stance_width",            "low"):  "Narrow stance at finish",
+    ("finish", "stance_width",            "high"): "Stance too wide at finish",
+    ("finish", "stance_width_ratio",      "low"):  "Stance narrow relative to shoulders at finish",
+    ("finish", "stance_width_ratio",      "high"): "Stance width too wide relative to shoulders at finish",
+    ("finish", "head_displacement",       "high"): "Head significantly displaced at finish",
+    ("finish", "spine_angle",             "high"): "Spine angle above ideal range at finish",
 }
 
 
@@ -492,6 +634,14 @@ def generate_phase_feedback(
 
     prefix = phase_name.replace("-", "_").replace(" ", "_").lower()
 
+    # When all local contribs are near-zero the model scored via its bias term;
+    # bypass the contrib gate and rank purely by benchmark deviation instead.
+    phase_locals = [
+        float(local_contribs.get(col, 0.0))
+        for col in feature_cols if col.startswith(prefix + "_")
+    ]
+    all_local_zero = bool(phase_locals) and all(abs(v) < 1e-6 for v in phase_locals)
+
     deviations = []
     fallback_candidates = []
     relaxed_candidates = []
@@ -512,16 +662,17 @@ def generate_phase_feedback(
         deviation = val - med
         norm_dev = abs(deviation) / max(iqr, 1e-6)
         local = float(local_contribs.get(col, 0.0))
-        weighted = local * norm_dev
-
-        weighted = local * norm_dev
+        # Use pure deviation ranking when model relies on bias (all contribs zero)
+        weighted = norm_dev if all_local_zero else local * norm_dev
 
         # Keep a relaxed ranking list so low-score phases still get at least
         # one concrete checkpoint when strict gates filter everything out.
         if weighted > 0:
             relaxed_candidates.append((weighted, metric))
 
-        if local < MIN_LOCAL_CONTRIB or norm_dev < MIN_NORM_DEVIATION:
+        if norm_dev < MIN_NORM_DEVIATION:
+            continue
+        if not all_local_zero and local < MIN_LOCAL_CONTRIB:
             continue
 
         direction = "high" if deviation > 0 else "low"
