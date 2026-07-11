@@ -1,9 +1,0 @@
-Video,Phase,Start_Frame,End_Frame,Duration,Key_Frame,Image_Path
-Minh_cleaned,Address,27,33,7,30,data\keyframes\Minh_nn\Minh_cleaned_Address.jpg
-Minh_cleaned,Takeaway,50,56,7,53,data\keyframes\Minh_nn\Minh_cleaned_Takeaway.jpg
-Minh_cleaned,Mid-backswing,56,62,7,59,data\keyframes\Minh_nn\Minh_cleaned_Mid-backswing.jpg
-Minh_cleaned,Top,68,74,7,71,data\keyframes\Minh_nn\Minh_cleaned_Top.jpg
-Minh_cleaned,Mid-downswing,72,78,7,75,data\keyframes\Minh_nn\Minh_cleaned_Mid-downswing.jpg
-Minh_cleaned,Impact,76,82,7,79,data\keyframes\Minh_nn\Minh_cleaned_Impact.jpg
-Minh_cleaned,Follow-through,79,85,7,82,data\keyframes\Minh_nn\Minh_cleaned_Follow-through.jpg
-Minh_cleaned,Finish,107,113,7,110,data\keyframes\Minh_nn\Minh_cleaned_Finish.jpg

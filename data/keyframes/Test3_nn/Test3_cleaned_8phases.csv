@@ -1,9 +1,0 @@
-Video,Phase,Start_Frame,End_Frame,Duration,Key_Frame,Image_Path
-Test3_cleaned,Address,87,93,7,90,data\keyframes\Test3_nn\Test3_cleaned_Address.jpg
-Test3_cleaned,Takeaway,110,116,7,113,data\keyframes\Test3_nn\Test3_cleaned_Takeaway.jpg
-Test3_cleaned,Mid-backswing,115,121,7,118,data\keyframes\Test3_nn\Test3_cleaned_Mid-backswing.jpg
-Test3_cleaned,Top,128,134,7,131,data\keyframes\Test3_nn\Test3_cleaned_Top.jpg
-Test3_cleaned,Mid-downswing,133,139,7,136,data\keyframes\Test3_nn\Test3_cleaned_Mid-downswing.jpg
-Test3_cleaned,Impact,137,143,7,140,data\keyframes\Test3_nn\Test3_cleaned_Impact.jpg
-Test3_cleaned,Follow-through,139,145,7,142,data\keyframes\Test3_nn\Test3_cleaned_Follow-through.jpg
-Test3_cleaned,Finish,209,212,4,210,data\keyframes\Test3_nn\Test3_cleaned_Finish.jpg

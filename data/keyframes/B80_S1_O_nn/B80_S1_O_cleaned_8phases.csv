@@ -1,9 +1,0 @@
-Video,Phase,Start_Frame,End_Frame,Duration,Key_Frame,Image_Path
-B80_S1_O_cleaned,Address,95,101,7,98,data\keyframes\B80_S1_O_nn\B80_S1_O_cleaned_Address.jpg
-B80_S1_O_cleaned,Takeaway,112,118,7,115,data\keyframes\B80_S1_O_nn\B80_S1_O_cleaned_Takeaway.jpg
-B80_S1_O_cleaned,Mid-backswing,117,123,7,120,data\keyframes\B80_S1_O_nn\B80_S1_O_cleaned_Mid-backswing.jpg
-B80_S1_O_cleaned,Top,129,135,7,132,data\keyframes\B80_S1_O_nn\B80_S1_O_cleaned_Top.jpg
-B80_S1_O_cleaned,Mid-downswing,133,139,7,136,data\keyframes\B80_S1_O_nn\B80_S1_O_cleaned_Mid-downswing.jpg
-B80_S1_O_cleaned,Impact,136,142,7,139,data\keyframes\B80_S1_O_nn\B80_S1_O_cleaned_Impact.jpg
-B80_S1_O_cleaned,Follow-through,137,143,7,140,data\keyframes\B80_S1_O_nn\B80_S1_O_cleaned_Follow-through.jpg
-B80_S1_O_cleaned,Finish,155,161,7,158,data\keyframes\B80_S1_O_nn\B80_S1_O_cleaned_Finish.jpg

@@ -1,9 +1,0 @@
-Video,Phase,Start_Frame,End_Frame,Duration,Key_Frame,Image_Path
-wymm_cleaned,Address,172,178,7,175,data\keyframes\wymm_nn\wymm_cleaned_Address.jpg
-wymm_cleaned,Takeaway,191,197,7,194,data\keyframes\wymm_nn\wymm_cleaned_Takeaway.jpg
-wymm_cleaned,Mid-backswing,196,202,7,199,data\keyframes\wymm_nn\wymm_cleaned_Mid-backswing.jpg
-wymm_cleaned,Top,212,218,7,215,data\keyframes\wymm_nn\wymm_cleaned_Top.jpg
-wymm_cleaned,Mid-downswing,217,223,7,220,data\keyframes\wymm_nn\wymm_cleaned_Mid-downswing.jpg
-wymm_cleaned,Impact,220,226,7,223,data\keyframes\wymm_nn\wymm_cleaned_Impact.jpg
-wymm_cleaned,Follow-through,221,227,7,224,data\keyframes\wymm_nn\wymm_cleaned_Follow-through.jpg
-wymm_cleaned,Finish,261,264,4,262,data\keyframes\wymm_nn\wymm_cleaned_Finish.jpg

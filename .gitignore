@@ -30,13 +30,9 @@ env/
 Thumbs.db
 desktop.ini
 
-# Data files (uncomment if you don't want to track data)
-# data/raw_videos/
-# data/cleaned_videos/
-# data/extracted_poses/
-# data/keyframes/
-# data/metrics/
-#outputs/
+Data files (uncomment if you don't want to track data)
+data/
+outputs/
 
 # Large files
 *.mp4

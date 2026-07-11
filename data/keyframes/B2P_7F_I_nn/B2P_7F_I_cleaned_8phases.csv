@@ -1,9 +1,0 @@
-Video,Phase,Start_Frame,End_Frame,Duration,Key_Frame,Image_Path
-B2P_7F_I_cleaned,Address,0,4,5,2,data\keyframes\B2P_7F_I_nn\B2P_7F_I_cleaned_Address.jpg
-B2P_7F_I_cleaned,Takeaway,19,25,7,22,data\keyframes\B2P_7F_I_nn\B2P_7F_I_cleaned_Takeaway.jpg
-B2P_7F_I_cleaned,Mid-backswing,26,32,7,29,data\keyframes\B2P_7F_I_nn\B2P_7F_I_cleaned_Mid-backswing.jpg
-B2P_7F_I_cleaned,Top,34,40,7,37,data\keyframes\B2P_7F_I_nn\B2P_7F_I_cleaned_Top.jpg
-B2P_7F_I_cleaned,Mid-downswing,37,43,7,40,data\keyframes\B2P_7F_I_nn\B2P_7F_I_cleaned_Mid-downswing.jpg
-B2P_7F_I_cleaned,Impact,42,48,7,45,data\keyframes\B2P_7F_I_nn\B2P_7F_I_cleaned_Impact.jpg
-B2P_7F_I_cleaned,Follow-through,44,50,7,47,data\keyframes\B2P_7F_I_nn\B2P_7F_I_cleaned_Follow-through.jpg
-B2P_7F_I_cleaned,Finish,59,65,7,62,data\keyframes\B2P_7F_I_nn\B2P_7F_I_cleaned_Finish.jpg

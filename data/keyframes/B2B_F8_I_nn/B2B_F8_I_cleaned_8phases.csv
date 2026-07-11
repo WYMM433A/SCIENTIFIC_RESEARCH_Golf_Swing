@@ -1,9 +1,0 @@
-Video,Phase,Start_Frame,End_Frame,Duration,Key_Frame,Image_Path
-B2B_F8_I_cleaned,Address,0,3,4,1,data\keyframes\B2B_F8_I_nn\B2B_F8_I_cleaned_Address.jpg
-B2B_F8_I_cleaned,Takeaway,10,16,7,13,data\keyframes\B2B_F8_I_nn\B2B_F8_I_cleaned_Takeaway.jpg
-B2B_F8_I_cleaned,Mid-backswing,15,21,7,18,data\keyframes\B2B_F8_I_nn\B2B_F8_I_cleaned_Mid-backswing.jpg
-B2B_F8_I_cleaned,Top,32,38,7,35,data\keyframes\B2B_F8_I_nn\B2B_F8_I_cleaned_Top.jpg
-B2B_F8_I_cleaned,Mid-downswing,41,47,7,44,data\keyframes\B2B_F8_I_nn\B2B_F8_I_cleaned_Mid-downswing.jpg
-B2B_F8_I_cleaned,Impact,45,51,7,48,data\keyframes\B2B_F8_I_nn\B2B_F8_I_cleaned_Impact.jpg
-B2B_F8_I_cleaned,Follow-through,48,54,7,51,data\keyframes\B2B_F8_I_nn\B2B_F8_I_cleaned_Follow-through.jpg
-B2B_F8_I_cleaned,Finish,60,66,7,63,data\keyframes\B2B_F8_I_nn\B2B_F8_I_cleaned_Finish.jpg
